@@ -1,0 +1,4 @@
+Transaction Date 2024-01-01	Description	Salary Deposit Type	Deposit Amount 5000
+Transaction Date 2024-01-03	Description	Grocery Store Purchase Type	Debit Amount -200
+Transaction Date 2024-01-07	Description	Utility Bill Payment Type	Debit Amount -50
+Transaction Date 2024-01-20	Description	Another Bill Payment Type	Debit Amount -4000
