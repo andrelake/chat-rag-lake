@@ -1,21 +1,41 @@
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParse
+import os
 
-from connections import db
+from connections import Embeddings
+from env import ASTRA_DB_API_ENDPOINT, ASTRA_DB_APPLICATION_TOKEN
 
-# llm = ChatOpenAI(openai_api_key=api_key)
-# prompt = ChatPromptTemplate.from_messages([
-#     ("system", "You are a software developer with a huge knowledge in python, LLM, Vectorial Database and RAG."),
-#     ("user", "{input}")
-# ])
 
-print(f"Connected to Astra DB: {db.get_collections()}")
-print(f"Connected to Astra DB: {db.collection('movies_db')}")
-print(f"Connected to Astra DB: {db.collection('movies_db').get()}")
+class Color:
+    RED = '\033[91m'
+    GREEN = '\033[92m'
+    CYAN = '\033[96m'
+    END = '\033[0m'
 
-# output_parser = StrOutputParser()
-#
-# chain = prompt | llm | output_parser
-# resp = chain.invoke({"input": "how can Langchain help a RAG made with Python and a vectorial database?"})
-# print(resp)
+
+def reset_collection(collection_name: str):
+    collection = Embeddings.connect_db(
+        astra_db_application_token=ASTRA_DB_APPLICATION_TOKEN,
+        astra_db_api_endpoint=ASTRA_DB_API_ENDPOINT,
+        collection_name=collection_name,
+    )
+
+    # Import documents
+    json_path = os.path.join('data', 'documents', f'{collection_name}_default.json')
+    Embeddings.import_documents(
+        collection=collection,
+        json_path=json_path
+    )
+    print(f'{Color.GREEN}Default documents data imported to {Color.CYAN}{collection_name}{Color.GREEN} successfully{Color.END}')
+
+    # Count documents
+    documents_count = collection.count_documents()['status']['count']
+    print(f'Collection {Color.CYAN}{collection_name}{Color.END} has {Color.CYAN}{documents_count}{Color.END} documents')
+
+    # Get documents
+    # documents = collection.get()
+    # print(f'Collection {Color.CYAN}{collection_name}{Color.END} documents:')
+    # print(documents)
+
+    return collection
+
+
+db_invoices = reset_collection('db_invoices')

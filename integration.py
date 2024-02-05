@@ -1,6 +1,6 @@
 import os
 
-from connections import db, import_documents
+from connections import Default
 
 
 class Color:
@@ -12,22 +12,22 @@ class Color:
 
 def reset_collection(collection_name: str):
     # Delete collection if exists
-    if collection_name in db.get_collections()['status']['collections']:
-        db.delete_collection(collection_name=collection_name)
+    if collection_name in Default.db.get_collections()['status']['collections']:
+        Default.db.delete_collection(collection_name=collection_name)
         print(f'{Color.GREEN}Existing collection {Color.CYAN}{collection_name}{Color.GREEN} deleted successfully{Color.END}')
         
     # Create a collection
-    db.create_collection(
+    Default.db.create_collection(
         collection_name=collection_name,
         dimension=2
     )
-    collection = db.collection(collection_name)
+    collection = Default.db.collection(collection_name)
     print(f'{Color.GREEN}Collection {Color.CYAN}{collection_name}{Color.GREEN} created successfully{Color.END}')
 
 
     # Import documents
     json_path = os.path.join('data', 'documents', f'{collection_name}_default.json')
-    import_documents(
+    Default.import_documents(
         collection=collection,
         json_path=json_path
     )
