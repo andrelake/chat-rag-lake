@@ -27,8 +27,8 @@ def reset_collection(collection_name: str):
     print(f'{Color.GREEN}Default documents data imported to {Color.CYAN}{collection_name}{Color.GREEN} successfully{Color.END}')
 
     # Count documents
-    documents_count = collection.count_documents()['status']['count']
-    print(f'Collection {Color.CYAN}{collection_name}{Color.END} has {Color.CYAN}{documents_count}{Color.END} documents')
+    # documents_count = collection.count_documents()['status']['count']
+    # print(f'Collection {Color.CYAN}{collection_name}{Color.END} has {Color.CYAN}{documents_count}{Color.END} documents')
 
     # Get documents
     # documents = collection.get()
@@ -38,4 +38,4 @@ def reset_collection(collection_name: str):
     return collection
 
 
-db_invoices = reset_collection('db_invoices')
+db_invoices = reset_collection('db_invoices_embed')

@@ -47,7 +47,12 @@ class Embeddings:
 
         # Add a LangChain document with the quote and metadata tags
         documents = [
-            Document(page_content=json.dumps(document, separators=(',', ':')), metadata={'teste': 'teste'})
+            Document(
+                page_content=json.dumps(document, separators=('\t', '\t')).replace('{', '')
+                                                                          .replace('}', '')
+                                                                          .replace('"', ''),
+                metadata={'teste': 'teste'}
+            )
             for document in documents
         ]
         collection.add_documents(documents)
