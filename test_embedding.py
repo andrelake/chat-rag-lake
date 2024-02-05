@@ -18,6 +18,9 @@ def reset_collection(collection_name: str):
         collection_name=collection_name,
     )
 
+    # Clear collection
+    collection.clear()
+
     # Import documents
     json_path = os.path.join('data', 'documents', f'{collection_name}_default.json')
     Embeddings.import_documents(
