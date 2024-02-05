@@ -30,11 +30,11 @@ class Default:
 
 class Embeddings:
     # Not working
-    def connect_db(astra_db_application_token: str, astra_db_api_endpoint: str, collection_name: str):
+    def connect_db(openai_api_key: str, astra_db_application_token: str, astra_db_api_endpoint: str, collection_name: str):
         from langchain_community.vectorstores import AstraDB as LangchainAstraDB
 
 
-        embedding = OpenAIEmbeddings()
+        embedding = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
         collection = LangchainAstraDB(
             embedding=embedding,
             collection_name=collection_name,
