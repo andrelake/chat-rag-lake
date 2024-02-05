@@ -1,0 +1,26 @@
+[
+    {
+    "transaction_date": "2024-01-01",
+    "description": "Salary Deposit",
+    "type": "Deposit",
+    "amount": 5000
+},
+{
+    "transaction_date": "2024-01-03",
+    "description": "Grocery Store Purchase",
+    "type": "Debit",
+    "amount": -200
+},
+{
+    "transaction_date": "2024-01-07",
+    "description": "Utility Bill Payment",
+    "type": "Debit",
+    "amount": -50
+},
+{
+    "transaction_date": "2024-01-20",
+    "description": "Another Bill Payment",
+    "type": "Debit",
+    "amount": -4000
+}
+]
