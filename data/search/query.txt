@@ -1,0 +1,1 @@
+Transaction Date 2024-01-01	Description	Salary Deposit Type	Deposit Amount 5000

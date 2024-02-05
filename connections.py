@@ -6,6 +6,8 @@ from env import OPENAI_API_KEY, ASTRA_DB_API_ENDPOINT, ASTRA_DB_APPLICATION_TOKE
 from langchain_openai import OpenAIEmbeddings
 from langchain.schema import Document
 
+from typing import Dict, Optional, List
+
 
 class Default:
     def connect_db(astra_db_application_token: str, astra_db_api_endpoint: str, namespace: str = 'default_keyspace'):
@@ -56,4 +58,10 @@ class Embeddings:
             for document in documents
         ]
         collection.add_documents(documents)
+    
+    def similarity_search(collection, query: str, k: int = 4, filter: Optional[Dict[str, str]] = None) -> List[Document]:
+        return collection.similarity_search(query, k, filter)
+    
+    def similarity_search_by_vector(collection, embedding: List[float], k: int = 4, filter: Optional[Dict[str, str]] = None) -> List[Document]:
+        return collection.similarity_search_by_vector(embedding, k, filter)
 
