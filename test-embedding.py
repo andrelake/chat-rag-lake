@@ -2,7 +2,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParse
 
-from db_conn import db
+from connections import db
 
 # llm = ChatOpenAI(openai_api_key=api_key)
 # prompt = ChatPromptTemplate.from_messages([

@@ -37,6 +37,11 @@ def reset_collection(collection_name: str):
     documents_count = collection.count_documents()['status']['count']
     print(f'Collection {Color.CYAN}{collection_name}{Color.END} has {Color.CYAN}{documents_count}{Color.END} documents')
 
+    # Get documents
+    # documents = collection.get()
+    # print(f'Collection {Color.CYAN}{collection_name}{Color.END} documents:')
+    # print(documents)
+
     return collection
 
 
