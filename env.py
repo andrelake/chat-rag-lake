@@ -1,8 +1,8 @@
 from dotenv import load_dotenv
 from os import getenv
 
-load_dotenv()
 
+load_dotenv()
 
 OPENAI_API_KEY = getenv('OPENAI_API_KEY')
 ASTRA_DB_APPLICATION_TOKEN = getenv('ASTRA_DB_APPLICATION_TOKEN')
