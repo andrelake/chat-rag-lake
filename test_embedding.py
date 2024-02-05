@@ -44,9 +44,9 @@ def reset_collection(collection_name: str):
     return collection
 
 def test_search(collection):
-    with open(os.path.join('data', 'search_vector.json'), 'r') as file:
+    with open(os.path.join('data', 'search', 'vector.json'), 'r') as file:
         vector = json.load(file)
-    with open(os.path.join('data', 'search_query.txt'), 'r') as file:
+    with open(os.path.join('data', 'search', 'query.txt'), 'r') as file:
         query = file.read()
     pprint(collection.similarity_search(query, k=3))
     pprint(collection.similarity_search_by_vector(vector, k=3))
