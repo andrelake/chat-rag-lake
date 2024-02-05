@@ -1,5 +1,4 @@
 import os
-from langchain.schema import Document
 
 from db_conn import db, import_documents
 
