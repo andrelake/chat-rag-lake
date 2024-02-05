@@ -9,15 +9,8 @@ from cassandra.cluster import Cluster
 from cassandra.auth import PlainTextAuthProvider
 
 from datasets import load_dataset
-from dotenv import load_dotenv
 
-# get enviroment variables from dotenv file
-ASTRA_DB_APPLICATION_TOKEN = os.environ.get("ASTRA_DB_APPLICATION_TOKEN")
-ASTRA_DB_API_ENDPOINT = os.environ.get("ASTRA_DB_API_ENDPOINT")
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-
-# load .env file
-load_dotenv()
+from env import OPENAI_API_KEY, ASTRA_DB_API_ENDPOINT, ASTRA_DB_APPLICATION_TOKEN
 
 # set embedding model
 embedding = OpenAIEmbeddings()

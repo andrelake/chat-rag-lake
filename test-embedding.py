@@ -1,30 +1,16 @@
-import os
-from dotenv import load_dotenv
-
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-from astrapy.db import AstraDB
+from env import OPENAI_API_KEY, ASTRA_DB_API_ENDPOINT, ASTRA_DB_APPLICATION_TOKEN
 
-load_dotenv()
-
-api_key = os.getenv('OPENAI_API_KEY')
-db_token = os.getenv('ASTRA_DB_APPLICATION_TOKEN')
-db_api_endpoint = os.getenv('ASTRA_DB_API_ENDPOINT')
+from db_conn import db
 
 # llm = ChatOpenAI(openai_api_key=api_key)
 # prompt = ChatPromptTemplate.from_messages([
 #     ("system", "You are a software developer with a huge knowledge in python, LLM, Vectorial Database and RAG."),
 #     ("user", "{input}")
 # ])
-
-
-# Initialization
-db = AstraDB(
-  token=db_token,
-  api_endpoint=db_api_endpoint,
-  namespace="default_keyspace")
 
 print(f"Connected to Astra DB: {db.get_collections()}")
 print(f"Connected to Astra DB: {db.collection('movies_db')}")
