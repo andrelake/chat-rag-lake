@@ -1,6 +1,6 @@
 import os
 
-from db_conn import db, import_documents
+from connections import db, import_documents
 
 
 class Color:
