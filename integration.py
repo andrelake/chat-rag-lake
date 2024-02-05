@@ -12,6 +12,7 @@ class Color:
 
 
 def reset_collection(collection_name: str):
+    # Delete collection if exists
     if collection_name in db.get_collections()['status']['collections']:
         db.delete_collection(collection_name=collection_name)
         print(f'{Color.GREEN}Existing collection {Color.CYAN}{collection_name}{Color.GREEN} deleted successfully{Color.END}')
