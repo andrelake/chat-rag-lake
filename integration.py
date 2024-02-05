@@ -1,19 +1,43 @@
 import os
-from langchain.indexes.vectorstore import VectorStoreIndexWrapper
 from langchain.schema import Document
 
-from cassandra.cluster import Cluster
-from cassandra.auth import PlainTextAuthProvider
-
-from datasets import load_dataset
-
-from db_conn import coll_movies_db
+from db_conn import db, import_documents
 
 
-# set db
-vstore = coll_movies_db
+class Color:
+    RED = '\033[91m'
+    GREEN = '\033[92m'
+    CYAN = '\033[96m'
+    END = '\033[0m'
 
-# load data:
-movies_dataset = load_dataset("")
-print("An example entry:")
-print(movies_dataset[16])
+
+def reset_collection(collection_name: str):
+    if collection_name in db.get_collections()['status']['collections']:
+        db.delete_collection(collection_name=collection_name)
+        print(f'{Color.GREEN}Existing collection {Color.CYAN}{collection_name}{Color.GREEN} deleted successfully{Color.END}')
+        
+    # Create a collection
+    db.create_collection(
+        collection_name=collection_name,
+        dimension=2
+    )
+    collection = db.collection(collection_name)
+    print(f'{Color.GREEN}Collection {Color.CYAN}{collection_name}{Color.GREEN} created successfully{Color.END}')
+
+
+    # Import documents
+    json_path = os.path.join('data', 'documents', f'{collection_name}_default.json')
+    import_documents(
+        collection=collection,
+        json_path=json_path
+    )
+    print(f'{Color.GREEN}Default documents data imported to {Color.CYAN}{collection_name}{Color.GREEN} successfully{Color.END}')
+
+    # Count documents
+    documents_count = collection.count_documents()['status']['count']
+    print(f'Collection {Color.CYAN}{collection_name}{Color.END} has {Color.CYAN}{documents_count}{Color.END} documents')
+
+    return collection
+
+
+db_invoices = reset_collection('db_invoices')
