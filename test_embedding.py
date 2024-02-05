@@ -48,12 +48,12 @@ def test_search(collection):
         vector = json.load(file)
     with open(os.path.join('data', 'search_query.txt'), 'r') as file:
         query = file.read()
-    pprint(db_invoices.similarity_search(query, k=3))
-    pprint(db_invoices.similarity_search_by_vector(vector, k=3))
+    pprint(collection.similarity_search(query, k=3))
+    pprint(collection.similarity_search_by_vector(vector, k=3))
 
 
 db_invoices = reset_collection('db_invoices_embed')
-test_search(db_invoices)
+test_search(collection=db_invoices)
 
 
 # search(query, search_type, **kwargs) Return docs most similar to query using specified search type.
