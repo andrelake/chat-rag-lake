@@ -3,11 +3,17 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from datetime import date
 from time import sleep
+from env import OPENAI_API_KEY
 
 
-load_dotenv()
+class Color:
+    RED = '\033[91m'
+    GREEN = '\033[92m'
+    CYAN = '\033[96m'
+    END = '\033[0m'
 
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 # 1: Carrega o arquivo
 file = client.files.create(
