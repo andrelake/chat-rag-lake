@@ -31,7 +31,7 @@ instructions = f'''
     Utilize respostas curtas e cálcule com 100% de precisão.
     Hoje é dia {current_date}.
     Todas as datas no arquivo estão no formato {date_format}.
-'''
+'''.replace('\n' + ' '*4, '\n').strip()
 
 # 2: Cria o assistente
 chat_assistant = client.beta.assistants.create(
@@ -44,11 +44,20 @@ chat_assistant = client.beta.assistants.create(
 # 3: Cria a thread
 thread = client.beta.threads.create()
 
+block_separator = Color.CYAN + '-' * 80 + Color.END
+print(block_separator, end='\n\n')
+print(f'{Color.CYAN}>>> System:{Color.END} {instructions}')
+print(f'{Color.CYAN}>>> System: `texto.txt`{Color.END}', end='\n\n')
+
+
 while True:
-    user_input = input("\nDigite sua pergunta (ou 'sair' para terminar): ")
+    print(block_separator, end='\n\n')
+    user_input = input(f'{Color.CYAN}>>> Digite sua pergunta (ou "sair"):{Color.END} ')
     if user_input.lower() == 'sair':
         break
 
+    print(f'\033[1A{Color.CYAN}>>> User:{Color.END} {user_input}\033[K') # thread_message.content[0].text.value
+    
     # 4: Adiciona a mensagem na thread
     thread_message = client.beta.threads.messages.create(
         thread_id=thread.id,
@@ -59,10 +68,9 @@ while True:
 
     # 5: roda o assistente
     my_run = client.beta.threads.runs.create(
-      thread_id=thread.id,
-      assistant_id=chat_assistant.id
+        thread_id=thread.id,
+        assistant_id=chat_assistant.id
     )
-
     # 6: Fica escutando o status para gatilho do comportamento
     while my_run.status in ["queued", "in_progress"]:
         keep_retrieving_run = client.beta.threads.runs.retrieve(
@@ -74,10 +82,7 @@ while True:
             # 7: pega as mensagens que foram adicionadas a thread
             all_messages = client.beta.threads.messages.list(thread_id=thread.id)
 
-            print('-'*60 + ' \n')
-            print(f"User: {thread_message.content[0].text.value}")
-            print(f"Assistant: {all_messages.data[0].content[0].text.value}")
-
+            print(f'{Color.CYAN}>>> Assistant:{Color.END} {all_messages.data[0].content[0].text.value}', end='\n\n')
             break
 
         sleep(1)
