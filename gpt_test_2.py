@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
+from datetime import date
+
 
 load_dotenv()
 
@@ -12,15 +14,23 @@ file = client.files.create(
   purpose='assistants'
 )
 
+manager_name = 'Fernando Dias'
+current_date = date.today().strftime('%Y-%m-%d')
+date_format = 'yyyy-MM-dd'
+headers = ['Data', 'Descrição', 'Tipo', 'Valor', 'Nome do cliente', 'CPF do cliente']
+instructions = f'''
+    Você é o assistente do gerente de contas {manager_name} da PicPay que opera em uma determinada carteira de clientes.
+    Você receberá um arquivo PSV (separado por pipe) contendo todas as transações das faturas de cartões (crédito e débito) dos clientes dessa carteira, essas são as colunas do cabeçalho: {', '.join(headers)}.
+    Utilize respostas curtas e cálcule com 100% de precisão.
+    Hoje é dia {current_date}.
+    Todas as datas no arquivo estão no formato {date_format}.
+'''
+
 # 2: Cria o assistente
 chat_assistant = client.beta.assistants.create(
     model="gpt-4-turbo-preview",
     name="Comercial Manager Support Chatbot",
-    instructions="Você é um assistente, operando no dia 2024-02-07 (formato yyyy-MM-dd), que responde em portugues. "
-                 "O usuário enviará um texto que representa algumas transações financeiras e fará algumas perguntas sobre elas. "
-                 "Utilize respostas curtas. "
-                 "O arquivo contém valores separado por pipe referentes ao seguinte cabeçalho: Data da transação, Descrição, Tipo do cartão, Valor, Nome do cliente, Número do documento do cliente(CPF). "
-                 "Todas as datas utilizadas estão no formato yyyy-MM-dd.",
+    instructions=instructions,
     tools=[{"type": "retrieval"}]
 )
 
