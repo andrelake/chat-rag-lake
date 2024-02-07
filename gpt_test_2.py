@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 from datetime import date
+from time import sleep
 
 
 load_dotenv()
@@ -10,8 +11,8 @@ client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 # 1: Carrega o arquivo
 file = client.files.create(
-  file=open("texto.txt", "rb"),
-  purpose='assistants'
+    file=open("texto.txt", "rb"),
+    purpose='assistants'
 )
 
 manager_name = 'Fernando Dias'
@@ -65,12 +66,12 @@ while True:
 
         if keep_retrieving_run.status == "completed":
             # 7: pega as mensagens que foram adicionadas a thread
-            all_messages = client.beta.threads.messages.list(
-                thread_id=thread.id
-            )
+            all_messages = client.beta.threads.messages.list(thread_id=thread.id)
 
-            print("------------------------------------------------------------ \n")
+            print('-'*60 + ' \n')
             print(f"User: {thread_message.content[0].text.value}")
             print(f"Assistant: {all_messages.data[0].content[0].text.value}")
 
             break
+
+        sleep(1)
