@@ -4,6 +4,7 @@ from openai import OpenAI
 from datetime import date
 from time import sleep
 from env import OPENAI_API_KEY
+from re import sub
 
 
 class Color:
@@ -12,77 +13,110 @@ class Color:
     CYAN = '\033[96m'
     END = '\033[0m'
 
+class Session:
+    divider_str = Color.CYAN + '-' * 80 + Color.END
+    date_format = 'yyyy-MM-dd'
+    headers = ('ID da transação', 'Data', 'Descrição', 'Tipo', 'Valor', 'Nome do cliente', 'CPF do cliente')
 
-client = OpenAI(api_key=OPENAI_API_KEY)
-
-# 1: Carrega o arquivo
-file = client.files.create(
-    file=open("texto.txt", "rb"),
-    purpose='assistants'
-)
-
-manager_name = 'Fernando Dias'
-current_date = date.today().strftime('%Y-%m-%d')
-date_format = 'yyyy-MM-dd'
-headers = ['Data', 'Descrição', 'Tipo', 'Valor', 'Nome do cliente', 'CPF do cliente']
-instructions = f'''
-    Você é o assistente do gerente de contas {manager_name} da PicPay que opera em uma determinada carteira de clientes.
-    Você receberá um arquivo PSV (separado por pipe) contendo todas as transações das faturas de cartões (crédito e débito) dos clientes dessa carteira, essas são as colunas do cabeçalho: {', '.join(headers)}.
-    Utilize respostas curtas e cálcule com 100% de precisão.
-    Hoje é dia {current_date}.
-    Todas as datas no arquivo estão no formato {date_format}.
-'''.replace('\n' + ' '*4, '\n').strip()
-
-# 2: Cria o assistente
-chat_assistant = client.beta.assistants.create(
-    model="gpt-4-turbo-preview",
-    name="Comercial Manager Support Chatbot",
-    instructions=instructions,
-    tools=[{"type": "retrieval"}]
-)
-
-# 3: Cria a thread
-thread = client.beta.threads.create()
-
-block_separator = Color.CYAN + '-' * 80 + Color.END
-print(block_separator, end='\n\n')
-print(f'{Color.CYAN}>>> System:{Color.END} {instructions}')
-print(f'{Color.CYAN}>>> System: `texto.txt`{Color.END}', end='\n\n')
-
-
-while True:
-    print(block_separator, end='\n\n')
-    user_input = input(f'{Color.CYAN}>>> Digite sua pergunta (ou "sair"):{Color.END} ')
-    if user_input.lower() == 'sair':
-        break
-
-    print(f'\033[1A{Color.CYAN}>>> User:{Color.END} {user_input}\033[K') # thread_message.content[0].text.value
-    
-    # 4: Adiciona a mensagem na thread
-    thread_message = client.beta.threads.messages.create(
-        thread_id=thread.id,
-        role="user",
-        content=user_input,
-        file_ids=[file.id]
-    )
-
-    # 5: roda o assistente
-    my_run = client.beta.threads.runs.create(
-        thread_id=thread.id,
-        assistant_id=chat_assistant.id
-    )
-    # 6: Fica escutando o status para gatilho do comportamento
-    while my_run.status in ["queued", "in_progress"]:
-        keep_retrieving_run = client.beta.threads.runs.retrieve(
-            thread_id=thread.id,
-            run_id=my_run.id
+    def __init__(self, openai_api_key: str, manager_name: str, portfolio_id: int, current_date: date):
+        self.client = OpenAI(api_key=openai_api_key)
+        self.thread = self.client.beta.threads.create()
+        self.file_path = os.path.join('data', 'portfolio', f'{portfolio_id}.txt')
+        self.assistant = None
+        self.instructions = None
+        self.current_date = current_date
+        self.manager_name = manager_name
+        self.instructions = sub(
+            ' +', ' ',
+            f'''
+                Você é um assistente impecável de {self.manager_name}, um gerente de contas que opera em uma determinada carteira de clientes da PicPay.
+                Você receberá um arquivo PSV (separado por pipe) contendo todas as transações das faturas de cartões (crédito e débito) dos clientes dessa carteira, essas são as colunas do cabeçalho: {', '.join(self.headers)}.
+                Utilize respostas curtas e cálcule com 100% de precisão.
+                Hoje é dia {self.current_date.strftime('%Y-%m-%d')}.
+                Todas as datas no arquivo estão no formato {self.date_format}.
+            '''.strip()
         )
+    
+    def load_file(self):
+        file = self.client.files.create(
+            file=open(self.file_path, "rb"),
+            purpose='assistants'
+        )
+        return file
+    
+    def create_assistant(self) -> None:
+        assistant = self.client.beta.assistants.create(
+            model="gpt-4-turbo-preview",
+            name="Comercial Manager Support Chatbot",
+            instructions=self.instructions,
+            tools=[{"type": "retrieval"}]
+        )
+        self.assistant = assistant
+    
+    def add_message(self, message: str) -> None:
+        thread_message = self.client.beta.threads.messages.create(
+            thread_id=self.thread.id,
+            role="user",
+            content=message,
+            file_ids=[self.load_file().id]
+        )
+        self.thread_message = thread_message
+    
+    def run_assistant(self):
+        my_run = self.client.beta.threads.runs.create(
+            thread_id=self.thread.id,
+            assistant_id=self.assistant.id
+        )
+        return my_run
+    
+    def get_messages(self) -> None:
+        all_messages = self.client.beta.threads.messages.list(thread_id=self.thread.id)
+        self.all_messages = all_messages
+    
+    def ask(self, question: str) -> None:
 
-        if keep_retrieving_run.status == "completed":
-            # 7: pega as mensagens que foram adicionadas a thread
-            all_messages = client.beta.threads.messages.list(thread_id=thread.id)
+        self.add_message(question)
+        my_run = self.run_assistant()
+        while my_run.status in ["queued", "in_progress"]:
+            keep_retrieving_run = self.client.beta.threads.runs.retrieve(
+                thread_id=self.thread.id,
+                run_id=my_run.id
+            )
+            if keep_retrieving_run.status == "completed":
+                self.get_messages()
+                break
+            sleep(1)
 
-            print(f'{Color.CYAN}>>> Assistant:{Color.END} {all_messages.data[0].content[0].text.value}', end='\n\n')
+    @staticmethod
+    def print_divider() -> None:
+        print(Session.divider_str, end='\n\n')
+    
+    def print_system_message(self) -> None:
+        print(f'{Color.CYAN}>>> System:{Color.END} {self.instructions}')
+        print(f'{Color.CYAN}>>> System: `{self.file_path}`{Color.END}', end='\n\n')
+        test_session.print_divider()
+    
+    def print_chat_message(self) -> None:
+        print(f'{Color.CYAN}>>> User:{Color.END} {self.thread_message.content[0].text.value}')
+        print(f'{Color.CYAN}>>> Assistant:{Color.END} {self.all_messages.data[0].content[0].text.value}', end='\n\n')
+        test_session.print_divider()
+
+
+if __name__ == '__main__':
+    test_session = Session(
+        openai_api_key=OPENAI_API_KEY,
+        manager_name='Bruno Pessolato Amabile',
+        portfolio_id=5,
+        current_date=date.today()
+    )
+    test_session.create_assistant()
+    test_session.print_divider()
+    test_session.print_system_message()
+
+    for i in range(4):
+        user_input = input(f'{Color.CYAN}>>> Digite sua pergunta (ou "sair"):{Color.END} ')
+        if user_input.lower() == 'sair':
             break
-
-        sleep(1)
+        print(f'\033[1A{Color.CYAN}>>> User:{Color.END} {user_input}\033[K', end='\r')
+        test_session.ask(user_input)
+        test_session.print_chat_message()
