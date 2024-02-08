@@ -20,7 +20,7 @@ class Session:
     def __init__(self, openai_api_key: str, manager_name: str, portfolio_id: int, current_date: date):
         self.client = OpenAI(api_key=openai_api_key)
         self.thread = self.client.beta.threads.create()
-        self.file_path = os.path.join('data', 'portfolio', f'{portfolio_id}.txt')
+        self.file_path = os.path.join('data', 'portfolio_invoices', f'{portfolio_id}.txt')
         self.assistant = None
         self.current_date = current_date
         self.manager_name = manager_name

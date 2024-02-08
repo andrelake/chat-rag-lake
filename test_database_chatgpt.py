@@ -1,10 +1,13 @@
 import os
-from dotenv import load_dotenv
-from openai import OpenAI
 from datetime import date
 from time import sleep
 from env import OPENAI_API_KEY
 from re import sub
+
+from openai import OpenAI
+from langchain.sql_database import SQLDatabase
+from langchain_community.agent_toolkits import create_sql_agent
+from langchain_openai import ChatOpenAI
 
 
 class Color:
@@ -13,15 +16,32 @@ class Color:
     CYAN = '\033[96m'
     END = '\033[0m'
 
+db = SQLDatabase.from_uri('sqlite:///database.db')
+# Import data from a CSV file
+file_path = os.path.join('data', 'portfolio_invoices', f'5.csv')
+with open('data.csv','r') as fin: # `with` statement available in 2.5+
+    # csv.DictReader uses first line in file for column headings by default
+    dr = csv.DictReader(fin) # comma is default delimiter
+    to_db = [(i['col1'], i['col2']) for i in dr]
+db.run(sql_create_table_invoices)
+cur.executemany("INSERT INTO t (col1, col2) VALUES (?, ?);", to_db)
+con.commit()
+con.close()
+sql_insert_invoices = f'''
+    INSERT INTO invoices (date, description, type, value, consumer_name, consumer_cpf)
+    SELECT * FROM CSVREAD('{file_path}', 'ID da transação', 'Data', 'Descrição', 'Tipo', 'Valor', 'Nome do cliente', 'CPF do cliente', '|')
+'''
+
 class Session:
     divider_str = Color.CYAN + '-' * 80 + Color.END
     date_format = 'yyyy-MM-dd'
     headers = ('ID da transação', 'Data', 'Descrição', 'Tipo', 'Valor', 'Nome do cliente', 'CPF do cliente')
 
     def __init__(self, openai_api_key: str, manager_name: str, portfolio_id: int, current_date: date):
-        self.client = OpenAI(api_key=openai_api_key)#, temperature=0.2, max_tokens=300, top_p=0.1)
+        self.llm = ChatOpenAI(api_key=openai_api_key, model='gpt-3.5-turbo', temperature=0.2, max_tokens=300, top_p=0.1)
+        self.sql_agent = create_sql_agent(self.llm, db=db, agent_type="openai-tools", verbose=True)
+        self.client = OpenAI(api_key=openai_api_key)
         self.thread = self.client.beta.threads.create()
-        self.file_path = os.path.join('data', 'portfolio', f'{portfolio_id}.txt')
         self.assistant = None
         self.instructions = None
         self.current_date = current_date
@@ -37,55 +57,44 @@ class Session:
             '''.strip()
         )
     
-    def load_file(self):
-        file = self.client.files.create(
-            file=open(self.file_path, "rb"),
-            purpose='assistants'
-        )
-        return file
+    # def load_file(self):
+    #     file = self.client.files.create(
+    #         file=open(self.file_path, "rb"),
+    #         purpose='assistants'
+    #     )
+    #     return file
     
-    def create_assistant(self) -> None:
-        assistant = self.client.beta.assistants.create(
-            model="gpt-4-turbo-preview",
-            name="Comercial Manager Support Chatbot",
-            instructions=self.instructions,
-            tools=[{"type": "retrieval"}]
-        )
-        self.assistant = assistant
+    # def create_assistant(self) -> None:
+    #     assistant = self.client.beta.assistants.create(
+    #         model="gpt-4-turbo-preview",
+    #         name="Comercial Manager Support Chatbot",
+    #         instructions=self.instructions,
+    #         tools=[{"type": "retrieval"}]
+    #     )
+    #     self.assistant = assistant
     
-    def add_message(self, message: str) -> None:
-        thread_message = self.client.beta.threads.messages.create(
-            thread_id=self.thread.id,
-            role="user",
-            content=message,
-            file_ids=[self.load_file().id]
-        )
-        self.thread_message = thread_message
+    # def add_message(self, message: str) -> None:
+    #     thread_message = self.client.beta.threads.messages.create(
+    #         thread_id=self.thread.id,
+    #         role="user",
+    #         content=message,
+    #         file_ids=[self.load_file().id]
+    #     )
+    #     self.thread_message = thread_message
     
-    def run_assistant(self):
-        my_run = self.client.beta.threads.runs.create(
-            thread_id=self.thread.id,
-            assistant_id=self.assistant.id
-        )
-        return my_run
+    # def run_assistant(self):
+    #     my_run = self.client.beta.threads.runs.create(
+    #         thread_id=self.thread.id,
+    #         assistant_id=self.assistant.id
+    #     )
+    #     return my_run
     
     def get_messages(self) -> None:
         all_messages = self.client.beta.threads.messages.list(thread_id=self.thread.id)
         self.all_messages = all_messages
     
     def ask(self, question: str) -> None:
-
-        self.add_message(question)
-        my_run = self.run_assistant()
-        while my_run.status in ["queued", "in_progress"]:
-            keep_retrieving_run = self.client.beta.threads.runs.retrieve(
-                thread_id=self.thread.id,
-                run_id=my_run.id
-            )
-            if keep_retrieving_run.status == "completed":
-                self.get_messages()
-                break
-            sleep(1)
+        self.sql_agent.invoke(input=question)
 
     @staticmethod
     def print_divider() -> None:
