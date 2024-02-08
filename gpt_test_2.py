@@ -103,17 +103,20 @@ class Session:
 
 
 if __name__ == '__main__':
+    manager_name = input(f'{Color.CYAN}>>> Digite o nome do gerente:{Color.END} ')
+    portfolio_id = input(f'{Color.CYAN}>>> Digite o ID da carteira:{Color.END} ')
+    print(end='\n\n')
     test_session = Session(
         openai_api_key=OPENAI_API_KEY,
-        manager_name='Bruno Pessolato Amabile',
-        portfolio_id=5,
+        manager_name=manager_name,
+        portfolio_id=portfolio_id,
         current_date=date.today()
     )
     test_session.create_assistant()
     test_session.print_divider()
     test_session.print_system_message()
 
-    for i in range(4):
+    while True:
         user_input = input(f'{Color.CYAN}>>> Digite sua pergunta (ou "sair"):{Color.END} ')
         if user_input.lower() == 'sair':
             break
