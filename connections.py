@@ -72,20 +72,31 @@ class Embeddings:
 class SQLite:
     ddl = {
         'portfolio_invoices': '''
-            CREATE TABLE IF NOT EXISTS invoices (
+            CREATE TABLE IF NOT EXISTS portfolio_invoices (
                 id INTEGER PRIMARY KEY,
                 date TEXT,
                 description TEXT,
                 type TEXT,
                 value REAL,
+                manager_id INTEGER,
+                manager_name TEXT,
                 consumer_name TEXT,
                 consumer_cpf TEXT
             );
         '''
     }
-    def __init__(self, file_path: str) -> None:
-        self.file_path = file_path
-        self.conn = sqlite3.connect(self.file_path)
+    import_portfolio_ids = [5]
+
+    def __init__(
+            self,
+            database_path: str = 'database.db',
+            import_csv_path: str = 'data/{table_name}/{portfolio_id}.txt',
+            import_sep: str = '|'
+        ) -> None:
+        self.database_path = database_path
+        self.import_csv_path = import_csv_path
+        self.import_sep = import_sep
+        self.conn = sqlite3.connect(self.database_path)
         self.cur = self.conn.cursor()
     
     def create_table(self, table_name: str):
@@ -96,12 +107,13 @@ class SQLite:
         self.cur.execute(f'DELETE FROM {table_name};')
         self.conn.commit()
     
-    def import_csv(self, file_path: str, table_name: str, sep: str = ','):
-        with open(file_path, 'r') as file:
+    def import_data(self, table_name: str, portfolio_id: int):
+        import_csv_path = self.import_csv_path.format(table_name=table_name, portfolio_id=portfolio_id)
+        with open(import_csv_path, 'r') as file:
             data = file.readlines()
-        data = (line.split(sep) for line in data)
+        data = tuple(tuple(line.split(self.import_sep)) for line in data)
         sql = f'''
-            INSERT INTO t VALUES ({', '.join('?' * len(data[0]))});
+            INSERT INTO {table_name} VALUES ({', '.join('?' * len(data[0]))});
         '''
         self.cur.executemany(sql, data)
         self.conn.commit()
@@ -114,9 +126,10 @@ class SQLite:
         tables = self.cur.execute(sql_list_tables).fetchall()
 
         # Create tables
-        for table in self.ddl:
-            if table in tables:
-                self.clear_table(table)
+        for table_name in self.ddl:
+            if table_name in tables:
+                self.clear_table(table_name)
             else:
-                self.create_table(table)
-            self.import_csv(self.file_path, table)
+                self.create_table(table_name)
+            for portfolio_id in self.import_portfolio_ids:
+                self.import_data(table_name, portfolio_id)

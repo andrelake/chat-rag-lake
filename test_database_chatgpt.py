@@ -19,7 +19,7 @@ class Color:
     END = '\033[0m'
 
 db_langchain = SQLDatabase.from_uri('sqlite:///database.db')
-db = SQLite(file_path='database.db')
+db = SQLite()
 db.terraform_db()
 
 class Session:
@@ -27,7 +27,7 @@ class Session:
     date_format = 'yyyy-MM-dd'
     headers = ('ID da transação', 'Data', 'Descrição', 'Tipo', 'Valor', 'Nome do cliente', 'CPF do cliente')
 
-    def __init__(self, openai_api_key: str, manager_name: str, portfolio_id: int, current_date: date):
+    def __init__(self, openai_api_key: str, manager_name: str, current_date: date):
         self.llm = ChatOpenAI(api_key=openai_api_key, model='gpt-3.5-turbo', temperature=0.2, max_tokens=300, top_p=0.1)
         self.sql_agent = create_sql_agent(self.llm, db=db, agent_type="openai-tools", verbose=True)
         self.client = OpenAI(api_key=openai_api_key)
