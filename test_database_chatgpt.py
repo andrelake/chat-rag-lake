@@ -4,6 +4,8 @@ from time import sleep
 from env import OPENAI_API_KEY
 from re import sub
 
+from connections import SQLite
+
 from openai import OpenAI
 from langchain.sql_database import SQLDatabase
 from langchain_community.agent_toolkits import create_sql_agent
@@ -16,21 +18,9 @@ class Color:
     CYAN = '\033[96m'
     END = '\033[0m'
 
-db = SQLDatabase.from_uri('sqlite:///database.db')
-# Import data from a CSV file
-file_path = os.path.join('data', 'portfolio_invoices', f'5.csv')
-with open('data.csv','r') as fin: # `with` statement available in 2.5+
-    # csv.DictReader uses first line in file for column headings by default
-    dr = csv.DictReader(fin) # comma is default delimiter
-    to_db = [(i['col1'], i['col2']) for i in dr]
-db.run(sql_create_table_invoices)
-cur.executemany("INSERT INTO t (col1, col2) VALUES (?, ?);", to_db)
-con.commit()
-con.close()
-sql_insert_invoices = f'''
-    INSERT INTO invoices (date, description, type, value, consumer_name, consumer_cpf)
-    SELECT * FROM CSVREAD('{file_path}', 'ID da transação', 'Data', 'Descrição', 'Tipo', 'Valor', 'Nome do cliente', 'CPF do cliente', '|')
-'''
+db_langchain = SQLDatabase.from_uri('sqlite:///database.db')
+db = SQLite(file_path='database.db')
+db.terraform_db()
 
 class Session:
     divider_str = Color.CYAN + '-' * 80 + Color.END

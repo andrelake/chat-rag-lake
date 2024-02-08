@@ -106,7 +106,7 @@ class SQLite:
         self.cur.executemany(sql, data)
         self.conn.commit()
     
-    def terraform_db(self, file_path: str):
+    def terraform_db(self):
         # List tables
         sql_list_tables = '''
             SELECT name FROM sqlite_master WHERE type='table';
