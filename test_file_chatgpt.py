@@ -1,5 +1,4 @@
 import os
-from dotenv import load_dotenv
 from openai import OpenAI
 from datetime import date
 from time import sleep
@@ -19,11 +18,10 @@ class Session:
     headers = ('ID da transação', 'Data', 'Descrição', 'Tipo', 'Valor', 'Nome do cliente', 'CPF do cliente')
 
     def __init__(self, openai_api_key: str, manager_name: str, portfolio_id: int, current_date: date):
-        self.client = OpenAI(api_key=openai_api_key)#, temperature=0.2, max_tokens=300, top_p=0.1)
+        self.client = OpenAI(api_key=openai_api_key)
         self.thread = self.client.beta.threads.create()
         self.file_path = os.path.join('data', 'portfolio', f'{portfolio_id}.txt')
         self.assistant = None
-        self.instructions = None
         self.current_date = current_date
         self.manager_name = manager_name
         self.instructions = sub(
