@@ -1,6 +1,7 @@
 langchain~=0.1.5
 langchain_openai
 langchain-experimental
+langchainhub
 python-dotenv~=1.0.1
 pinecone-client
 astrapy~=0.7.3
