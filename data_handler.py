@@ -12,15 +12,18 @@ def load_document(filepath) -> list:
     return data
 
 
-def chunk_data(data: list, chunk_size=1536) -> list:
+def chunk_data(data: list, chunk_size=1600) -> list:
     from langchain.text_splitter import RecursiveCharacterTextSplitter
     print(f"\nStarting chunk context")
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
-        chunk_overlap=10,
-        length_function=len
+        chunk_overlap=0
     )
     chunks = text_splitter.split_documents(data)
+    i = 1
+    for chunk in chunks:
+        print(f"#{i} {chunk.page_content}\n")
+        i += 1
 
     print(f"\nTotal chunks: {len(chunks)}")
     return chunks
