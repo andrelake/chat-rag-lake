@@ -51,10 +51,8 @@ def chunk_data(data: List, chunk_size: int = 1600) -> List:
         chunk_overlap=0
     )
     chunks = text_splitter.split_documents(data)
-    i = 1
-    for chunk in chunks:
-        log(f'#{i} {chunk.page_content}\n')
-        i += 1
+    for i, chunk in enumerate(chunks):
+        log(f'#{i+1} {chunk.page_content}')
     log(f'Total chunks: {len(chunks)}')
     return chunks
 
