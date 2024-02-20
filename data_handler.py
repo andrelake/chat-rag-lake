@@ -65,16 +65,18 @@ def create_vector_store(chunks: List, embeddings: OpenAIEmbeddings, index_name: 
     return PineconeVectorstore.from_documents(chunks, embeddings, index_name=index_name)
 
 
-def delete_pinecone_index(pinecone: Pinecone, index_name: str = 'all') -> None:
-    if index_name == 'all':
-        for index in pinecone.list_indexes():
-            print(f'\nDeleting all indexes...')
-            pinecone.delete_index(index)
-            print('\nAll Indexes Deleted Successfully.')
-    else:
-        print(f'\nDeleting index: {index_name}', end='')
-        pinecone.delete_index(index_name)
-        print('\nIndex Deleted Successfully.')
+def delete_pinecone_index(index_name: str, pinecone: Pinecone) -> None:
+    print(f'\nDeleting index: {index_name}"')
+    pinecone.delete_index(index_name)
+    print(f'\nIndex Deleted Successfully.')
+
+
+def delete_all_pinecone_indexes(pinecone: Pinecone) -> None:
+    print(f'\nDeleting all indexes...')
+    indexes = pinecone.list_indexes()
+    for index in pinecone.list_indexes():
+        pinecone.delete_index(index)
+    print(f'\nSuccessfully Deleted All Indexes: {", ".join(indexes)}.')
 
 
 def show_embeddings_cost(texts: Union[Tuple, List, Set]) -> None:
