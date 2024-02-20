@@ -13,7 +13,7 @@ def get_pinecone_client(api_key: str) -> Pinecone:
     return Pinecone(api_key=api_key)
 
 
-def get_openai_embeddings(api_key: str) -> OpenAIEmbeddings:
+def get_embeddings_client(api_key: str) -> OpenAIEmbeddings:
     return OpenAIEmbeddings(openai_api_key=api_key)
 
 
@@ -96,11 +96,11 @@ if __name__ == '__main__':
     # Chunk data
     chunks = chunk_data(data)
 
-    # Pinecone
+    # Pinecone vectorstore client
     pinecone = get_pinecone_client(PINECONE_API_KEY)
 
-    # OpenAI
-    embeddings = get_openai_embeddings(OPENAI_API_KEY)
+    # OpenAI embeddings client
+    embeddings = get_embeddings_client(OPENAI_API_KEY)
 
     # Insert or Fetch Embeddings
     index_name = 'felipe-test-index-1'
