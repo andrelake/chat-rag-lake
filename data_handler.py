@@ -86,3 +86,31 @@ def show_embeddings_cost(texts: Union[Tuple, List, Set]) -> None:
     print(f'Total tokens: {total_tokens}')
     print(f'Total pages: {len(texts)}')
     print(f'Embedding cost: ${total_tokens * 0.0004 / 1000:.4f}')
+
+
+if __name__ == '__main__':
+    # Load document
+    file_path = 'data/texto.pdf'
+    data = load_document(file_path)
+
+    # Chunk data
+    chunks = chunk_data(data)
+
+    # Pinecone
+    pinecone = get_pinecone_client(PINECONE_API_KEY)
+
+    # OpenAI
+    embeddings = get_openai_embeddings(OPENAI_API_KEY)
+
+    # Insert or Fetch Embeddings
+    index_name = 'felipe-test-index-1'
+    vectorstore = insert_or_fetch_embeddings(index_name, chunks, pinecone, embeddings)
+
+    # Show Embeddings Cost
+    show_embeddings_cost(chunks)
+
+    # Delete Pinecone Index
+    # delete_pinecone_index(index_name, pinecone)
+
+    # Delete All Pinecone Indexes
+    # delete_all_pinecone_indexes(index_name, pinecone)
