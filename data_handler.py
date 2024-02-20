@@ -32,7 +32,7 @@ def get_embeddings_client(api_key: str) -> OpenAIEmbeddings:
     return OpenAIEmbeddings(openai_api_key=api_key)
 
 
-def load_document(filepath: str, verbose: bool = False) -> List:
+def load_document(filepath: str) -> List:
 
     log(f'Loading {filepath}')
     loader = PyPDFLoader(filepath)
