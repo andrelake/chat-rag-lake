@@ -1,6 +1,6 @@
 from typing import Union, Tuple, List, Set
 import re
-from env import OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_REGION
+from env import OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_ENVIRONMENT
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
@@ -60,7 +60,7 @@ def chunk_data(data: List, chunk_size: int = 1600) -> List:
 def insert_or_fetch_embeddings(index_name: str, chunks: List, pinecone: Pinecone, embeddings: OpenAIEmbeddings) -> PineconeVectorstore:
     indexes = pinecone.list_indexes()
     log(f'Indexes: {len(indexes)}')
-    if index_name in indexes:
+    if index_name in indexes.names():
         log(f'Getting info from index: {index_name}')
         return PineconeVectorstore.from_existing_index(index_name, embeddings)
     else:
@@ -73,7 +73,7 @@ def create_vector_store(chunks: List, embeddings: OpenAIEmbeddings, index_name: 
         index_name,
         dimension=1536,
         metric='cosine',
-        spec=ServerlessSpec(cloud='aws', region=PINECONE_REGION)
+        spec=ServerlessSpec(cloud='aws', region=PINECONE_ENVIRONMENT)
     )
     return PineconeVectorstore.from_documents(chunks, embeddings, index_name=index_name)
 
