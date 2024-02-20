@@ -9,40 +9,24 @@ from pinecone import Pinecone, ServerlessSpec
 import tiktoken
 
 
-class Logger:
-    def __init__(self, end: str = '\n', verbose: bool = False, **kwargs):
-        self.end = end
-        self.verbose = verbose
-        self.kwargs = kwargs
-
-    def __call__(self, message: str, **kwargs):
-        kwargs = {'end': self.end, **self.kwargs, **kwargs}
-        if self.verbose:
-            print(message, **kwargs)
-
-
-log = Logger()
-
-
 def get_pinecone_client(api_key: str) -> Pinecone:
     return Pinecone(api_key=api_key)
 
 
-def get_embeddings_client(api_key: str) -> OpenAIEmbeddings:
+def get_openai_embeddings(api_key: str) -> OpenAIEmbeddings:
     return OpenAIEmbeddings(openai_api_key=api_key)
 
 
-def load_document(filepath: str, verbose: bool = False) -> List:
-
-    log(f'Loading {filepath}')
+def load_document(filepath) -> List:
+    print(f'Loading {filepath}')
     loader = PyPDFLoader(filepath)
     data = loader.load()
-    log(f'Data Loaded Successfully. Total pages: {len(data)}')
+    print(f'\nData Loaded Successfully. Total pages: {len(data)}')
     return data
 
 
 def chunk_data(data: List, chunk_size: int = 1600) -> List:
-    log(f'Starting chunk context')
+    print(f'\nStarting chunk context')
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
         chunk_overlap=0
@@ -50,28 +34,28 @@ def chunk_data(data: List, chunk_size: int = 1600) -> List:
     chunks = text_splitter.split_documents(data)
     i = 1
     for chunk in chunks:
-        log(f'#{i} {chunk.page_content}\n')
+        print(f'#{i} {chunk.page_content}\n')
         i += 1
-    log(f'Total chunks: {len(chunks)}')
+    print(f'\nTotal chunks: {len(chunks)}')
     return chunks
 
 
 def insert_or_fetch_embeddings(index_name: str, chunks: List, pinecone: Pinecone, embeddings: OpenAIEmbeddings) -> PineconeVectorstore:
     indexes = pinecone.list_indexes()
-    log(f'Indexes: {len(indexes)}')
+    print(f'\nIndexes: {len(indexes)}')
     if len(indexes) == 0:
         return create_vector_store(chunks, embeddings, index_name, pinecone)
     else:
         for index in indexes:
             if index['name'] == index_name:
-                log(f'Getting info from index: {index_name}')
+                print(f'\nGetting info from index: {index_name}')
                 return PineconeVectorstore.from_existing_index(index_name, embeddings)
             else:
                 return create_vector_store(chunks, embeddings, index_name, pinecone)
 
 
 def create_vector_store(chunks: List, embeddings: OpenAIEmbeddings, index_name: str, pinecone: Pinecone) -> PineconeVectorstore:
-    log(f'Creating index: {index_name}')
+    print(f'\nCreating index: {index_name}')
     pinecone.create_index(
         index_name,
         dimension=1536,
@@ -82,33 +66,29 @@ def create_vector_store(chunks: List, embeddings: OpenAIEmbeddings, index_name: 
 
 
 def delete_pinecone_index(index_name: str, pinecone: Pinecone) -> None:
-    log(f'Deleting index: {index_name}"')
+    print(f'\nDeleting index: {index_name}"')
     pinecone.delete_index(index_name)
-    log(f'Index Deleted Successfully.')
+    print(f'\nIndex Deleted Successfully.')
 
 
 def delete_all_pinecone_indexes(pinecone: Pinecone) -> None:
-    log(f'Deleting all indexes...')
+    print(f'\nDeleting all indexes...')
     indexes = pinecone.list_indexes()
     for index in pinecone.list_indexes():
         pinecone.delete_index(index)
-    log(f'Successfully Deleted All Indexes: {", ".join(indexes)}.')
+    print(f'\nSuccessfully Deleted All Indexes: {", ".join(indexes)}.')
 
 
 def show_embeddings_cost(texts: Union[Tuple, List, Set]) -> None:
-    log(f'Starting embedding price calculation')
+    print(f'\nStarting embedding price calculation')
     encoding = tiktoken.encoding_for_model('text-embedding-ada-002')
     total_tokens = sum([len(encoding.encode(page.page_content)) for page in texts])
-    log(f'Total tokens: {total_tokens}')
-    log(f'Total pages: {len(texts)}')
-    log(f'Embedding cost: ${total_tokens * 0.0004 / 1000:.4f}')
+    print(f'Total tokens: {total_tokens}')
+    print(f'Total pages: {len(texts)}')
+    print(f'Embedding cost: ${total_tokens * 0.0004 / 1000:.4f}')
 
 
 if __name__ == '__main__':
-    # Configure Logger
-    log.verbose = True
-    log.end = '\n\n'
-
     # Load document
     file_path = 'data/texto.pdf'
     data = load_document(file_path)
@@ -116,11 +96,11 @@ if __name__ == '__main__':
     # Chunk data
     chunks = chunk_data(data)
 
-    # Pinecone vectorstore client
+    # Pinecone
     pinecone = get_pinecone_client(PINECONE_API_KEY)
 
-    # OpenAI embeddings client
-    embeddings = get_embeddings_client(OPENAI_API_KEY)
+    # OpenAI
+    embeddings = get_openai_embeddings(OPENAI_API_KEY)
 
     # Insert or Fetch Embeddings
     index_name = 'felipe-test-index-1'
