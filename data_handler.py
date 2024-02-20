@@ -60,15 +60,11 @@ def chunk_data(data: List, chunk_size: int = 1600) -> List:
 def insert_or_fetch_embeddings(index_name: str, chunks: List, pinecone: Pinecone, embeddings: OpenAIEmbeddings) -> PineconeVectorstore:
     indexes = pinecone.list_indexes()
     log(f'Indexes: {len(indexes)}')
-    if len(indexes) == 0:
-        return create_vector_store(chunks, embeddings, index_name, pinecone)
+    if index_name in indexes:
+        log(f'Getting info from index: {index_name}')
+        return PineconeVectorstore.from_existing_index(index_name, embeddings)
     else:
-        for index in indexes:
-            if index['name'] == index_name:
-                log(f'Getting info from index: {index_name}')
-                return PineconeVectorstore.from_existing_index(index_name, embeddings)
-            else:
-                return create_vector_store(chunks, embeddings, index_name, pinecone)
+        return create_vector_store(chunks, embeddings, index_name, pinecone)
 
 
 def create_vector_store(chunks: List, embeddings: OpenAIEmbeddings, index_name: str, pinecone: Pinecone) -> PineconeVectorstore:
