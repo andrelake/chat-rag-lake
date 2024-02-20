@@ -1,3 +1,4 @@
+from typing import Union, Tuple, List, Set
 from env import OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_REGION
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -8,7 +9,7 @@ from pinecone import Pinecone, ServerlessSpec
 import tiktoken
 
 
-def load_document(filepath) -> list:
+def load_document(filepath) -> List:
     print(f'Loading {filepath}')
     loader = PyPDFLoader(filepath)
     data = loader.load()
@@ -16,7 +17,7 @@ def load_document(filepath) -> list:
     return data
 
 
-def chunk_data(data: list, chunk_size=1600) -> list:
+def chunk_data(data: List, chunk_size: int = 1600) -> List:
     print(f'\nStarting chunk context')
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
@@ -31,12 +32,11 @@ def chunk_data(data: list, chunk_size=1600) -> list:
     return chunks
 
 
-def insert_or_fetch_embeddings(index_name: str, chunks: list):
+def insert_or_fetch_embeddings(index_name: str, chunks: List) -> PineconeVectorstore:
     embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
     pinecone = Pinecone(api_key=PINECONE_API_KEY)
     indexes = pinecone.list_indexes()
     print(f'\nIndexes: {len(indexes)}')
-
     if len(indexes) == 0:
         return create_vector_store(chunks, embeddings, index_name, pinecone)
     else:
@@ -48,7 +48,7 @@ def insert_or_fetch_embeddings(index_name: str, chunks: list):
                 return create_vector_store(chunks, embeddings, index_name, pinecone)
 
 
-def create_vector_store(chunks, embeddings, index_name, pinecone):
+def create_vector_store(chunks: List, embeddings: OpenAIEmbeddings, index_name: str, pinecone: Pinecone) -> PineconeVectorstore:
     print(f'\nCreating index: {index_name}')
     pinecone.create_index(
         index_name,
@@ -59,7 +59,7 @@ def create_vector_store(chunks, embeddings, index_name, pinecone):
     return PineconeVectorstore.from_documents(chunks, embeddings, index_name=index_name)
 
 
-def delete_pinecone_index(index_name='all'):
+def delete_pinecone_index(index_name: str = 'all') -> None:
     pinecone = Pinecone(api_key=PINECONE_API_KEY)
     if index_name == 'all':
         for index in pinecone.list_indexes():
@@ -72,7 +72,7 @@ def delete_pinecone_index(index_name='all'):
         print('\nIndex Deleted Successfully.')
 
 
-def show_embeddings_cost(texts):
+def show_embeddings_cost(texts: Union[Tuple, List, Set]) -> None:
     print(f'\nStarting embedding price calculation')
     encoding = tiktoken.encoding_for_model('text-embedding-ada-002')
     total_tokens = sum([len(encoding.encode(page.page_content)) for page in texts])
