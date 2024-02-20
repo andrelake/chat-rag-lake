@@ -1,4 +1,5 @@
 from typing import Union, Tuple, List, Set
+import re
 from env import OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_REGION
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -33,10 +34,12 @@ def get_embeddings_client(api_key: str) -> OpenAIEmbeddings:
 
 
 def load_document(filepath: str) -> List:
-
     log(f'Loading {filepath}')
     loader = PyPDFLoader(filepath)
     data = loader.load()
+    for page in data:
+        page.page_content = re.sub(r' +', ' ', page.page_content)
+        page.page_content = re.sub(r'(?: \n)+(?<! )', ' \n', page.page_content)
     log(f'Data Loaded Successfully. Total pages: {len(data)}')
     return data
 
