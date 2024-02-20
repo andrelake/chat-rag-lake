@@ -125,6 +125,8 @@ if __name__ == '__main__':
 
     # Insert or Fetch Embeddings
     index_name = 'felipe-test-index-1'
+    if index_name in pinecone.list_indexes():
+        delete_pinecone_index(index_name, pinecone)
     vectorstore = insert_or_fetch_embeddings(index_name, chunks, pinecone, embeddings)
 
     # Show Embeddings Cost
