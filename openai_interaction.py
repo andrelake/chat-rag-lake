@@ -1,6 +1,8 @@
+from langchain.agents import AgentExecutor, create_openai_tools_agent
+from langchain.tools.retriever import create_retriever_tool
 from langchain_core.messages import HumanMessage, AIMessage
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, SystemMessagePromptTemplate, \
+    HumanMessagePromptTemplate, PromptTemplate
 from langchain_openai import ChatOpenAI
 
 from env import OPENAI_API_KEY, OPENAI_MODEL_NAME
@@ -46,30 +48,36 @@ def asking_and_getting_answers(vectorstore, question: str, chat_history=None):
     # retriever
     retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 3})
 
-    # system prompt
-    contextualize_q_prompt = system_prompt_handler()
+    tool = create_retriever_tool(
+        retriever,
+        "search_state_forum_of_education",
+        "Searches and returns content about the State Forum of Education.",
+    )
+    tools = [tool]
+
+    # chat_prompt_template
+    chat_prompt_template = build_chat_prompt_template()
 
     # llm
     llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, model_name=OPENAI_MODEL_NAME, temperature=0.5)
 
-    contextualize_q_chain = contextualize_q_prompt | llm | StrOutputParser()
-
-    rag_chain = (
-            RunnablePassthrough.assign(context=contextualize_q_chain | retriever)
-            | contextualize_q_prompt
-            | llm
+    # agent
+    agent = create_openai_tools_agent(
+        llm=llm,
+        tools=tools,
+        prompt=chat_prompt_template
     )
+    agent_executor = AgentExecutor(agent=agent, tools=tools)
 
-    resp = rag_chain.invoke({"question": question, "chat_history": chat_history, "context": retriever})
-    chat_history.extend([HumanMessage(content=question), AIMessage(content=resp.content)])
+    resp = agent_executor.invoke({"question": question, "chat_history": chat_history, "context": retriever})
+    output = resp.get('output')
+    chat_history.extend([HumanMessage(content=question), AIMessage(content=output)])
 
-    return resp.content, chat_history
+    return output, chat_history
 
 
-def system_prompt_handler():
-    from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-    # prompt
-    contextualize_q_system_prompt = (
+def build_chat_prompt_template():
+    system_prompt_template = (
         "Você deve entender e dar todas as respostas em português, do Brasil. "
         "Você é um assistente que responderá perguntas com base no contexto abaixo. "
         "O contexto é um fórum de bate-papo que tem a coordenação geral do Ministro Chefe da Casa Civil, "
@@ -81,11 +89,11 @@ def system_prompt_handler():
         "Histórico de bate-papo: {chat_history} "
         "Pergunta de acompanhamento: {question}"
     )
-    contextualize_q_prompt = ChatPromptTemplate.from_messages(
-        [
-            ("system", contextualize_q_system_prompt),
-            MessagesPlaceholder(variable_name="chat_history"),
-            ("human", "{question}"),
-        ]
+
+    return ChatPromptTemplate.from_messages(
+        [SystemMessagePromptTemplate(prompt=PromptTemplate(input_variables=['context', 'chat_history', 'question'],
+                                                           template=system_prompt_template)),
+         MessagesPlaceholder(variable_name='chat_history', optional=True),
+         HumanMessagePromptTemplate(prompt=PromptTemplate(input_variables=['question'], template='{question}')),
+         MessagesPlaceholder(variable_name='agent_scratchpad')]
     )
-    return contextualize_q_prompt

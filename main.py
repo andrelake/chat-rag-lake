@@ -24,8 +24,8 @@ def main() -> None:
             sleep(2)
             break
 
-        result, chat_history = asking_and_getting_answers(vector_store, question, chat_history)
-        print(f"\nAnswer : {result}")
+        output, chat_history = asking_and_getting_answers(vector_store, question, chat_history)
+        print(f"\nResposta : {output}")
         print(f"\nChat History : {chat_history}")
         print(f"\n {'-' * 50}")
         i += 1
