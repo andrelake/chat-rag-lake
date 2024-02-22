@@ -1,8 +1,9 @@
 from time import perf_counter, sleep
 
-from data_handler import load_document, chunk_data, insert_or_fetch_embeddings, get_pinecone_client, get_embeddings_client
+from data_handler import load_document, chunk_data, insert_or_fetch_embeddings, get_pinecone_client, \
+    get_embeddings_client, log
 from env import PINECONE_INDEX_NAME, PINECONE_API_KEY, OPENAI_API_KEY
-from openai_interaction import asking_and_getting_answers
+from openai_interaction_conversation_chain import asking_and_getting_answers
 
 filepath = "data/texto.pdf"
 
@@ -24,15 +25,14 @@ def main() -> None:
             sleep(2)
             break
 
-        output, chat_history = asking_and_getting_answers(vector_store, question, chat_history)
-        print(f"\nResposta : {output}")
-        print(f"\nChat History : {chat_history}")
-        print(f"\n {'-' * 50}")
+        output = asking_and_getting_answers(vector_store, question, chat_history)
+        log(f"{output}")
         i += 1
 
 
 if __name__ == "__main__":
     print("\nStarting...")
+    log.verbose = True
     time_start = perf_counter()
     main()
     # delete_pinecone_index(index_name=PINECONE_INDEX_NAME)
