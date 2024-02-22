@@ -1,12 +1,12 @@
 from langchain.agents import AgentExecutor, create_openai_tools_agent
-from langchain.memory import ConversationBufferMemory, ChatMessageHistory
+from langchain.memory import ConversationBufferMemory
 from langchain.tools.retriever import create_retriever_tool
-from langchain_core.messages import HumanMessage, AIMessage
+from langchain_community.chat_message_histories import UpstashRedisChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, SystemMessagePromptTemplate, \
     HumanMessagePromptTemplate, PromptTemplate
 from langchain_openai import ChatOpenAI
 
-from env import OPENAI_API_KEY, OPENAI_MODEL_NAME
+from env import OPENAI_API_KEY, OPENAI_MODEL_NAME, UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN
 
 
 # def get_interaction(key: str) -> None:
@@ -44,13 +44,14 @@ from env import OPENAI_API_KEY, OPENAI_MODEL_NAME
 
 def asking_and_getting_answers(vectorstore, question: str, chat_history=None):
     if chat_history is None:
-        chat_history = ChatMessageHistory()
+        chat_history = UpstashRedisChatMessageHistory(
+            url=UPSTASH_REDIS_REST_URL,
+            token=UPSTASH_REDIS_REST_TOKEN,
+            session_id='session_id'
+        )
 
     # retriever
     retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k": 3})
-
-    # history aware retriever
-
 
     # tool
     tool = create_retriever_tool(
@@ -64,19 +65,17 @@ def asking_and_getting_answers(vectorstore, question: str, chat_history=None):
     chat_prompt_template = build_chat_prompt_template()
 
     # memory
-    # memory = VectorStoreRetrieverMemory(
-    #     memory_key="chat_history",
-    #     return_docs=True,
-    #     retriever=retriever,
-    #     return_messages=True,
-    #     )
     memory = ConversationBufferMemory(
         memory_key='chat_history',
         input_key='input',
+        chat_memory=chat_history,
         return_messages=True)
 
     # llm
-    llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, model_name=OPENAI_MODEL_NAME, temperature=0.5)
+    llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY,
+                     model_name=OPENAI_MODEL_NAME,
+                     temperature=0.5,
+                     streaming=True)
 
     # agent
     agent = create_openai_tools_agent(
@@ -88,13 +87,9 @@ def asking_and_getting_answers(vectorstore, question: str, chat_history=None):
     # agent_executor
     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory)
 
-    resp = agent_executor.invoke({"input": question, "chat_history": chat_history})
-    _input = resp.get('input')
-    output = resp.get('output')
-    chat_history.add_user_message(_input)
-    chat_history.add_ai_message(output)
+    resp = agent_executor.invoke({"input": question, "chat_history": chat_history, 'context': retriever})
 
-    return output, chat_history
+    return resp.get('output')
 
 
 def build_chat_prompt_template() -> ChatPromptTemplate:
@@ -102,21 +97,15 @@ def build_chat_prompt_template() -> ChatPromptTemplate:
         "You are a helpful assistant. "
         "You can only use Portuguese, from Brazil, to read and answer all the questions. "
         "You can use the following pieces of context to answer the question. {context} "
-        # "Combine chat history and the last user's question to create a new independent question. "
+        "Combine chat history and the last user's question to create a new independent question. "
+        "Histórico de bate-papo: {chat_history} "
+        "Pergunta de acompanhamento: {input}"
     )
 
     return ChatPromptTemplate.from_messages(
-        [SystemMessagePromptTemplate(prompt=PromptTemplate(input_variables=['context', 'chat_history', 'question'],
+        [SystemMessagePromptTemplate(prompt=PromptTemplate(input_variables=['context', 'chat_history', 'input'],
                                                            template=system_template)),
          MessagesPlaceholder(variable_name='chat_history', optional=True),
-         HumanMessagePromptTemplate(prompt=PromptTemplate(input_variables=['question'], template='{question}')),
+         HumanMessagePromptTemplate(prompt=PromptTemplate(input_variables=['input'], template='{input}')),
          MessagesPlaceholder(variable_name='agent_scratchpad')]
     )
-    # return ChatPromptTemplate.from_messages(
-    #             [
-    #                 ("system", system_template),
-    #                 MessagesPlaceholder(variable_name="chat_history"),
-    #                 ("human", "{input}"),
-    #                 MessagesPlaceholder("agent_scratchpad"),
-    #             ]
-    #         )

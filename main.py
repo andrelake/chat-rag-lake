@@ -3,7 +3,7 @@ from time import perf_counter, sleep
 from data_handler import load_document, chunk_data, insert_or_fetch_embeddings, get_pinecone_client, \
     get_embeddings_client, log
 from env import PINECONE_INDEX_NAME, PINECONE_API_KEY, OPENAI_API_KEY
-from openai_interaction_conversation_chain import asking_and_getting_answers
+from openai_interaction_agent import asking_and_getting_answers
 
 filepath = "data/texto.pdf"
 
@@ -14,7 +14,7 @@ def main() -> None:
     pinecone = get_pinecone_client(PINECONE_API_KEY)
     embeddings = get_embeddings_client(OPENAI_API_KEY)
     vector_store = insert_or_fetch_embeddings(PINECONE_INDEX_NAME, chunks, pinecone, embeddings)
-    chat_history = []
+    # chat_history_conversational = []
 
     i = 1
     print("Digite Sair ou Fim para encerrar.")
@@ -25,7 +25,7 @@ def main() -> None:
             sleep(2)
             break
 
-        output = asking_and_getting_answers(vector_store, question, chat_history)
+        output = asking_and_getting_answers(vector_store, question, None)
         log(f"{output}")
         i += 1
 
