@@ -11,7 +11,7 @@ file_path = 'data/texto.pdf'
 data = load_document(file_path)
 
 # Chunk data
-chunks = chunk_data(data)
+chunks = chunk_data(data, chunk_size=1600, chunk_overlap=160)
 
 # Pinecone vectorstore client
 pinecone = get_pinecone_client(PINECONE_API_KEY)

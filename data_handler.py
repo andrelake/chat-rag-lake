@@ -1,14 +1,13 @@
-import re
 from typing import Union, Tuple, List, Set
+import re
+from env import OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_ENVIRONMENT
 
-import tiktoken
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import Pinecone as PineconeVectorstore
 from langchain_openai import OpenAIEmbeddings
 from pinecone import Pinecone, ServerlessSpec
-
-from env import OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_ENVIRONMENT
+import tiktoken
 
 
 class Logger:
@@ -45,17 +44,16 @@ def load_document(filepath: str) -> List:
     return data
 
 
-def chunk_data(data: List, chunk_size: int = 1600) -> List:
+def chunk_data(data: List, chunk_size: int = 1600, chunk_overlap: int = 0) -> List:
     log(f'Starting chunk context')
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
-        chunk_overlap=160
+        chunk_overlap=chunk_overlap
     )
     chunks = text_splitter.split_documents(data)
-    # for i, chunk in enumerate(chunks):
-    #     log(f'#{i+1} \n{chunk.page_content}')
-    #
-    # log(f'Total chunks: {len(chunks)}')
+    for i, chunk in enumerate(chunks):
+        log(f'#{i+1} {chunk.page_content}')
+    log(f'Total chunks: {len(chunks)}')
     return chunks
 
 
@@ -80,7 +78,7 @@ def create_vector_store(chunks: List, embeddings: OpenAIEmbeddings, index_name: 
     return PineconeVectorstore.from_documents(chunks, embeddings, index_name=index_name)
 
 
-def delete_pinecone_index(index_name: str, pinecone: Pinecone = get_pinecone_client(PINECONE_API_KEY)) -> None:
+def delete_pinecone_index(index_name: str, pinecone: Pinecone) -> None:
     log(f'Deleting index: {index_name}"')
     pinecone.delete_index(index_name)
     log(f'Index Deleted Successfully.')
