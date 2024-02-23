@@ -1,3 +1,4 @@
+import os
 from env import CHROMA_DB_HOST, CHROMA_DB_PORT, OPENAI_API_KEY
 from data_handler.chromadb import (
     log,
@@ -12,25 +13,72 @@ from data_handler.chromadb import (
     get_month_name
 )
 
+from chromadb.utils import embedding_functions
+
+
+def threat_product(product):
+    return {'debit': 'débito', 'credit': 'crédito', '': 'desconhecido'}[product or '']
+
+
 # Configure Logger
 log.verbose = True
 log.end = '\n\n'
 
-# Load document
-file_path = '*.avro'
-data = None
+# Load document and chunk data
+documents = extract_documents(
+    path=os.path.join('data', 'card_transactions', 'ptt_transaction_year=2024'),
+    group_by=[
+        'transaction_year',
+        'portfolio_id',
+        'consumer_id',
+    ],
+    group_body=
+        lambda record:
+            f'''Durante {record['transaction_month']:02}/{record['transaction_year']:04} (mês de {get_month_name(record['transaction_month'])} '''
+            f'''do ano de {record['transaction_year']:04}), o cliente '{record['consumer_name']}' (CPF {record['consumer_document']}) que pertence à carteira de clientes '''
+            f'''de ID '{record['portfolio_id']}' do gerente de contas '{record['officer_name']}' efetuou as seguintes transações de cartão variante {record['card_variant']} '''
+            f'''na modalidade '{threat_product(record['product'])}':''',
+    aggregated_body=
+        lambda record:
+            f'''\nDia {record['transaction_day']:02}/{record['transaction_month']:02}/{record['transaction_year']:04} '''
+            f'''às {record['transaction_at'].strftime('%H:%M')} de R$ {record['transaction_value']} '''
+            f'''para '{record['seller_description'].strip()}\'.''',
+    filter=
+        lambda record:
+            record['transaction_year'] == 2024 and record['portfolio_id'] == 39 and record['transaction_month'] == 2 and record['transaction_day'] >= 19
+)
+show_embeddings_cost(documents)
 
-# Chunk data
-chunks = None
-
-# Pinecone vectorstore client
-pinecone = get_pinecone_client(PINECONE_API_KEY)
+# ChromaDB vectorstore client
+db_client = get_chromadb_client(host=CHROMA_DB_HOST, port=CHROMA_DB_PORT)
 
 # OpenAI embeddings client
-embeddings = get_embeddings_client(OPENAI_API_KEY)
+embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
+                     # get_embeddings_client(OPENAI_API_KEY)  # OpenAI
+                     # embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")  # Local Open Source
 
-# Insert or Fetch Embeddings
-index_name = 'ai_prj_prd_data'
-if index_name in pinecone.list_indexes():
-    delete_pinecone_index(index_name, pinecone)
-vectorstore = insert_or_fetch_embeddings(index_name, chunks, pinecone, embeddings)
+# Create collection
+langchain_db_collection_name = 'felipe-dev-picpay-prj-ai-rag-llm'
+try:
+    langchain_db_collection = delete_collection(name=langchain_db_collection_name, chroma_client=db_client)
+except:
+    pass
+for batch in range(0, len(documents), 200):
+    add_documents(
+        create_collection(
+            name=langchain_db_collection_name,
+            embedding_function=embedding_function,
+            db_client=db_client
+        ),
+        documents[batch:batch+200]
+    )
+
+# Add documents
+add_documents(langchain_db_collection, documents[:10])
+
+# Search for similar documents
+query = "Qual o total do valor de transações do gerente Bruno Pessolato em janeiro de 2024?"
+result_documents = query_collection(langchain_db_collection, query)
+
+# Show result
+log(result_documents)
