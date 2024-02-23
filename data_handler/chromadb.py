@@ -1,14 +1,9 @@
 import os
 from typing import Optional, Any, Callable, Union, Tuple, List, Set
-import re
-from env import OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_ENVIRONMENT
 
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import Chroma as LangchainChromaVectorstore
 from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
-from pinecone import Pinecone, ServerlessSpec
 import chromadb
 import fastavro
 import tiktoken
