@@ -60,6 +60,12 @@ def get_or_create_collection(name: str, embedding_function: OpenAIEmbeddings, db
     return langchain_db_collection
 
 
+def delete_collection(name: str, chroma_client: chromadb.Client) -> None:
+    log(f'Deleting collection: {name}')
+    chroma_client.delete_collection(name)
+    log(f'Successfully Deleted Collection: {name}.')
+
+
 def insert_or_fetch_embeddings(index_name: str, chunks: List, pinecone: Pinecone, embeddings: OpenAIEmbeddings) -> PineconeVectorstore:
     indexes = pinecone.list_indexes()
     log(f'Indexes: {len(indexes)}')
@@ -70,10 +76,10 @@ def insert_or_fetch_embeddings(index_name: str, chunks: List, pinecone: Pinecone
         return create_vector_store(chunks, embeddings, index_name, pinecone)
 
 
-def show_embeddings_cost(texts: Union[Tuple, List, Set]) -> None:
+def show_embeddings_cost(documents: Union[Tuple, List, Set]) -> None:
     log(f'Starting embedding price calculation')
     encoding = tiktoken.encoding_for_model('text-embedding-ada-002')
-    total_tokens = sum([len(encoding.encode(page.page_content)) for page in texts])
+    total_tokens = sum([len(encoding.encode(document.page_content)) for document in documents])
     log(f'Total tokens: {total_tokens}')
-    log(f'Total pages: {len(texts)}')
+    log(f'Total pages: {len(documents)}')
     log(f'Embedding cost: ${total_tokens * 0.0004 / 1000:.4f}')
