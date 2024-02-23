@@ -66,14 +66,16 @@ def delete_collection(name: str, chroma_client: chromadb.Client) -> None:
     log(f'Successfully Deleted Collection: {name}.')
 
 
-def insert_or_fetch_embeddings(index_name: str, chunks: List, pinecone: Pinecone, embeddings: OpenAIEmbeddings) -> PineconeVectorstore:
-    indexes = pinecone.list_indexes()
-    log(f'Indexes: {len(indexes)}')
-    if index_name in indexes.names():
-        log(f'Getting info from index: {index_name}')
-        return PineconeVectorstore.from_existing_index(index_name, embeddings)
-    else:
-        return create_vector_store(chunks, embeddings, index_name, pinecone)
+def add_documents(langchain_db_collection: LangchainChromaVectorstore, documents: List) -> None:
+    langchain_db_collection._collection.add(documents)
+    log(f'Added {len(documents)} documents to collection')
+
+
+def query_collection(langchain_db_collection: LangchainChromaVectorstore, query: str) -> None:
+    log(f'Querying collection')
+    result = langchain_db_collection.similarity_search(query)
+    log(f'Result: {result}')
+    return result
 
 
 def show_embeddings_cost(documents: Union[Tuple, List, Set]) -> None:
