@@ -4,7 +4,7 @@ from env import OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_ENVIRONMENT
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
-from langchain_community.vectorstores import Pinecone as PineconeVectorstore
+from langchain_community.vectorstores import Chroma as LangchainChromaVectorstore
 from langchain_openai import OpenAIEmbeddings
 from pinecone import Pinecone, ServerlessSpec
 import chromadb
@@ -38,6 +38,28 @@ def get_chromadb_client(host: str, port: int) -> chromadb.HttpClient:
     )
 
 
+def get_collection(name: str, embedding_function: OpenAIEmbeddings, db_client: chromadb.Client) -> LangchainChromaVectorstore:
+    log(f'Getting collection: {name}')
+    langchain_db_collection = LangchainChromaVectorstore(
+        client=db_client,
+        collection_name=name,
+        embedding_function=embedding_function,
+    )
+    return langchain_db_collection
+
+
+def create_collection(name: str, embedding_function: OpenAIEmbeddings, db_client: chromadb.Client) -> LangchainChromaVectorstore:
+    log(f'Creating collection')
+    langchain_db_collection = get_collection(name, embedding_function, db_client)
+    return langchain_db_collection
+
+
+def get_or_create_collection(name: str, embedding_function: OpenAIEmbeddings, db_client: chromadb.Client) -> LangchainChromaVectorstore:
+    log(f'Getting/Creating collection')
+    langchain_db_collection = get_collection(name, embedding_function, db_client)
+    return langchain_db_collection
+
+
 def chunk_data(data: List, chunk_size: int = 1600, chunk_overlap: int = 0) -> List:
     log(f'Starting chunk context')
     text_splitter = RecursiveCharacterTextSplitter(
@@ -59,23 +81,6 @@ def insert_or_fetch_embeddings(index_name: str, chunks: List, pinecone: Pinecone
         return PineconeVectorstore.from_existing_index(index_name, embeddings)
     else:
         return create_vector_store(chunks, embeddings, index_name, pinecone)
-
-
-def create_vector_store(chunks: List, embeddings: OpenAIEmbeddings, index_name: str, pinecone: Pinecone) -> PineconeVectorstore:
-    log(f'Creating index: {index_name}')
-    pinecone.create_index(
-        index_name,
-        dimension=1536,
-        metric='cosine',
-        spec=ServerlessSpec(cloud='aws', region=PINECONE_ENVIRONMENT)
-    )
-    return PineconeVectorstore.from_documents(chunks, embeddings, index_name=index_name)
-
-
-def delete_pinecone_index(index_name: str, pinecone: Pinecone) -> None:
-    log(f'Deleting index: {index_name}"')
-    pinecone.delete_index(index_name)
-    log(f'Index Deleted Successfully.')
 
 
 def show_embeddings_cost(texts: Union[Tuple, List, Set]) -> None:
