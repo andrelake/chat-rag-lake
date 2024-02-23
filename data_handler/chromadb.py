@@ -7,6 +7,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import Pinecone as PineconeVectorstore
 from langchain_openai import OpenAIEmbeddings
 from pinecone import Pinecone, ServerlessSpec
+import chromadb
 import tiktoken
 
 
@@ -25,12 +26,16 @@ class Logger:
 log = Logger()
 
 
-def get_pinecone_client(api_key: str) -> Pinecone:
-    return Pinecone(api_key=api_key)
-
-
 def get_embeddings_client(api_key: str) -> OpenAIEmbeddings:
     return OpenAIEmbeddings(openai_api_key=api_key)
+
+
+def get_chromadb_client(host: str, port: int) -> chromadb.HttpClient:
+    return chromadb.HttpClient(
+        host=host,
+        port=port,
+        settings=chromadb.config.Settings(allow_reset=True, anonymized_telemetry=False)
+    )
 
 
 def load_document(filepath: str) -> List:
