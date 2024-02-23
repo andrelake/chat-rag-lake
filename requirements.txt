@@ -1,4 +1,11 @@
-langchain
+langchain~=0.1.5
 langchain_openai
 langchain-experimental
-python-dotenv
+langchainhub
+python-dotenv~=1.0.1
+pinecone-client
+astrapy~=0.7.3
+upstash-redis
+openai~=1.11.1
+pypdf
+tiktoken

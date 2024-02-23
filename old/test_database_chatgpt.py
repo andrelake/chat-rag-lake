@@ -1,10 +1,8 @@
-import os
 from datetime import date
-from time import sleep
 from env import OPENAI_API_KEY
 from re import sub
 
-from connections import SQLite
+from old.connections import SQLite
 
 from openai import OpenAI
 from langchain.sql_database import SQLDatabase

@@ -1,6 +1,6 @@
 import os
 
-from connections import Embeddings
+from old.connections import Embeddings
 from env import ASTRA_DB_API_ENDPOINT, ASTRA_DB_APPLICATION_TOKEN
 
 import json

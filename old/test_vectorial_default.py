@@ -1,6 +1,6 @@
 import os
 
-from connections import Default
+from old.connections import Default
 
 
 class Color:
