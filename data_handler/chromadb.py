@@ -1,13 +1,16 @@
-from typing import Union, Tuple, List, Set
+import os
+from typing import Optional, Any, Callable, Union, Tuple, List, Set
 import re
 from env import OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_ENVIRONMENT
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import Chroma as LangchainChromaVectorstore
+from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 from pinecone import Pinecone, ServerlessSpec
 import chromadb
+import fastavro
 import tiktoken
 
 
@@ -85,3 +88,81 @@ def show_embeddings_cost(documents: Union[Tuple, List, Set]) -> None:
     log(f'Total tokens: {total_tokens}')
     log(f'Total pages: {len(documents)}')
     log(f'Embedding cost: ${total_tokens * 0.0004 / 1000:.4f}')
+
+def get_month_name(n: int) -> str:
+    return ('janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro')[n-1]
+
+def extract_documents_from_file(
+    file_path: str,
+    group_by: str,
+    group_body: Callable[[Any], str],
+    aggregated_body: Callable[[Any], str],
+    filter: Optional[Callable[[Any], bool]] = None
+) -> List[Document]:  # TODO: Test pandas implementation
+    document: Document = None
+    documents: List[Document] = list()
+    stream_last_group_headers = None
+    stream_current_group_headers = None
+    count_processed_rows: int = 0
+    count_total_rows: int = 0
+
+    log(f'Reading data from `{file_path}`')
+    with open(file_path, 'rb') as fp:
+        for block in fastavro.block_reader(fp):
+            count_total_rows += block.num_records
+            try:
+                for record in block:
+                    if not filter(record):
+                        continue
+                    stream_current_group_headers = tuple(record[header] for header in group_by)
+                    if stream_current_group_headers != stream_last_group_headers:
+                        if document:
+                            documents.append(document)
+                        document = Document(
+                            page_content=group_body(record),
+                            metadata={'transaction_id': record['transaction_id']}
+                        )
+                        stream_last_group_headers = stream_current_group_headers
+                    document.page_content += aggregated_body(record)
+                    count_processed_rows += 1
+            except Exception as e:
+                log(f'Error: {e}. Skipping record.', end='\n')
+                continue
+        if document:
+            documents.append(document)
+    log(f'Processed {count_processed_rows:_}/{count_total_rows:_} rows from `{file_path}` into {len(documents)} documents.')
+    return documents
+
+
+def extract_documents(
+    path: str,
+    group_by: str,
+    group_body: Callable[[Any], str],
+    aggregated_body: Callable[[Any], str],
+    filter: Optional[Callable[[Any], bool]] = None
+) -> List[Document]:  # TODO: Test pandas implementation
+    
+    log(f'Extracting documents from `{path}`')
+    source_files = []
+    # Example: filepath = 'data/card_transactions/'
+    # Real file: 'data/card_transactions/transaction_year=2023/part-00002-tid-1056622170898768028-a56bd3a2-d283-4b7a-ab87-62442d905a78-116499-1.c000.avro'
+    # Example: files = ['data/card_transactions/transaction_year=2023/part-00002-tid-1056622170898768028-a56bd3a2-d283-4b7a-ab87-62442d905a78-116499-1.c000.avro']
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            if file.endswith('.avro'):
+                file_path = os.path.join(root, file)
+                source_files.append(file_path)
+                log(file_path, end='\n')
+
+    documents = []
+    for file_path in source_files:
+        documents.extend(
+            extract_documents_from_file(
+                file_path=file_path,
+                group_by=group_by,
+                group_body=group_body,
+                aggregated_body=aggregated_body,
+                filter=filter
+            )
+        )
+    return documents
