@@ -38,17 +38,6 @@ def get_chromadb_client(host: str, port: int) -> chromadb.HttpClient:
     )
 
 
-def load_document(filepath: str) -> List:
-    log(f'Loading {filepath}')
-    loader = PyPDFLoader(filepath)
-    data = loader.load()
-    for page in data:
-        page.page_content = re.sub(r' +', ' ', page.page_content)
-        page.page_content = re.sub(r'(?: \n)+(?<! )', ' \n', page.page_content)
-    log(f'Data Loaded Successfully. Total pages: {len(data)}')
-    return data
-
-
 def chunk_data(data: List, chunk_size: int = 1600, chunk_overlap: int = 0) -> List:
     log(f'Starting chunk context')
     text_splitter = RecursiveCharacterTextSplitter(
@@ -89,14 +78,6 @@ def delete_pinecone_index(index_name: str, pinecone: Pinecone) -> None:
     log(f'Index Deleted Successfully.')
 
 
-def delete_all_pinecone_indexes(pinecone: Pinecone) -> None:
-    log(f'Deleting all indexes...')
-    indexes = pinecone.list_indexes()
-    for index in pinecone.list_indexes():
-        pinecone.delete_index(index)
-    log(f'Successfully Deleted All Indexes: {", ".join(indexes)}.')
-
-
 def show_embeddings_cost(texts: Union[Tuple, List, Set]) -> None:
     log(f'Starting embedding price calculation')
     encoding = tiktoken.encoding_for_model('text-embedding-ada-002')
@@ -104,37 +85,3 @@ def show_embeddings_cost(texts: Union[Tuple, List, Set]) -> None:
     log(f'Total tokens: {total_tokens}')
     log(f'Total pages: {len(texts)}')
     log(f'Embedding cost: ${total_tokens * 0.0004 / 1000:.4f}')
-
-
-if __name__ == '__main__':
-    # Configure Logger
-    log.verbose = True
-    log.end = '\n\n'
-
-    # Load document
-    file_path = 'data/texto.pdf'
-    data = load_document(file_path)
-
-    # Chunk data
-    chunks = chunk_data(data)
-
-    # Pinecone vectorstore client
-    pinecone = get_pinecone_client(PINECONE_API_KEY)
-
-    # OpenAI embeddings client
-    embeddings = get_embeddings_client(OPENAI_API_KEY)
-
-    # Insert or Fetch Embeddings
-    index_name = 'felipe-test-index-1'
-    if index_name in pinecone.list_indexes():
-        delete_pinecone_index(index_name, pinecone)
-    vectorstore = insert_or_fetch_embeddings(index_name, chunks, pinecone, embeddings)
-
-    # Show Embeddings Cost
-    show_embeddings_cost(chunks)
-
-    # Delete Pinecone Index
-    # delete_pinecone_index(index_name, pinecone)
-
-    # Delete All Pinecone Indexes
-    # delete_all_pinecone_indexes(index_name, pinecone)
