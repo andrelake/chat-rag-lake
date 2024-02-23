@@ -1,6 +1,16 @@
-from env import PINECONE_API_KEY, OPENAI_API_KEY
-from data_handler.pinecone import log, get_pinecone_client, get_embeddings_client, load_document, chunk_data, insert_or_fetch_embeddings, delete_pinecone_index
-
+from env import CHROMA_DB_HOST, CHROMA_DB_PORT, OPENAI_API_KEY
+from data_handler.chromadb import (
+    log,
+    get_chromadb_client,
+    get_embeddings_client,
+    extract_documents,
+    create_collection,
+    add_documents,
+    query_collection,
+    delete_collection,
+    show_embeddings_cost,
+    get_month_name
+)
 
 # Configure Logger
 log.verbose = True
