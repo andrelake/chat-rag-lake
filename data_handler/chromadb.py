@@ -60,19 +60,6 @@ def get_or_create_collection(name: str, embedding_function: OpenAIEmbeddings, db
     return langchain_db_collection
 
 
-def chunk_data(data: List, chunk_size: int = 1600, chunk_overlap: int = 0) -> List:
-    log(f'Starting chunk context')
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap
-    )
-    chunks = text_splitter.split_documents(data)
-    for i, chunk in enumerate(chunks):
-        log(f'#{i+1} {chunk.page_content}')
-    log(f'Total chunks: {len(chunks)}')
-    return chunks
-
-
 def insert_or_fetch_embeddings(index_name: str, chunks: List, pinecone: Pinecone, embeddings: OpenAIEmbeddings) -> PineconeVectorstore:
     indexes = pinecone.list_indexes()
     log(f'Indexes: {len(indexes)}')
