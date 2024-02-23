@@ -38,24 +38,27 @@ def get_chromadb_client(host: str, port: int) -> chromadb.HttpClient:
 
 def get_collection(name: str, embedding_function: OpenAIEmbeddings, db_client: chromadb.Client) -> LangchainChromaVectorstore:
     log(f'Getting collection: {name}')
-    langchain_db_collection = LangchainChromaVectorstore(
-        client=db_client,
-        collection_name=name,
-        embedding_function=embedding_function,
-    )
-    return langchain_db_collection
+    db_collection = db_client.get_collection(name)
+    # langchain_db_collection = LangchainChromaVectorstore(
+    #     client=db_client,
+    #     collection_name=name,
+    #     embedding_function=embedding_function,
+    # )
+    return db_collection
 
 
 def create_collection(name: str, embedding_function: OpenAIEmbeddings, db_client: chromadb.Client) -> LangchainChromaVectorstore:
     log(f'Creating collection')
-    langchain_db_collection = get_collection(name, embedding_function, db_client)
-    return langchain_db_collection
+    db_collection = db_client.create_collection(name)
+    # langchain_db_collection = get_collection(name, embedding_function, db_client)
+    return db_collection
 
 
 def get_or_create_collection(name: str, embedding_function: OpenAIEmbeddings, db_client: chromadb.Client) -> LangchainChromaVectorstore:
     log(f'Getting/Creating collection')
-    langchain_db_collection = get_collection(name, embedding_function, db_client)
-    return langchain_db_collection
+    db_collection = db_client.get_or_create_collection(name)
+    # langchain_db_collection = get_collection(name, embedding_function, db_client)
+    return db_collection
 
 
 def delete_collection(name: str, chroma_client: chromadb.Client) -> None:
@@ -65,13 +68,26 @@ def delete_collection(name: str, chroma_client: chromadb.Client) -> None:
 
 
 def add_documents(langchain_db_collection: LangchainChromaVectorstore, documents: List) -> None:
-    langchain_db_collection._collection.add(documents)
+    kargs = [
+        {
+            'documents': document.page_content[:25],
+            'metadatas': document.metadata,
+            'ids': f'{document.metadata["transaction_id"]:19}'
+        }
+        for document in documents
+    ]
+    print(kargs)
+    kargs = {key: [item[key] for item in kargs] for key in kargs[0]}
+    print(kargs)
+    langchain_db_collection.add(**kargs)
+    # langchain_db_collection._collection.add(documents)
     log(f'Added {len(documents)} documents to collection')
 
 
 def query_collection(langchain_db_collection: LangchainChromaVectorstore, query: str) -> None:
     log(f'Querying collection')
-    result = langchain_db_collection.similarity_search(query)
+    result = langchain_db_collection.query(query_texts=[query])
+    # result = langchain_db_collection.similarity_search(query)
     log(f'Result: {result}')
     return result
 
