@@ -1,4 +1,5 @@
 from langchain.agents import AgentExecutor, create_openai_tools_agent
+from langchain_core.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.memory import ConversationBufferMemory
 from langchain.tools.retriever import create_retriever_tool
 from langchain_community.chat_message_histories import UpstashRedisChatMessageHistory
@@ -47,7 +48,7 @@ def asking_and_getting_answers(vectorstore, question: str, chat_history=None):
         chat_history = UpstashRedisChatMessageHistory(
             url=UPSTASH_REDIS_REST_URL,
             token=UPSTASH_REDIS_REST_TOKEN,
-            session_id='session_id'
+            session_id='session_test'
         )
 
     # retriever
@@ -68,6 +69,7 @@ def asking_and_getting_answers(vectorstore, question: str, chat_history=None):
     memory = ConversationBufferMemory(
         memory_key='chat_history',
         input_key='input',
+        output_key='output',
         chat_memory=chat_history,
         return_messages=True)
 
@@ -75,7 +77,8 @@ def asking_and_getting_answers(vectorstore, question: str, chat_history=None):
     llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY,
                      model_name=OPENAI_MODEL_NAME,
                      temperature=0.5,
-                     streaming=True)
+                     streaming=True,
+                     callbacks=[StreamingStdOutCallbackHandler()],)
 
     # agent
     agent = create_openai_tools_agent(
@@ -87,8 +90,8 @@ def asking_and_getting_answers(vectorstore, question: str, chat_history=None):
     # agent_executor
     agent_executor = AgentExecutor(agent=agent, tools=tools, memory=memory)
 
-    resp = agent_executor.invoke({"input": question, "chat_history": chat_history, 'context': retriever})
-
+    resp = agent_executor.invoke({"input": question, "chat_history": chat_history,
+                                  'context': retriever.get_relevant_documents(question)})
     return resp.get('output')
 
 
@@ -96,7 +99,10 @@ def build_chat_prompt_template() -> ChatPromptTemplate:
     system_template = (
         "You are a helpful assistant. "
         "You can only use Portuguese, from Brazil, to read and answer all the questions. "
-        "You can use the following pieces of context to answer the question. {context} "
+        "You should ensure that questions already answered will use the chat history as context. "
+        "Please, check it before answering. "
+        "You should only using the agent tool if asked about something related to the State Forum of Education. "
+        "You can use the following pieces of context to answer the questions. {context} "
         "Combine chat history and the last user's question to create a new independent question. "
         "Histórico de bate-papo: {chat_history} "
         "Pergunta de acompanhamento: {input}"

@@ -1,4 +1,5 @@
 from time import perf_counter, sleep
+from pprint import pprint
 
 from data_handler import load_document, chunk_data, insert_or_fetch_embeddings, get_pinecone_client, \
     get_embeddings_client, log
@@ -25,16 +26,15 @@ def main() -> None:
             sleep(2)
             break
 
-        output = asking_and_getting_answers(vector_store, question, None)
-        log(f"{output}")
+        time_start = perf_counter()
+        asking_and_getting_answers(vector_store, question, None)
+        time_end = perf_counter()
+        print(f"\nTime taken: {time_end - time_start:.2f} seconds")
         i += 1
 
 
 if __name__ == "__main__":
     print("\nStarting...")
     log.verbose = True
-    time_start = perf_counter()
     main()
     # delete_pinecone_index(index_name=PINECONE_INDEX_NAME)
-    time_end = perf_counter()
-    print(f"\nTime taken: {time_end - time_start:.2f} seconds")
