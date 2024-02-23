@@ -1,5 +1,5 @@
 from env import PINECONE_API_KEY, OPENAI_API_KEY
-from data_handler import log, get_pinecone_client, get_embeddings_client, load_document, chunk_data, insert_or_fetch_embeddings, delete_pinecone_index
+from data_handler.pinecone import log, get_pinecone_client, get_embeddings_client, load_document, chunk_data, insert_or_fetch_embeddings, delete_pinecone_index
 
 
 # Configure Logger
