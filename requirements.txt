@@ -12,3 +12,5 @@ tiktoken
 chromadb-client
 sentence-transformers
 cramjam
+pandas
+Faker
