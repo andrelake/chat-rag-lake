@@ -1,4 +1,5 @@
 import os
+from shutil import rmtree
 from typing import List
 import pytz
 import random
@@ -151,7 +152,7 @@ def generate_dummy_data(
 
     # Create sorted index
     log(f'Sorting & reindexing data by `{group_by}`...')
-    df.set_index(group_by, inplace=True, drop=False)
+    df.set_index(group_by, inplace=True, drop=True)
     df.sort_index(ascending=True, inplace=True)
 
     # Dataframe info, size and memory usage
@@ -161,16 +162,16 @@ def generate_dummy_data(
     log(f'Dataframe memory usage: `{df.memory_usage(deep=True).sum() / 1024 ** 2:.2f} MB`')
 
     if save_path:
+        # Delete old data
+        log(f'Deleting old data from `{save_path}`...')
+        rmtree(save_path, ignore_errors=True)
+
         # Save data to disk as Avro partitioned by year
         for group_name, group_df in df.groupby(level=0):
             path = os.path.join(save_path, f'ptt_transaction_year={group_name}', 'data.avro')
             os.makedirs(os.path.dirname(path), exist_ok=True)
             with open(path, 'wb') as f:
-                writer(f, avro_schema, group_df.to_dict(orient='records'))
-
-            from pprint import pprint
-            group_df[:1].to_dict(orient='records')
-
+                writer(f, avro_schema, group_df.reset_index(drop=False).to_dict(orient='records'))
             log(f'Saved `{path}` with `{len(group_df)}` records.', end='\n')
     
     return df
@@ -179,11 +180,11 @@ def generate_dummy_data(
 def validation_quiz(df: pd.DataFrame, log: callable = log):
     officer_name = df.iloc[random.randint(0, len(df))].officer_name
     log(f'Query: Qual o valor total de transações em janeiro de 2023 feitas pelos clientes da carteira do gerente {officer_name}?', end='\n')
-    result = df[df.transaction_year == 2023 & df.transaction_month == 1 & df.officer_name == officer_name].transaction_value.sum()
+    result = df[(df.index.get_level_values('transaction_year') == 2023) & (df.transaction_month == 1) & (df.officer_name == officer_name)].transaction_value.sum()
     log(f'Correct answer: `{result}`.')
 
-    log(f'Query: Quantos clientes possuem cartão de crédito e débito?', end='\n')
-    result = df.groupby('consumer_id').product.nunique().value_counts()
+    log(f'Query: Quantos clientes possuem cartão de crédito e quantos de débito?', end='\n')
+    result = df.card_variant.value_counts()
     log(f'Correct answer: `{result}`.')
 
     log(f'Query: Quantos clientes realizaram mais de R$ 8000 em transações com cartão platinum em um único mês?', end='\n')
@@ -191,7 +192,7 @@ def validation_quiz(df: pd.DataFrame, log: callable = log):
     log(f'Correct answer: `{result}`.')
 
     log(f'Query: Quantas transações foram realizadas nas 3 carteiras com o maior valor total de transações em abril de 2023?', end='\n')
-    result = df[df.transaction_year == 2023 & df.transaction_month == 4].groupby('portfolio_id').transaction_value.sum().nlargest(3).sum()
+    result = df[(df.index.get_level_values('transaction_year') == 2023) & (df.transaction_month == 4)].groupby('portfolio_id').transaction_value.sum().nlargest(3)
     log(f'Correct answer: `{result}`.')
 
 

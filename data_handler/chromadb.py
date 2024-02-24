@@ -131,7 +131,7 @@ def extract_documents_from_file(
                             documents.append(document)
                         document = Document(
                             page_content=group_body(record),
-                            metadata={'transaction_id': record['transaction_id']}
+                            metadata=dict(record)
                         )
                         stream_last_group_headers = stream_current_group_headers
                     document.page_content += aggregated_body(record)

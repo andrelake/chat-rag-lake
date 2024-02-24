@@ -26,6 +26,7 @@ def threat_product(product):
 log.verbose = True
 log.end = '\n\n'
 
+avro_path = os.path.join('data', 'card_transactions')
 
 # Generate dummy data
 df = generate_dummy_data(
@@ -37,18 +38,19 @@ df = generate_dummy_data(
     n_officers=1,
     n_consumers_officer=10,
     n_transactions_consumer_day=6,
-    start_date=date(2020, 1, 1),
+    start_date=date(2023, 1, 1),
     end_date=date(2024, 2, 29),
     chaos_consumers_officer=0.5,
     chaos_transactions_client_day=0.5,
     log=log,
-    save_path=os.path.join('data', 'card_transactions')
+    save_path=avro_path
 )
+print(df)
 validation_quiz(df, log)
 
 # Load document and chunk data
 documents = extract_documents(
-    path=os.path.join('data', 'card_transactions', 'ptt_transaction_year=2024'),
+    path=avro_path,
     group_by=[
         'transaction_year',
         'portfolio_id',
