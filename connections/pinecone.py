@@ -2,8 +2,6 @@ from typing import Union, Tuple, List, Set
 import re
 from env import OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_ENVIRONMENT
 
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import Pinecone as PineconeVectorstore
 from langchain_openai import OpenAIEmbeddings
 from pinecone import Pinecone, ServerlessSpec
@@ -31,30 +29,6 @@ def get_pinecone_client(api_key: str) -> Pinecone:
 
 def get_embeddings_client(api_key: str) -> OpenAIEmbeddings:
     return OpenAIEmbeddings(openai_api_key=api_key)
-
-
-def load_document(filepath: str) -> List:
-    log(f'Loading {filepath}')
-    loader = PyPDFLoader(filepath)
-    data = loader.load()
-    for page in data:
-        page.page_content = re.sub(r' +', ' ', page.page_content)
-        page.page_content = re.sub(r'(?: \n)+(?<! )', ' \n', page.page_content)
-    log(f'Data Loaded Successfully. Total pages: {len(data)}')
-    return data
-
-
-def chunk_data(data: List, chunk_size: int = 1600, chunk_overlap: int = 0) -> List:
-    log(f'Starting chunk context')
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap
-    )
-    chunks = text_splitter.split_documents(data)
-    for i, chunk in enumerate(chunks):
-        log(f'#{i+1} {chunk.page_content}')
-    log(f'Total chunks: {len(chunks)}')
-    return chunks
 
 
 def insert_or_fetch_embeddings(index_name: str, chunks: List, pinecone: Pinecone, embeddings: OpenAIEmbeddings) -> PineconeVectorstore:

@@ -1,13 +1,16 @@
 import os
 from shutil import rmtree
-from typing import List
+from typing import Optional, Any, Callable, List
 import pytz
 import random
 from datetime import date
 
 import pandas as pd
 from faker import Faker
-from fastavro import writer, parse_schema
+from fastavro import block_reader, parse_schema, writer
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_core.documents import Document
 
 
 class Logger:
@@ -194,6 +197,110 @@ def validation_quiz(df: pd.DataFrame, log: callable = log):
     log(f'Query: Quantas transações foram realizadas nas 3 carteiras com o maior valor total de transações em abril de 2023?', end='\n')
     result = df[(df.index.get_level_values('transaction_year') == 2023) & (df.transaction_month == 4)].groupby('portfolio_id').transaction_value.sum().nlargest(3)
     log(f'Correct answer: `{result}`.')
+
+
+def get_month_name(n: int) -> str:
+    return ('janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro')[n-1]
+
+
+def extract_documents_from_file(
+    file_path: str,
+    group_by: str,
+    group_body: Callable[[Any], str],
+    aggregated_body: Callable[[Any], str],
+    filter: Optional[Callable[[Any], bool]] = None
+) -> List[Document]:  # TODO: Test pandas implementation
+    document: Document = None
+    documents: List[Document] = list()
+    stream_last_group_headers = None
+    stream_current_group_headers = None
+    count_processed_rows: int = 0
+    count_total_rows: int = 0
+
+    log(f'Reading data from `{file_path}`')
+    with open(file_path, 'rb') as fp:
+        for block in block_reader(fp):
+            count_total_rows += block.num_records
+            try:
+                for record in block:
+                    if not filter(record):
+                        continue
+                    stream_current_group_headers = tuple(record[header] for header in group_by)
+                    if stream_current_group_headers != stream_last_group_headers:
+                        if document:
+                            documents.append(document)
+                        document = Document(
+                            page_content=group_body(record),
+                            metadata=dict(record)
+                        )
+                        stream_last_group_headers = stream_current_group_headers
+                    document.page_content += aggregated_body(record)
+                    count_processed_rows += 1
+            except Exception as e:
+                log(f'Error: {e}. Skipping record.', end='\n')
+                continue
+        if document:
+            documents.append(document)
+    log(f'Processed {count_processed_rows:_}/{count_total_rows:_} rows from `{file_path}` into {len(documents)} documents.')
+    return documents
+
+
+def extract_documents(
+    path: str,
+    group_by: str,
+    group_body: Callable[[Any], str],
+    aggregated_body: Callable[[Any], str],
+    filter: Optional[Callable[[Any], bool]] = None
+) -> List[Document]:  # TODO: Test pandas implementation
+    
+    log(f'Extracting documents from `{path}`')
+    source_files = []
+    # Example: filepath = 'data/card_transactions/'
+    # Real file: 'data/card_transactions/transaction_year=2023/part-00002-tid-1056622170898768028-a56bd3a2-d283-4b7a-ab87-62442d905a78-116499-1.c000.avro'
+    # Example: files = ['data/card_transactions/transaction_year=2023/part-00002-tid-1056622170898768028-a56bd3a2-d283-4b7a-ab87-62442d905a78-116499-1.c000.avro']
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            if file.endswith('.avro'):
+                file_path = os.path.join(root, file)
+                source_files.append(file_path)
+                log(file_path, end='\n')
+
+    documents = []
+    for file_path in source_files:
+        documents.extend(
+            extract_documents_from_file(
+                file_path=file_path,
+                group_by=group_by,
+                group_body=group_body,
+                aggregated_body=aggregated_body,
+                filter=filter
+            )
+        )
+    return documents
+
+
+def load_documents_from_pdf(filepath: str) -> List:
+    log(f'Loading {filepath}')
+    loader = PyPDFLoader(filepath)
+    data = loader.load()
+    for page in data:
+        page.page_content = re.sub(r' +', ' ', page.page_content)
+        page.page_content = re.sub(r'(?: \n)+(?<! )', ' \n', page.page_content)
+    log(f'Data Loaded Successfully. Total pages: {len(data)}')
+    return data
+
+
+def redistribute_chunks(data: List, chunk_size: int = 1600, chunk_overlap: int = 0) -> List:
+    log(f'Starting chunk context')
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap
+    )
+    chunks = text_splitter.split_documents(data)
+    for i, chunk in enumerate(chunks):
+        log(f'#{i+1} {chunk.page_content}')
+    log(f'Total chunks: {len(chunks)}')
+    return chunks
 
 
 if __name__ == '__main__':
