@@ -1,5 +1,7 @@
 import os
 from env import CHROMA_DB_HOST, CHROMA_DB_PORT, OPENAI_API_KEY
+from datetime import date
+
 from data_handler.chromadb import (
     log,
     get_chromadb_client,
@@ -12,7 +14,7 @@ from data_handler.chromadb import (
     show_embeddings_cost,
     get_month_name
 )
-
+from data_handler.dummy import generate_dummy_data
 from chromadb.utils import embedding_functions
 
 
@@ -23,6 +25,25 @@ def threat_product(product):
 # Configure Logger
 log.verbose = True
 log.end = '\n\n'
+
+
+# Generate dummy data
+generate_dummy_data(
+    n_officers=1,
+    n_consumers_officer=10,
+    n_transactions_consumer_day=6,
+    start_date=date(2024, 1, 1),
+    end_date=date(2024, 12, 31),
+    group_by=[
+        'transaction_year',
+        'portfolio_id',
+        'consumer_id',
+    ],
+    chaos_consumers_officer=0,
+    chaos_transactions_client_day=0.5,
+    log=log
+)
+
 
 # Load document and chunk data
 documents = extract_documents(

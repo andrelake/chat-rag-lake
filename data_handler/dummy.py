@@ -1,10 +1,12 @@
 import os
+from typing import List
+import pytz
+import random
+from datetime import date
 
 import pandas as pd
 from faker import Faker
-import random
-from fastavro import writer, parse_schema, reader
-from datetime import date
+from fastavro import writer, parse_schema
 
 
 class Logger:
@@ -23,14 +25,15 @@ log = Logger()
 
 
 def generate_dummy_data(
+    group_by: List,
     n_officers: int,
     n_consumers_officer: int,
     n_transactions_consumer_day: int,
     start_date: date,
     end_date: date,
-    chaos_consumers_officer: float,
-    chaos_transactions_client_day: float,
-    log: callable
+    chaos_consumers_officer: float = 0,
+    chaos_transactions_client_day: float = 0,
+    log: callable = log
 ):
 
     # PySpark data schema
@@ -55,7 +58,7 @@ def generate_dummy_data(
 
     pandas_schema = {
         'transaction_id': pd.UInt32Dtype(),
-        'transaction_at': pd.DatetimeTZDtype(),
+        'transaction_at': pd.StringDtype(),  # pd.DatetimeTZDtype(tz='UTC'),
         'transaction_year': pd.Int16Dtype(),
         'transaction_month': pd.UInt8Dtype(),
         'transaction_day': pd.UInt8Dtype(),
@@ -72,14 +75,37 @@ def generate_dummy_data(
         'seller_description': pd.StringDtype()
     }
 
+    avro_schema = parse_schema({
+        'type': 'record',
+        'name': 'Transaction',
+        'fields': [
+            {'name': 'transaction_id', 'type': 'long'},
+            {'name': 'transaction_at', 'type': 'string'},
+            {'name': 'transaction_year', 'type': 'int'},
+            {'name': 'transaction_month', 'type': 'int'},
+            {'name': 'transaction_day', 'type': 'int'},
+            {'name': 'consumer_id_hash', 'type': 'long'},
+            {'name': 'consumer_id', 'type': 'long'},
+            {'name': 'consumer_document', 'type': 'string'},
+            {'name': 'consumer_name', 'type': 'string'},
+            {'name': 'portfolio_id', 'type': 'long'},
+            {'name': 'officer_id', 'type': 'long'},
+            {'name': 'officer_name', 'type': 'string'},
+            {'name': 'product', 'type': ['null', 'string'], 'default': None},
+            {'name': 'card_variant', 'type': ['null', 'string'], 'default': None},
+            {'name': 'transaction_value', 'type': 'double'},
+            {'name': 'seller_description', 'type': 'string'}
+        ]
+    })
+
     # Generate data into a pandas dataframe
-    fake = Faker()
+    fake = Faker(locale='pt_BR')
     log(f'Generating dummy data for `{n_officers}` officers and `{n_consumers_officer}` consumers per officer...')
     officers = [(i, fake.name(), i) for i in range(n_officers)]
 
     # Generate data
     log(f'Generating transactions...')
-    df = pd.DataFrame(columns=pandas_schema.keys()).astype(pandas_schema)
+    dfs = []
     data_chunk = []
     i_transaction_id = 0
     for portfolio_id, officer_name, officer_id in officers:
@@ -90,9 +116,11 @@ def generate_dummy_data(
             consumer_name = fake.name()
             for transaction_date in pd.date_range(start=start_date, end=end_date, freq='D'):
                 for _ in range(int(n_transactions_consumer_day * (1 + random.uniform(-chaos_transactions_client_day, chaos_transactions_client_day)))):
+                    transaction_at = transaction_date + pd.Timedelta(hours=random.randint(0, 23), minutes=random.randint(0, 59), seconds=random.randint(0, 59))
+                    transaction_at = transaction_at.replace(tzinfo=pytz.utc)
                     data_chunk.append({
                         'transaction_id': i_transaction_id,
-                        'transaction_at': transaction_date + pd.Timedelta(hours=random.randint(0, 23), minutes=random.randint(0, 59), seconds=random.randint(0, 59)),
+                        'transaction_at': transaction_at.strftime('%Y-%m-%dT%H:%M:%S.%f%z'),
                         'transaction_year': transaction_date.year,
                         'transaction_month': transaction_date.month,
                         'transaction_day': transaction_date.day,
@@ -107,29 +135,56 @@ def generate_dummy_data(
                         'card_variant': random.choice(['', 'black', 'gold', 'platinum', 'standard']),
                         'transaction_value': random.uniform(1, 5000),
                         'seller_description': fake.company()
-                    }, ignore_index=True)
+                    })
             if data_chunk:
                 count_transactions_portfolio += len(data_chunk)
-                df.append(data_chunk, ignore_index=True, inplace=True)
-        log(f'\tGenerated `{len(count_transactions_portfolio)}` transactions'
+                df = pd.DataFrame(data=data_chunk, columns=pandas_schema.keys()).astype(pandas_schema)
+                dfs.append(df)
+        log(f'\tGenerated `{count_transactions_portfolio}` transactions'
             f'for portfolio `{portfolio_id}` (officer `{officer_id}`: `{officer_name}`).',
             end='\n')
+    
+    df = pd.concat(dfs, ignore_index=True)
+
     log(f'\nGenerated `{len(df)}` transactions in total.')
 
     # Create sorted index
-    df.set_index(['transaction_year', 'transaction_month', 'transaction_day', 'transaction_id'], inplace=True, drop=False)
+    log(f'Sorting & reindexing data by `{group_by}`...')
+    df.set_index(group_by, inplace=True, drop=False)
     df.sort_index(ascending=True, inplace=True)
 
+    # Dataframe info, size and memory usage
+    log(f'Dataframe info:', end='\n')
+    log(df.info())
+    log(f'Dataframe size: `{df.shape}`')
+    log(f'Dataframe memory usage: `{df.memory_usage(deep=True).sum() / 1024 ** 2:.2f} MB`')
+
     # Save data to disk as Avro partitioned by year
-    avro_schema = parse_schema(pyspark_schema)
     for group_name, group_df in df.groupby(level=0):
         path = os.path.join('data', 'card_transactions', f'ptt_transaction_year={group_name}', 'data.avro')
+        os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, 'wb') as f:
-            writer(f, avro_schema, group_df.to_dict(orient='records', index=False))
-        log(f'\nSaved `{path}` with `{len(group_df)}` records.')
+            writer(f, avro_schema, group_df.to_dict(orient='records'))
+
+        from pprint import pprint
+        group_df[:1].to_dict(orient='records')
+
+        log(f'Saved `{path}` with `{len(group_df)}` records.', end='\n')
+    
+    return df
+
 
 if __name__ == '__main__':
-    generate_dummy_data(
+
+    log.verbose = True
+    log.end = '\n\n'
+
+    df = generate_dummy_data(
+        group_by=[
+            'transaction_year',
+            'portfolio_id',
+            'consumer_id',
+        ],
         n_officers=1,
         n_consumers_officer=10,
         n_transactions_consumer_day=6,
@@ -139,3 +194,4 @@ if __name__ == '__main__':
         chaos_transactions_client_day=0.5,
         log=print
     )
+    
