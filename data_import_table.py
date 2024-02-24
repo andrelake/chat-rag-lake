@@ -69,9 +69,7 @@ documents = extract_documents(
             f'''\nDia {record['transaction_day']:02}/{record['transaction_month']:02}/{record['transaction_year']:04} '''
             f'''às {record['transaction_at'].strftime('%H:%M')} de R$ {record['transaction_value']} '''
             f'''para '{record['seller_description'].strip()}\'.''',
-    filter=
-        lambda record:
-            record['transaction_year'] == 2024 and record['portfolio_id'] == 39 and record['transaction_month'] == 2 and record['transaction_day'] >= 19
+    filter=lambda record: True
 )
 show_embeddings_cost(documents)
 
