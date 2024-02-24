@@ -9,3 +9,6 @@ upstash-redis
 openai~=1.11.1
 pypdf
 tiktoken
+chromadb-client
+sentence-transformers
+cramjam
