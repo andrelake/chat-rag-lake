@@ -29,19 +29,20 @@ log.end = '\n\n'
 
 # Generate dummy data
 generate_dummy_data(
-    n_officers=1,
-    n_consumers_officer=10,
-    n_transactions_consumer_day=6,
-    start_date=date(2024, 1, 1),
-    end_date=date(2024, 12, 31),
     group_by=[
         'transaction_year',
         'portfolio_id',
         'consumer_id',
     ],
-    chaos_consumers_officer=0,
+    n_officers=1,
+    n_consumers_officer=10,
+    n_transactions_consumer_day=6,
+    start_date=date(2020, 1, 1),
+    end_date=date(2024, 2, 29),
+    chaos_consumers_officer=0.5,
     chaos_transactions_client_day=0.5,
-    log=log
+    log=log,
+    save_path=os.path.join('data', 'card_transactions')
 )
 
 

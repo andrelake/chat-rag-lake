@@ -33,7 +33,8 @@ def generate_dummy_data(
     end_date: date,
     chaos_consumers_officer: float = 0,
     chaos_transactions_client_day: float = 0,
-    log: callable = log
+    log: callable = log,
+    save_path: str = None
 ):
 
     # PySpark data schema
@@ -154,22 +155,23 @@ def generate_dummy_data(
     df.sort_index(ascending=True, inplace=True)
 
     # Dataframe info, size and memory usage
-    log(f'Dataframe info:', end='\n')
-    log(df.info())
-    log(f'Dataframe size: `{df.shape}`')
+    log(f'Dataframe info:')
+    log(df.info(), end='\n')
+    log(f'Dataframe size: `{df.shape}`', end='\n')
     log(f'Dataframe memory usage: `{df.memory_usage(deep=True).sum() / 1024 ** 2:.2f} MB`')
 
-    # Save data to disk as Avro partitioned by year
-    for group_name, group_df in df.groupby(level=0):
-        path = os.path.join('data', 'card_transactions', f'ptt_transaction_year={group_name}', 'data.avro')
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        with open(path, 'wb') as f:
-            writer(f, avro_schema, group_df.to_dict(orient='records'))
+    if save_path:
+        # Save data to disk as Avro partitioned by year
+        for group_name, group_df in df.groupby(level=0):
+            path = os.path.join(save_path, f'ptt_transaction_year={group_name}', 'data.avro')
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, 'wb') as f:
+                writer(f, avro_schema, group_df.to_dict(orient='records'))
 
-        from pprint import pprint
-        group_df[:1].to_dict(orient='records')
+            from pprint import pprint
+            group_df[:1].to_dict(orient='records')
 
-        log(f'Saved `{path}` with `{len(group_df)}` records.', end='\n')
+            log(f'Saved `{path}` with `{len(group_df)}` records.', end='\n')
     
     return df
 
@@ -192,6 +194,15 @@ if __name__ == '__main__':
         end_date=date(2024, 2, 29),
         chaos_consumers_officer=0.5,
         chaos_transactions_client_day=0.5,
-        log=print
+        log=log,
+        save_path=os.path.join('data', 'card_transactions')
     )
-    
+
+    # Prompt some complexbusiness questions
+    officer_name = df.iloc[random.randint(0, len(df))].officer_name
+    log(f'Query: Qual o valor total de transações em janeiro de 2023 feitas pelos clientes da carteira do gerente {officer_name}?', end='\n')
+    result = df[df.transaction_year == 2023 & df.transaction_month == 1 & df.officer_name == officer_name].transaction_value.sum()
+    log(f'Correct answer: `{result}`.')
+
+    log(f'Query: Quantos clientes possuem cartão de crédito e débito?', end='\n')
+
