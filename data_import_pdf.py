@@ -1,5 +1,5 @@
 from env import PINECONE_API_KEY, OPENAI_API_KEY
-from data_handler.pinecone import (
+from connections.pinecone import (
     log,
     get_pinecone_client,
     get_embeddings_client,

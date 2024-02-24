@@ -2,7 +2,7 @@ import os
 from env import CHROMA_DB_HOST, CHROMA_DB_PORT, OPENAI_API_KEY
 from datetime import date
 
-from data_handler.chromadb import (
+from connections.chromadb import (
     log,
     get_chromadb_client,
     get_embeddings_client,
@@ -14,7 +14,7 @@ from data_handler.chromadb import (
     show_embeddings_cost,
     get_month_name
 )
-from data_handler.dummy import generate_dummy_data, validation_quiz
+from data_handler import generate_dummy_data, validation_quiz
 from chromadb.utils import embedding_functions
 
 
