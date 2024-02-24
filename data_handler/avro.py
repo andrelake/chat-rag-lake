@@ -8,8 +8,6 @@ from datetime import date
 import pandas as pd
 from faker import Faker
 from fastavro import block_reader, parse_schema, writer
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders import PyPDFLoader
 from langchain_core.documents import Document
 
 
@@ -180,25 +178,6 @@ def generate_dummy_data(
     return df
 
 
-def validation_quiz(df: pd.DataFrame, log: callable = log):
-    officer_name = df.iloc[random.randint(0, len(df))].officer_name
-    log(f'Query: Qual o valor total de transações em janeiro de 2023 feitas pelos clientes da carteira do gerente {officer_name}?', end='\n')
-    result = df[(df.index.get_level_values('transaction_year') == 2023) & (df.transaction_month == 1) & (df.officer_name == officer_name)].transaction_value.sum()
-    log(f'Correct answer: `{result}`.')
-
-    log(f'Query: Quantos clientes possuem cartão de crédito e quantos de débito?', end='\n')
-    result = df.card_variant.value_counts()
-    log(f'Correct answer: `{result}`.')
-
-    log(f'Query: Quantos clientes realizaram mais de R$ 8000 em transações com cartão platinum em um único mês?', end='\n')
-    result = df[df.card_variant == 'platinum'].groupby(['transaction_year', 'transaction_month', 'consumer_id']).transaction_value.sum().gt(8000).sum()
-    log(f'Correct answer: `{result}`.')
-
-    log(f'Query: Quantas transações foram realizadas nas 3 carteiras com o maior valor total de transações em abril de 2023?', end='\n')
-    result = df[(df.index.get_level_values('transaction_year') == 2023) & (df.transaction_month == 4)].groupby('portfolio_id').transaction_value.sum().nlargest(3)
-    log(f'Correct answer: `{result}`.')
-
-
 def get_month_name(n: int) -> str:
     return ('janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro')[n-1]
 
@@ -279,28 +258,23 @@ def extract_documents(
     return documents
 
 
-def load_documents_from_pdf(filepath: str) -> List:
-    log(f'Loading {filepath}')
-    loader = PyPDFLoader(filepath)
-    data = loader.load()
-    for page in data:
-        page.page_content = re.sub(r' +', ' ', page.page_content)
-        page.page_content = re.sub(r'(?: \n)+(?<! )', ' \n', page.page_content)
-    log(f'Data Loaded Successfully. Total pages: {len(data)}')
-    return data
+def validation_quiz(df: pd.DataFrame, log: callable = log):
+    officer_name = df.iloc[random.randint(0, len(df))].officer_name
+    log(f'Query: Qual o valor total de transações em janeiro de 2023 feitas pelos clientes da carteira do gerente {officer_name}?', end='\n')
+    result = df[(df.index.get_level_values('transaction_year') == 2023) & (df.transaction_month == 1) & (df.officer_name == officer_name)].transaction_value.sum()
+    log(f'Correct answer: `{result}`.')
 
+    log(f'Query: Quantos clientes possuem cartão de crédito e quantos de débito?', end='\n')
+    result = df.card_variant.value_counts()
+    log(f'Correct answer: `{result}`.')
 
-def redistribute_chunks(data: List, chunk_size: int = 1600, chunk_overlap: int = 0) -> List:
-    log(f'Starting chunk context')
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap
-    )
-    chunks = text_splitter.split_documents(data)
-    for i, chunk in enumerate(chunks):
-        log(f'#{i+1} {chunk.page_content}')
-    log(f'Total chunks: {len(chunks)}')
-    return chunks
+    log(f'Query: Quantos clientes realizaram mais de R$ 8000 em transações com cartão platinum em um único mês?', end='\n')
+    result = df[df.card_variant == 'platinum'].groupby(['transaction_year', 'transaction_month', 'consumer_id']).transaction_value.sum().gt(8000).sum()
+    log(f'Correct answer: `{result}`.')
+
+    log(f'Query: Quantas transações foram realizadas nas 3 carteiras com o maior valor total de transações em abril de 2023?', end='\n')
+    result = df[(df.index.get_level_values('transaction_year') == 2023) & (df.transaction_month == 4)].groupby('portfolio_id').transaction_value.sum().nlargest(3)
+    log(f'Correct answer: `{result}`.')
 
 
 if __name__ == '__main__':
