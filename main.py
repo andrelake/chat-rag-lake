@@ -1,7 +1,12 @@
 from time import perf_counter, sleep
 
-from data_handler import load_document, chunk_data, insert_or_fetch_embeddings, get_pinecone_client, \
-    get_embeddings_client, log
+from data_handler.pdf import load_documents, redistribute_chunks
+from connections.pinecone import (
+    log,
+    insert_or_fetch_embeddings,
+    get_pinecone_client,
+    get_embeddings_client,
+)
 from env import PINECONE_INDEX_NAME, PINECONE_API_KEY, OPENAI_API_KEY
 from openai_interaction_agent import asking_and_getting_answers
 
@@ -9,8 +14,8 @@ filepath = "data/texto.pdf"
 
 
 def main() -> None:
-    data = load_document(filepath)
-    chunks = chunk_data(data)
+    data = load_documents(filepath)
+    chunks = redistribute_chunks(data)
     pinecone = get_pinecone_client(PINECONE_API_KEY)
     embeddings = get_embeddings_client(OPENAI_API_KEY)
     vector_store = insert_or_fetch_embeddings(PINECONE_INDEX_NAME, chunks, pinecone, embeddings)

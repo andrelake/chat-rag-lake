@@ -1,19 +1,24 @@
 import os
 from env import CHROMA_DB_HOST, CHROMA_DB_PORT, OPENAI_API_KEY
-from data_handler.chromadb import (
+from datetime import date
+
+from chromadb.utils import embedding_functions
+from connections.chromadb import (
     log,
     get_chromadb_client,
     get_embeddings_client,
-    extract_documents,
     create_collection,
     add_documents,
     query_collection,
     delete_collection,
-    show_embeddings_cost,
+    show_embeddings_cost
+)
+from data_handler.avro import (
+    generate_dummy_data,
+    extract_documents,
+    validation_quiz,
     get_month_name
 )
-
-from chromadb.utils import embedding_functions
 
 
 def threat_product(product):
@@ -24,9 +29,30 @@ def threat_product(product):
 log.verbose = True
 log.end = '\n\n'
 
+avro_path = os.path.join('data', 'card_transactions')
+
+# Generate dummy data
+df = generate_dummy_data(
+    group_by=[
+        'transaction_year',
+        'portfolio_id',
+        'consumer_id',
+    ],
+    n_officers=1,
+    n_consumers_officer=10,
+    n_transactions_consumer_day=6,
+    start_date=date(2023, 1, 1),
+    end_date=date(2024, 2, 29),
+    chaos_consumers_officer=0.5,
+    chaos_transactions_client_day=0.5,
+    log=log,
+    save_path=avro_path
+)
+validation_quiz(df, log)
+
 # Load document and chunk data
 documents = extract_documents(
-    path=os.path.join('data', 'card_transactions', 'ptt_transaction_year=2024'),
+    path=avro_path,
     group_by=[
         'transaction_year',
         'portfolio_id',
