@@ -14,7 +14,7 @@ from data_handler.chromadb import (
     show_embeddings_cost,
     get_month_name
 )
-from data_handler.dummy import generate_dummy_data
+from data_handler.dummy import generate_dummy_data, validation_quiz
 from chromadb.utils import embedding_functions
 
 
@@ -28,7 +28,7 @@ log.end = '\n\n'
 
 
 # Generate dummy data
-generate_dummy_data(
+df = generate_dummy_data(
     group_by=[
         'transaction_year',
         'portfolio_id',
@@ -44,7 +44,7 @@ generate_dummy_data(
     log=log,
     save_path=os.path.join('data', 'card_transactions')
 )
-
+validation_quiz(df, log)
 
 # Load document and chunk data
 documents = extract_documents(

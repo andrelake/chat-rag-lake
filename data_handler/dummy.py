@@ -176,6 +176,25 @@ def generate_dummy_data(
     return df
 
 
+def validation_quiz(df: pd.DataFrame, log: callable = log):
+    officer_name = df.iloc[random.randint(0, len(df))].officer_name
+    log(f'Query: Qual o valor total de transações em janeiro de 2023 feitas pelos clientes da carteira do gerente {officer_name}?', end='\n')
+    result = df[df.transaction_year == 2023 & df.transaction_month == 1 & df.officer_name == officer_name].transaction_value.sum()
+    log(f'Correct answer: `{result}`.')
+
+    log(f'Query: Quantos clientes possuem cartão de crédito e débito?', end='\n')
+    result = df.groupby('consumer_id').product.nunique().value_counts()
+    log(f'Correct answer: `{result}`.')
+
+    log(f'Query: Quantos clientes realizaram mais de R$ 8000 em transações com cartão platinum em um único mês?', end='\n')
+    result = df[df.card_variant == 'platinum'].groupby(['transaction_year', 'transaction_month', 'consumer_id']).transaction_value.sum().gt(8000).sum()
+    log(f'Correct answer: `{result}`.')
+
+    log(f'Query: Quantas transações foram realizadas nas 3 carteiras com o maior valor total de transações em abril de 2023?', end='\n')
+    result = df[df.transaction_year == 2023 & df.transaction_month == 4].groupby('portfolio_id').transaction_value.sum().nlargest(3).sum()
+    log(f'Correct answer: `{result}`.')
+
+
 if __name__ == '__main__':
 
     log.verbose = True
@@ -198,11 +217,5 @@ if __name__ == '__main__':
         save_path=os.path.join('data', 'card_transactions')
     )
 
-    # Prompt some complexbusiness questions
-    officer_name = df.iloc[random.randint(0, len(df))].officer_name
-    log(f'Query: Qual o valor total de transações em janeiro de 2023 feitas pelos clientes da carteira do gerente {officer_name}?', end='\n')
-    result = df[df.transaction_year == 2023 & df.transaction_month == 1 & df.officer_name == officer_name].transaction_value.sum()
-    log(f'Correct answer: `{result}`.')
-
-    log(f'Query: Quantos clientes possuem cartão de crédito e débito?', end='\n')
+    validation_quiz(df, log)
 
