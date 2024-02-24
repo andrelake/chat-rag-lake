@@ -2,20 +2,23 @@ import os
 from env import CHROMA_DB_HOST, CHROMA_DB_PORT, OPENAI_API_KEY
 from datetime import date
 
+from chromadb.utils import embedding_functions
 from connections.chromadb import (
     log,
     get_chromadb_client,
     get_embeddings_client,
-    extract_documents,
     create_collection,
     add_documents,
     query_collection,
     delete_collection,
-    show_embeddings_cost,
+    show_embeddings_cost
+)
+from data_handler.avro import (
+    generate_dummy_data,
+    extract_documents,
+    validation_quiz,
     get_month_name
 )
-from data_handler import generate_dummy_data, validation_quiz
-from chromadb.utils import embedding_functions
 
 
 def threat_product(product):
@@ -45,7 +48,6 @@ df = generate_dummy_data(
     log=log,
     save_path=avro_path
 )
-print(df)
 validation_quiz(df, log)
 
 # Load document and chunk data

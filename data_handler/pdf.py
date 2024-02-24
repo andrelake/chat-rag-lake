@@ -20,7 +20,7 @@ class Logger:
 log = Logger()
 
 
-def load_documents_from_pdf(filepath: str) -> List:
+def load_documents(filepath: str) -> List:
     log(f'Loading {filepath}')
     loader = PyPDFLoader(filepath)
     data = loader.load()

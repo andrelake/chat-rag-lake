@@ -8,6 +8,7 @@ from connections.pinecone import (
     insert_or_fetch_embeddings,
     delete_pinecone_index
 )
+from data_handler.pdf import load_documents_from_pdf, redistribute_chunks
 
 
 # Configure Logger
@@ -16,10 +17,10 @@ log.end = '\n\n'
 
 # Load document
 file_path = 'data/texto.pdf'
-data = load_document(file_path)
+data = load_documents_from_pdf(file_path)
 
 # Chunk data
-chunks = chunk_data(data, chunk_size=1600, chunk_overlap=160)
+chunks = redistribute_chunks(data, chunk_size=1600, chunk_overlap=160)
 
 # Pinecone vectorstore client
 pinecone = get_pinecone_client(PINECONE_API_KEY)
