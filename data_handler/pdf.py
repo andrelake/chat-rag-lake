@@ -1,23 +1,10 @@
 import re
-from typing import Optional, Any, Callable, List
+from typing import List
+
+from utils import log
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
-
-
-class Logger:
-    def __init__(self, end: str = '\n', verbose: bool = False, **kwargs):
-        self.end = end
-        self.verbose = verbose
-        self.kwargs = kwargs
-
-    def __call__(self, message: str, **kwargs):
-        kwargs = {'end': self.end, **self.kwargs, **kwargs}
-        if self.verbose:
-            print(message, **kwargs)
-
-
-log = Logger()
 
 
 def load_documents(filepath: str) -> List:
@@ -31,7 +18,7 @@ def load_documents(filepath: str) -> List:
     return data
 
 
-def redistribute_chunks(data: List, chunk_size: int = 1600, chunk_overlap: int = 0) -> List:
+def redistribute_documents(data: List, chunk_size: int = 1600, chunk_overlap: int = 0) -> List:
     log(f'Starting chunk context')
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,

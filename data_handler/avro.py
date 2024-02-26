@@ -6,25 +6,12 @@ import random
 from datetime import date
 import json
 
+from utils import log
+
 import pandas as pd
 from faker import Faker
 from fastavro import block_reader, parse_schema, writer
 from langchain_core.documents import Document
-
-
-class Logger:
-    def __init__(self, end: str = '\n', verbose: bool = False, **kwargs):
-        self.end = end
-        self.verbose = verbose
-        self.kwargs = kwargs
-
-    def __call__(self, message: str, **kwargs):
-        kwargs = {'end': self.end, **self.kwargs, **kwargs}
-        if self.verbose:
-            print(message, **kwargs)
-
-
-log = Logger()
 
 
 def generate_dummy_data(
@@ -179,10 +166,6 @@ def generate_dummy_data(
     return df
 
 
-def get_month_name(n: int) -> str:
-    return ('janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro')[n-1]
-
-
 def extract_documents_from_file(
     file_path: str,
     group_by: str,
@@ -256,6 +239,7 @@ def extract_documents(
                 filter=filter
             )
         )
+    os.makedirs(os.path.join('data', 'refined', 'card_transactions_documents'), exist_ok=True)
     with open(os.path.join('data', 'refined', 'card_transactions_documents', 'card_transactions_documents.json'), 'w') as fo:
         json.dump([dict(document) for document in documents], fo)
     return documents

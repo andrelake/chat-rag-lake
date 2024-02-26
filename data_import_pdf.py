@@ -1,35 +1,43 @@
-from env import PINECONE_API_KEY, OPENAI_API_KEY
+import os
+from pprint import pprint
+
+from env import PINECONE_API_KEY, OPENAI_API_KEY, PINECONE_ENVIRONMENT
+from utils import log
 from connections.pinecone import (
-    log,
-    get_pinecone_client,
-    get_embeddings_client,
-    load_document,
-    chunk_data,
-    insert_or_fetch_embeddings,
-    delete_pinecone_index
+    get_database_client,
+    create_vectorstore,
+    get_vectorstore,
+    delete_vectorstore,
+    add_documents,
+    query_documents,
 )
-from data_handler.pdf import load_documents_from_pdf, redistribute_chunks
+from connections.openai import get_embeddings_client, get_embedding_cost
+from data_handler.pdf import load_documents, redistribute_documents
 
 
 # Configure Logger
-log.verbose = True
+log.verbose = False
 log.end = '\n\n'
 
-# Load document
-file_path = 'data/texto.pdf'
-data = load_documents_from_pdf(file_path)
+# Load documents
+file_path = os.path.join('data', 'landing', 'forum_estatais_educacao.pdf', 'texto.pdf')
+data = load_documents(file_path)
 
 # Chunk data
-chunks = redistribute_chunks(data, chunk_size=1600, chunk_overlap=160)
+documents = redistribute_documents(data, chunk_size=1600, chunk_overlap=160)
 
-# Pinecone vectorstore client
-pinecone = get_pinecone_client(PINECONE_API_KEY)
+log.verbose = False
+
+# Get vectorstore client
+database_client = get_database_client(PINECONE_API_KEY)
 
 # OpenAI embeddings client
-embeddings = get_embeddings_client(OPENAI_API_KEY)
+embedding_function = get_embeddings_client(OPENAI_API_KEY)
 
-# Insert or Fetch Embeddings
-index_name = 'ai_prj_prd_data'
-if index_name in pinecone.list_indexes():
-    delete_pinecone_index(index_name, pinecone)
-vectorstore = insert_or_fetch_embeddings(index_name, chunks, pinecone, embeddings)
+# Get or create vectorstore
+vectorstore_name = 'felipe-dev-picpay-prj-ai-rag-llm-pdf'
+vectorstore = get_vectorstore(vectorstore_name, embedding_function, database_client, create=True, dimension_count=None)
+
+# Add documents
+get_embedding_cost(documents)
+# add_documents(vectorstore, documents)

@@ -2,22 +2,22 @@ import os
 from env import CHROMA_DB_HOST, CHROMA_DB_PORT, OPENAI_API_KEY
 from datetime import date
 
+from utils import log, get_month_name
+
 from chromadb.utils import embedding_functions
-from connections.chromadb import (
-    log,
-    get_chromadb_client,
-    get_embeddings_client,
-    create_collection,
+from connections.pinecone import (
+    get_database_client,
+    create_vectorstore,
+    get_vectorstore,
+    delete_vectorstore,
     add_documents,
-    query_collection,
-    delete_collection,
-    show_embeddings_cost
+    query_documents,
 )
+from connections.openai import get_embeddings_client, get_embedding_cost
 from data_handler.avro import (
     generate_dummy_data,
     extract_documents,
-    validation_quiz,
-    get_month_name
+    validation_quiz
 )
 
 
@@ -50,7 +50,7 @@ df = generate_dummy_data(
 )
 validation_quiz(df, log)
 
-# Load document and chunk data
+# Load documents and chunk data
 documents = extract_documents(
     path=avro_path,
     group_by=[
@@ -67,42 +67,23 @@ documents = extract_documents(
     aggregated_body=
         lambda record:
             f'''\nDia {record['transaction_day']:02}/{record['transaction_month']:02}/{record['transaction_year']:04} '''
-            f'''às {record['transaction_at'].strftime('%H:%M')} de R$ {record['transaction_value']} '''
+            f'''às {record['transaction_at']} de R$ {record['transaction_value']} '''
             f'''para '{record['seller_description'].strip()}\'.''',
     filter=lambda record: True
 )
-show_embeddings_cost(documents)
+get_embedding_cost(documents)
 
-# ChromaDB vectorstore client
-db_client = get_chromadb_client(host=CHROMA_DB_HOST, port=CHROMA_DB_PORT)
+# Get vectorstore client
+database_client = get_database_client(host=CHROMA_DB_HOST, port=CHROMA_DB_PORT)
 
 # OpenAI embeddings client
-embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
-                     # get_embeddings_client(OPENAI_API_KEY)  # OpenAI
-                     # embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")  # Local Open Source
+embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")  # Local Open Source
+                     # get_embeddings_client(OPENAI_API_KEY)  # OpenAI Embeddings
 
-# Create collection
-langchain_db_collection_name = 'felipe-dev-picpay-prj-ai-rag-llm'
-try:
-    langchain_db_collection = delete_collection(name=langchain_db_collection_name, chroma_client=db_client)
-except:
-    pass
-for batch in range(0, len(documents), 200):
-    add_documents(
-        create_collection(
-            name=langchain_db_collection_name,
-            embedding_function=embedding_function,
-            db_client=db_client
-        ),
-        documents[batch:batch+200]
-    )
+# Get or create vectorstore
+vectorstore_name = 'felipe-dev-picpay-prj-ai-rag-llm-table'
+vectorstore = get_vectorstore(vectorstore_name, embedding_function, database_client, create=True, dimension_count=None)
 
 # Add documents
-add_documents(langchain_db_collection, documents[:10])
-
-# Search for similar documents
-query = "Qual o total do valor de transações do gerente Bruno Pessolato em janeiro de 2024?"
-result_documents = query_collection(langchain_db_collection, query)
-
-# Show result
-log(result_documents)
+get_embedding_cost(documents)
+add_documents(vectorstore, documents[:10])
