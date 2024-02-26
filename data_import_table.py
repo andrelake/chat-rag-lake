@@ -1,5 +1,5 @@
 import os
-from env import CHROMA_DB_HOST, CHROMA_DB_PORT, OPENAI_API_KEY
+from env import PINECONE_API_KEY, OPENAI_API_KEY
 from datetime import date
 
 from utils import log, get_month_name
@@ -74,7 +74,7 @@ documents = extract_documents(
 get_embedding_cost(documents)
 
 # Get vectorstore client
-database_client = get_database_client(host=CHROMA_DB_HOST, port=CHROMA_DB_PORT)
+database_client = get_database_client(api_key=PINECONE_API_KEY)
 
 # OpenAI embeddings client
 embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")  # Local Open Source
