@@ -4,6 +4,9 @@ from typing import Optional, Any, Callable, List
 import pytz
 import random
 from datetime import date
+import json
+
+from utils import log
 
 import pandas as pd
 from faker import Faker
@@ -11,23 +14,8 @@ from fastavro import block_reader, parse_schema, writer
 from langchain_core.documents import Document
 
 
-class Logger:
-    def __init__(self, end: str = '\n', verbose: bool = False, **kwargs):
-        self.end = end
-        self.verbose = verbose
-        self.kwargs = kwargs
-
-    def __call__(self, message: str, **kwargs):
-        kwargs = {'end': self.end, **self.kwargs, **kwargs}
-        if self.verbose:
-            print(message, **kwargs)
-
-
-log = Logger()
-
-
 def generate_dummy_data(
-    group_by: List,
+    order_by: List,
     n_officers: int,
     n_consumers_officer: int,
     n_transactions_consumer_day: int,
@@ -143,7 +131,7 @@ def generate_dummy_data(
                 count_transactions_portfolio += len(data_chunk)
                 df = pd.DataFrame(data=data_chunk, columns=pandas_schema.keys()).astype(pandas_schema)
                 dfs.append(df)
-        log(f'\tGenerated `{count_transactions_portfolio}` transactions'
+        log(f'\tGenerated `{count_transactions_portfolio}` transactions '
             f'for portfolio `{portfolio_id}` (officer `{officer_id}`: `{officer_name}`).',
             end='\n')
     
@@ -152,8 +140,8 @@ def generate_dummy_data(
     log(f'\nGenerated `{len(df)}` transactions in total.')
 
     # Create sorted index
-    log(f'Sorting & reindexing data by `{group_by}`...')
-    df.set_index(group_by, inplace=True, drop=True)
+    log(f'Sorting & reindexing data by `{order_by}`...')
+    df.set_index(order_by, inplace=True, drop=True)
     df.sort_index(ascending=True, inplace=True)
 
     # Dataframe info, size and memory usage
@@ -176,10 +164,6 @@ def generate_dummy_data(
             log(f'Saved `{path}` with `{len(group_df)}` records.', end='\n')
     
     return df
-
-
-def get_month_name(n: int) -> str:
-    return ('janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro')[n-1]
 
 
 def extract_documents_from_file(
@@ -234,9 +218,9 @@ def extract_documents(
     
     log(f'Extracting documents from `{path}`')
     source_files = []
-    # Example: filepath = 'data/card_transactions/'
-    # Real file: 'data/card_transactions/transaction_year=2023/part-00002-tid-1056622170898768028-a56bd3a2-d283-4b7a-ab87-62442d905a78-116499-1.c000.avro'
-    # Example: files = ['data/card_transactions/transaction_year=2023/part-00002-tid-1056622170898768028-a56bd3a2-d283-4b7a-ab87-62442d905a78-116499-1.c000.avro']
+    # Example: filepath = 'data/landing/card_transactions.avro/'
+    # Real file: 'data/landing/card_transactions.avro/transaction_year=2023/part-00002-tid-1056622170898768028-a56bd3a2-d283-4b7a-ab87-62442d905a78-116499-1.c000.avro'
+    # Example: files = ['data/landing/card_transactions.avro/transaction_year=2023/part-00002-tid-1056622170898768028-a56bd3a2-d283-4b7a-ab87-62442d905a78-116499-1.c000.avro']
     for root, dirs, files in os.walk(path):
         for file in files:
             if file.endswith('.avro'):
@@ -255,27 +239,29 @@ def extract_documents(
                 filter=filter
             )
         )
-    import json
-    json.dump([dict(document) for document in documents], open('data.json', 'w'))
+    os.makedirs(os.path.join('data', 'refined', 'card_transactions_documents'), exist_ok=True)
+    with open(os.path.join('data', 'refined', 'card_transactions_documents', 'card_transactions_documents.json'), 'w') as fo:
+        json.dump([dict(document) for document in documents], fo)
     return documents
 
 
 def validation_quiz(df: pd.DataFrame, log: callable = log):
-    officer_name = df.iloc[random.randint(0, len(df))].officer_name
+    df2 = df.reset_index(drop=False)
+    officer_name = df2.iloc[random.randint(0, len(df2))].officer_name
     log(f'Query: Qual o valor total de transações em janeiro de 2023 feitas pelos clientes da carteira do gerente {officer_name}?', end='\n')
-    result = df[(df.index.get_level_values('transaction_year') == 2023) & (df.transaction_month == 1) & (df.officer_name == officer_name)].transaction_value.sum()
+    result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 1) & (df2.officer_name == officer_name)].transaction_value.sum()
     log(f'Correct answer: `{result:.2f}`.')
 
     log(f'Query: Quantos clientes possuem um cartão de crédito e quantos possuem um de débito?', end='\n')
-    result = df.reset_index('consumer_id').groupby('product', observed=False).consumer_id.nunique()
+    result = df2.groupby('product', observed=False).consumer_id.nunique()
     log(f'Correct answer: `{result}`.')
 
     log(f'Query: Quantos clientes realizaram mais de R$ 8000 em transações com cartão platinum em um único mês?', end='\n')
-    result = df[df.card_variant == 'platinum'].groupby(['transaction_year', 'transaction_month', 'consumer_id']).transaction_value.sum().gt(8000).sum()
+    result = df2[df2.card_variant == 'platinum'].groupby(['transaction_year', 'transaction_month', 'consumer_id']).transaction_value.sum().gt(8000).sum()
     log(f'Correct answer: `{result}`.')
 
     log(f'Query: Quantas transações foram realizadas nas 3 carteiras com o maior valor total de transações em abril de 2023?', end='\n')
-    result = df[(df.index.get_level_values('transaction_year') == 2023) & (df.transaction_month == 4)].groupby('portfolio_id').transaction_value.sum().nlargest(3)
+    result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 4)].groupby('portfolio_id').transaction_value.sum().nlargest(3)
     log(f'Correct answer: `{result}`.')
 
 
@@ -298,7 +284,7 @@ if __name__ == '__main__':
         chaos_consumers_officer=0.5,
         chaos_transactions_client_day=0.5,
         log=log,
-        save_path=os.path.join('data', 'card_transactions')
+        save_path=os.path.join('data', 'landing', 'card_transactions.avro')
     )
 
     validation_quiz(df, log)

@@ -1,8 +1,9 @@
 from time import perf_counter, sleep
 
+from utils import log
+
 from data_handler.pdf import load_documents, redistribute_chunks
 from connections.pinecone import (
-    log,
     insert_or_fetch_embeddings,
     get_pinecone_client,
     get_embeddings_client,
