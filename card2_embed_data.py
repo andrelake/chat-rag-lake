@@ -2,7 +2,7 @@ import os
 from env import PINECONE_API_KEY, OPENAI_API_KEY
 from datetime import date
 
-from utils import log, get_month_name
+from utils import log, get_month_name, threat_product
 
 from chromadb.utils import embedding_functions
 from connections.pinecone import (
@@ -21,37 +21,12 @@ from data_handler.avro import (
 )
 
 
-def threat_product(product):
-    return {'debit': 'débito', 'credit': 'crédito', '': 'desconhecido'}[product or '']
-
-
 # Configure Logger
 log.verbose = True
 log.end = '\n\n'
 
-avro_path = os.path.join('data', 'landing', 'card_transactions.avro')
-
-# Generate dummy data
-df = generate_dummy_data(
-    order_by=[
-        'transaction_year',
-        'portfolio_id',
-        'consumer_id',
-        'transaction_at',
-    ],
-    n_officers=5,
-    n_consumers_officer=10,
-    n_transactions_consumer_day=6,
-    start_date=date(2023, 1, 1),
-    end_date=date(2024, 2, 29),
-    chaos_consumers_officer=0.5,
-    chaos_transactions_client_day=0.5,
-    log=log,
-    save_path=avro_path
-)
-validation_quiz(df, log)
-
 # Load documents and chunk data
+avro_path = os.path.join('data', 'landing', 'card_transactions.avro')
 documents = extract_documents(
     path=avro_path,
     group_by=[
@@ -98,4 +73,4 @@ vectorstore = get_vectorstore(
 
 # Add documents
 get_embedding_cost(documents=documents, model_name='text-embedding-3-small')  # If using OpenAI Embeddings
-add_documents(vectorstore, documents)  # Add only 10 documents for testing purposes
+#add_documents(vectorstore, documents)  # Add only 10 documents for testing purposes

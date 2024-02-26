@@ -14,4 +14,8 @@ def get_month_name(n: int) -> str:
     return ('janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro')[n-1]
 
 
+def threat_product(product):
+    return {'debit': 'débito', 'credit': 'crédito', '': 'desconhecido'}[product or '']
+
+
 log = Logger()
