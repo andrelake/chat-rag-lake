@@ -49,10 +49,10 @@ documents = extract_documents(
     filter=lambda record: True
 )
 
-# Get vectorstore client
+# Get database client
 database_client = get_database_client(api_key=PINECONE_API_KEY)
 
-# OpenAI embeddings client
+# Get embeddings client
 embedding_model_name = 'text-embedding-3-small'
 embedding_function_callables = [
     get_embeddings_client(OPENAI_API_KEY, model_name='text-embedding-3-small'),  # API, OpenAI, 1536 dimensions
@@ -73,4 +73,4 @@ vectorstore = get_vectorstore(
 
 # Add documents
 get_embedding_cost(documents=documents, model_name='text-embedding-3-small')  # If using OpenAI Embeddings
-#add_documents(vectorstore, documents)  # Add only 10 documents for testing purposes
+add_documents(vectorstore, documents)  # Add only 10 documents for testing purposes

@@ -31,7 +31,7 @@ log.verbose = True
 # Get vectorstore client
 database_client = get_database_client(PINECONE_API_KEY)
 
-# OpenAI embeddings client
+# Get embeddings client
 embedding_model_name = 'text-embedding-3-small'
 embedding_function = get_embeddings_client(OPENAI_API_KEY, model_name=embedding_model_name)
 
