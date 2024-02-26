@@ -7,6 +7,7 @@ from utils import log
 from langchain_community.vectorstores import Pinecone as LangchainPineconeVectorstore
 from langchain_openai import OpenAIEmbeddings
 from pinecone import Pinecone, ServerlessSpec
+from tqdm.auto import tqdm
 
 
 def get_database_client(api_key: str) -> Pinecone:
@@ -15,7 +16,7 @@ def get_database_client(api_key: str) -> Pinecone:
 
 def create_vectorstore(name: str, dimension_count: int, embedding_function: OpenAIEmbeddings, database_client: Pinecone) -> LangchainPineconeVectorstore:
     log(f'Creating vectorstore {name}')
-    vectorstore = database_client.create_index(
+    database_client.create_index(
         name,
         dimension=dimension_count,
         metric='cosine',
@@ -24,6 +25,13 @@ def create_vectorstore(name: str, dimension_count: int, embedding_function: Open
     # wait for index to be initialized
     while not database_client.describe_index(name).status['ready']:
         sleep(1)
+    vectorstore = get_vectorstore(
+        name=name,
+        embedding_function=embedding_function,
+        database_client=database_client,
+        create=False,
+        dimension_count=dimension_count
+    )
     return vectorstore
 
 
@@ -52,16 +60,19 @@ def delete_vectorstore(name: str, database_client: Pinecone) -> None:
 
 
 def add_documents(vectorstore: LangchainPineconeVectorstore, documents: List) -> None:
-    kargs = [
-        {
-            'texts': document.page_content[:25],
-            'metadatas': document.metadata,
-            'ids': f'{document.metadata["transaction_id"]:19}'
-        }
-        for document in documents
-    ]
-    kargs = {key: [item[key] for item in kargs] for key in kargs[0]}
-    vectorstore.add_texts(**kargs)
+    batch_size = 64
+    for i in tqdm(range(0, len(documents), batch_size)):
+        i_end = min(i+batch_size, len(documents))
+        kargs = [
+            {
+                'texts': document.page_content,
+                'metadatas': document.metadata,
+                'ids': f'{document.metadata["transaction_id"]:19}'
+            }
+            for document in documents[i:i_end]
+        ]
+        kargs = {key: [item[key] for item in kargs] for key in kargs[0]}
+        vectorstore.add_texts(**kargs)
     log(f'Added {len(documents)} documents to vectorstore')
 
 

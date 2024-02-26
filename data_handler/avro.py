@@ -15,7 +15,7 @@ from langchain_core.documents import Document
 
 
 def generate_dummy_data(
-    group_by: List,
+    order_by: List,
     n_officers: int,
     n_consumers_officer: int,
     n_transactions_consumer_day: int,
@@ -131,7 +131,7 @@ def generate_dummy_data(
                 count_transactions_portfolio += len(data_chunk)
                 df = pd.DataFrame(data=data_chunk, columns=pandas_schema.keys()).astype(pandas_schema)
                 dfs.append(df)
-        log(f'\tGenerated `{count_transactions_portfolio}` transactions'
+        log(f'\tGenerated `{count_transactions_portfolio}` transactions '
             f'for portfolio `{portfolio_id}` (officer `{officer_id}`: `{officer_name}`).',
             end='\n')
     
@@ -140,8 +140,8 @@ def generate_dummy_data(
     log(f'\nGenerated `{len(df)}` transactions in total.')
 
     # Create sorted index
-    log(f'Sorting & reindexing data by `{group_by}`...')
-    df.set_index(group_by, inplace=True, drop=True)
+    log(f'Sorting & reindexing data by `{order_by}`...')
+    df.set_index(order_by, inplace=True, drop=True)
     df.sort_index(ascending=True, inplace=True)
 
     # Dataframe info, size and memory usage
@@ -246,21 +246,22 @@ def extract_documents(
 
 
 def validation_quiz(df: pd.DataFrame, log: callable = log):
-    officer_name = df.iloc[random.randint(0, len(df))].officer_name
+    df2 = df.reset_index(drop=False)
+    officer_name = df2.iloc[random.randint(0, len(df2))].officer_name
     log(f'Query: Qual o valor total de transações em janeiro de 2023 feitas pelos clientes da carteira do gerente {officer_name}?', end='\n')
-    result = df[(df.index.get_level_values('transaction_year') == 2023) & (df.transaction_month == 1) & (df.officer_name == officer_name)].transaction_value.sum()
+    result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 1) & (df2.officer_name == officer_name)].transaction_value.sum()
     log(f'Correct answer: `{result:.2f}`.')
 
     log(f'Query: Quantos clientes possuem um cartão de crédito e quantos possuem um de débito?', end='\n')
-    result = df.reset_index('consumer_id').groupby('product', observed=False).consumer_id.nunique()
+    result = df2.groupby('product', observed=False).consumer_id.nunique()
     log(f'Correct answer: `{result}`.')
 
     log(f'Query: Quantos clientes realizaram mais de R$ 8000 em transações com cartão platinum em um único mês?', end='\n')
-    result = df[df.card_variant == 'platinum'].groupby(['transaction_year', 'transaction_month', 'consumer_id']).transaction_value.sum().gt(8000).sum()
+    result = df2[df2.card_variant == 'platinum'].groupby(['transaction_year', 'transaction_month', 'consumer_id']).transaction_value.sum().gt(8000).sum()
     log(f'Correct answer: `{result}`.')
 
     log(f'Query: Quantas transações foram realizadas nas 3 carteiras com o maior valor total de transações em abril de 2023?', end='\n')
-    result = df[(df.index.get_level_values('transaction_year') == 2023) & (df.transaction_month == 4)].groupby('portfolio_id').transaction_value.sum().nlargest(3)
+    result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 4)].groupby('portfolio_id').transaction_value.sum().nlargest(3)
     log(f'Correct answer: `{result}`.')
 
 

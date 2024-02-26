@@ -33,12 +33,13 @@ avro_path = os.path.join('data', 'landing', 'card_transactions.avro')
 
 # Generate dummy data
 df = generate_dummy_data(
-    group_by=[
+    order_by=[
         'transaction_year',
         'portfolio_id',
         'consumer_id',
+        'transaction_at',
     ],
-    n_officers=1,
+    n_officers=5,
     n_consumers_officer=10,
     n_transactions_consumer_day=6,
     start_date=date(2023, 1, 1),
@@ -57,6 +58,7 @@ documents = extract_documents(
         'transaction_year',
         'portfolio_id',
         'consumer_id',
+        'transaction_month',
     ],
     group_body=
         lambda record:
@@ -76,13 +78,24 @@ documents = extract_documents(
 database_client = get_database_client(api_key=PINECONE_API_KEY)
 
 # OpenAI embeddings client
-embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")  # Local Open Source
-                     # get_embeddings_client(OPENAI_API_KEY)  # OpenAI Embeddings
+embedding_model_name = 'text-embedding-3-small'
+embedding_function_callables = [
+    get_embeddings_client(OPENAI_API_KEY, model_name='text-embedding-3-small'),  # API, OpenAI, 1536 dimensions
+    embedding_functions.ONNXMiniLM_L6_V2(preferred_providers=['DmlExecutionProvider']),  # Local (GPU), Open Source, 384 dimensions
+    embedding_functions.SentenceTransformerEmbeddingFunction(model_name='all-MiniLM-L6-v2'),  # Local, Open Source, 384 dimensions
+]
 
 # Get or create vectorstore
 vectorstore_name = 'felipe-dev-picpay-prj-ai-rag-llm-table'
-vectorstore = get_vectorstore(vectorstore_name, embedding_function, database_client, create=True, dimension_count=None)
+delete_vectorstore(vectorstore_name, database_client)
+vectorstore = get_vectorstore(
+    name=vectorstore_name,
+    embedding_function=embedding_function_callables[0],
+    database_client=database_client,
+    create=True,
+    dimension_count=1536  # 384 for all-MiniLM-L6-v2
+)
 
 # Add documents
-get_embedding_cost(documents)
-add_documents(vectorstore, documents[:5])
+get_embedding_cost(documents=documents, model_name='text-embedding-3-small')  # If using OpenAI Embeddings
+add_documents(vectorstore, documents)  # Add only 10 documents for testing purposes
