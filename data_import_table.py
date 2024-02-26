@@ -71,7 +71,6 @@ documents = extract_documents(
             f'''para '{record['seller_description'].strip()}\'.''',
     filter=lambda record: True
 )
-get_embedding_cost(documents)
 
 # Get vectorstore client
 database_client = get_database_client(api_key=PINECONE_API_KEY)
@@ -86,4 +85,4 @@ vectorstore = get_vectorstore(vectorstore_name, embedding_function, database_cli
 
 # Add documents
 get_embedding_cost(documents)
-add_documents(vectorstore, documents[:10])
+add_documents(vectorstore, documents[:5])
