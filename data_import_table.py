@@ -29,7 +29,7 @@ def threat_product(product):
 log.verbose = True
 log.end = '\n\n'
 
-avro_path = os.path.join('data', 'card_transactions')
+avro_path = os.path.join('data', 'landing', 'card_transactions.avro')
 
 # Generate dummy data
 df = generate_dummy_data(

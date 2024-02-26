@@ -4,6 +4,7 @@ from typing import Optional, Any, Callable, List
 import pytz
 import random
 from datetime import date
+import json
 
 import pandas as pd
 from faker import Faker
@@ -234,9 +235,9 @@ def extract_documents(
     
     log(f'Extracting documents from `{path}`')
     source_files = []
-    # Example: filepath = 'data/card_transactions/'
-    # Real file: 'data/card_transactions/transaction_year=2023/part-00002-tid-1056622170898768028-a56bd3a2-d283-4b7a-ab87-62442d905a78-116499-1.c000.avro'
-    # Example: files = ['data/card_transactions/transaction_year=2023/part-00002-tid-1056622170898768028-a56bd3a2-d283-4b7a-ab87-62442d905a78-116499-1.c000.avro']
+    # Example: filepath = 'data/landing/card_transactions.avro/'
+    # Real file: 'data/landing/card_transactions.avro/transaction_year=2023/part-00002-tid-1056622170898768028-a56bd3a2-d283-4b7a-ab87-62442d905a78-116499-1.c000.avro'
+    # Example: files = ['data/landing/card_transactions.avro/transaction_year=2023/part-00002-tid-1056622170898768028-a56bd3a2-d283-4b7a-ab87-62442d905a78-116499-1.c000.avro']
     for root, dirs, files in os.walk(path):
         for file in files:
             if file.endswith('.avro'):
@@ -255,8 +256,8 @@ def extract_documents(
                 filter=filter
             )
         )
-    import json
-    json.dump([dict(document) for document in documents], open('data.json', 'w'))
+    with open(os.path.join('data', 'refined', 'card_transactions_documents', 'card_transactions_documents.json'), 'w') as fo:
+        json.dump([dict(document) for document in documents], fo)
     return documents
 
 
@@ -298,7 +299,7 @@ if __name__ == '__main__':
         chaos_consumers_officer=0.5,
         chaos_transactions_client_day=0.5,
         log=log,
-        save_path=os.path.join('data', 'card_transactions')
+        save_path=os.path.join('data', 'landing', 'card_transactions.avro')
     )
 
     validation_quiz(df, log)
