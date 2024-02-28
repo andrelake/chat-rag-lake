@@ -104,7 +104,7 @@ def generate_dummy_data(
         count_transactions_portfolio = 0
         for consumer_id in range(int(n_consumers_officer * (1 + random.uniform(-chaos_consumers_officer, chaos_consumers_officer)))):
             data_chunk = []
-            consumer_document = fake.cpf()
+            consumer_document = fake.cpf().replace('-', '').replace('.', '').rjust(11, '0')
             consumer_name = fake.name()
             for transaction_date in pd.date_range(start=start_date, end=end_date, freq='D'):
                 for _ in range(int(n_transactions_consumer_day * (1 + random.uniform(-chaos_transactions_client_day, chaos_transactions_client_day)))):
@@ -235,103 +235,103 @@ def extract_documents(
 
 
 def get_documents_metadata() -> List[AttributeInfo]:
-    description = 'Transações de cartão de crédito e débito.'
+    description = 'Card transactions made by consumers.'
     attributes = [
         AttributeInfo(
             name='transaction_id',
             type='integer',
             nullable=False,
-            description='Identificador único da transação.'
+            description='Unique transaction identifier.'
         ),
         AttributeInfo(
             name='transaction_at',
-            type='timestamp',
+            type='string',
             nullable=False,
-            description='Data e hora da transação em formato "%Y-%m-%dT%H:%M:%S.%f%z".'
+            description='Date and time of the transaction formatted as "YYYY-MM-DDTHH:MM:SS.sssZ".'
         ),
         AttributeInfo(
             name='transaction_year',
             type='integer',
             nullable=False,
-            description='Ano da transação.'
+            description='Year of the transaction.'
         ),
         AttributeInfo(
             name='transaction_month',
             type='integer',
             nullable=False,
-            description='Mês da transação.'
+            description='Month of the transaction.'
         ),
         AttributeInfo(
             name='transaction_day',
             type='integer',
             nullable=False,
-            description='Dia da transação.'
+            description='Day of the transaction.'
         ),
         AttributeInfo(
             name='consumer_id_hash',
             type='integer',
             nullable=False,
-            description='Identificador único do consumidor hasheado.'
+            description='Unique consumer identifier hash (anonymized).'
         ),
         AttributeInfo(
             name='consumer_id',
             type='integer',
             nullable=False,
-            description='Identificador único do consumidor.'
+            description='Unique consumer identifier (anonymized).'
         ),
         AttributeInfo(
             name='consumer_document',
             type='string',
             nullable=False,
-            description='O número do CPF do consumidor.'
+            description='Brazilian 11-digit CPF identification document number of the consumer. Formatted as "00000000000"'
         ),
         AttributeInfo(
             name='consumer_name',
             type='string',
             nullable=False,
-            description='Nome do consumidor.'
+            description='Name of the consumer/costumer that made the transaction.'
         ),
         AttributeInfo(
             name='portfolio_id',
             type='integer',
             nullable=False,
-            description='Identificador único da carteira de clientes a que o consumidor pertence.'
+            description='Unique identifier of the portfolio of clients managed by the officer.'
         ),
         AttributeInfo(
             name='officer_id',
             type='integer',
             nullable=False,
-            description='Identificador único do gerente da carteira de clientes.'
+            description='Unique identifier of the officer (bank account manager) managing the portfolio of clients.'
         ),
         AttributeInfo(
             name='officer_name',
             type='string',
             nullable=False,
-            description='Nome do gerente da carteira de clientes.'
+            description='Name of the officer managing the portfolio of clients.'
         ),
         AttributeInfo(
             name='product',
             type='string',
             nullable=True,
-            description='Modalidade de cartão utilizado: "credit", "debit".'
+            description='Type of card used: "credit", "debit".'
         ),
         AttributeInfo(
             name='card_variant',
             type='string',
             nullable=True,
-            description='Variante do cartão utilizado: "black", "gold", "platinum", "standard".'
+            description='Variant of the card used: "black", "gold", "platinum", "standard".'
         ),
         AttributeInfo(
             name='transaction_value',
-            type='integer',
+            type='double',
             nullable=False,
-            description='Valor da transação em reais (R$).'
+            description='Value of the transaction in BRL (Brazilian Real).'
         ),
         AttributeInfo(
             name='seller_description',
             type='string',
             nullable=False,
-            description='Descrição do estabelecimento onde a transação foi realizada.'
+            description='Description of the seller/establishment that received the transaction.'
         )
     ]
     return description, attributes
@@ -355,6 +355,11 @@ def validation_quiz(df: pd.DataFrame, log: callable = log):
     log(f'Query: Quantas transações foram realizadas nas 3 carteiras com o maior valor total de transações em abril de 2023?', end='\n')
     result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 4)].groupby('portfolio_id').transaction_value.sum().nlargest(3)
     log(f'Correct answer: `{result}`.')
+
+    # Soma de #
+
+    # Quantos % dos clientes da carteira do gerente # fizeram transações com cartão de crédito nos últimos 6 meses?
+
 
 
 if __name__ == '__main__':

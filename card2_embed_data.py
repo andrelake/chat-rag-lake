@@ -25,12 +25,13 @@ from data_handler.avro import (
 log.verbose = True
 log.end = '\n\n'
 
+
 # Load documents and chunk data
 avro_path = os.path.join('data', 'landing', 'card_transactions.avro')
 documents = extract_documents(
     path=avro_path,
-    page_content_body=lambda record: f'''{record['seller_description']}''',
-    metadata_body=lambda record: {k: v for k, v in dict(record).items() if k not in ['seller_description']},
+    page_content_body=lambda record: f'''O cliente {record['consumer_name']} (CPF: {record['consumer_document']}) efetuou um transação de R$ {record['transaction_value']:.2f} em {record['transaction_day']}/{record['transaction_month']}/{record['transaction_year']} (dd/MM/yyyy) com cartão de {threat_product(record['product'])} variante {record['card_variant']} no estabelecimento "{record['seller_description']}"''',
+    metadata_body=lambda record: dict(record),
     filter=lambda record: True
 )
 
@@ -58,4 +59,9 @@ vectorstore = get_vectorstore(
 
 # Add documents
 get_embedding_cost(documents=documents, model_name='text-embedding-3-small')  # If using OpenAI Embeddings
-#add_documents(vectorstore, documents)  # Add only 10 documents for testing purposes
+add_documents(
+    vectorstore=vectorstore,
+    documents=documents,
+    embedding_function=embedding_function_callables[0],
+    vectorstore_name=vectorstore_name,
+)
