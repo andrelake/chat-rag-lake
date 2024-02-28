@@ -15,5 +15,4 @@ cramjam
 pandas
 Faker
 sentence_transformers
-onnxruntime-directml
 tqdm
