@@ -5,6 +5,7 @@ from env import OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_ENVIRONMENT
 from utils import log
 
 from langchain_community.vectorstores import Pinecone as LangchainPineconeVectorstore
+from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 from pinecone import Pinecone, ServerlessSpec
 from tqdm.auto import tqdm
@@ -59,20 +60,11 @@ def delete_vectorstore(name: str, database_client: Pinecone) -> None:
     log(f'Successfully deleted vectorstore: {name}.')
 
 
-def add_documents(vectorstore: LangchainPineconeVectorstore, documents: List) -> None:
-    batch_size = 64
+def add_documents(vectorstore: LangchainPineconeVectorstore, documents: List[Document], embedding_function: OpenAIEmbeddings, vectorstore_name: str) -> None:
+    batch_size = 512
     for i in tqdm(range(0, len(documents), batch_size)):
         i_end = min(i+batch_size, len(documents))
-        kargs = [
-            {
-                'texts': document.page_content,
-                'metadatas': document.metadata,
-                'ids': f'{document.metadata["transaction_id"]:19}'
-            }
-            for document in documents[i:i_end]
-        ]
-        kargs = {key: [item[key] for item in kargs] for key in kargs[0]}
-        vectorstore.add_texts(**kargs)
+        vectorstore.from_documents(documents[i:i_end], embedding_function, index_name=vectorstore_name)
     log(f'Added {len(documents)} documents to vectorstore')
 
 

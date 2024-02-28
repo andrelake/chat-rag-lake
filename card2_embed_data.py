@@ -25,27 +25,13 @@ from data_handler.avro import (
 log.verbose = True
 log.end = '\n\n'
 
+
 # Load documents and chunk data
 avro_path = os.path.join('data', 'landing', 'card_transactions.avro')
 documents = extract_documents(
     path=avro_path,
-    group_by=[
-        'transaction_year',
-        'portfolio_id',
-        'consumer_id',
-        'transaction_month',
-    ],
-    group_body=
-        lambda record:
-            f'''Durante {record['transaction_month']:02}/{record['transaction_year']:04} (mês de {get_month_name(record['transaction_month'])} '''
-            f'''do ano de {record['transaction_year']:04}), o cliente '{record['consumer_name']}' (CPF {record['consumer_document']}) que pertence à carteira de clientes '''
-            f'''de ID '{record['portfolio_id']}' do gerente de contas '{record['officer_name']}' efetuou as seguintes transações de cartão variante {record['card_variant']} '''
-            f'''na modalidade '{threat_product(record['product'])}':''',
-    aggregated_body=
-        lambda record:
-            f'''\nDia {record['transaction_day']:02}/{record['transaction_month']:02}/{record['transaction_year']:04} '''
-            f'''às {record['transaction_at']} de R$ {record['transaction_value']} '''
-            f'''para '{record['seller_description'].strip()}\'.''',
+    page_content_body=lambda record: f'''O cliente {record['consumer_name']} (CPF: {record['consumer_document']}) efetuou um transação de R$ {record['transaction_value']:.2f} em {record['transaction_day']}/{record['transaction_month']}/{record['transaction_year']} (dd/MM/yyyy) com cartão de {threat_product(record['product'])} variante {record['card_variant']} no estabelecimento "{record['seller_description']}"''',
+    metadata_body=lambda record: dict(record),
     filter=lambda record: True
 )
 
@@ -56,12 +42,12 @@ database_client = get_database_client(api_key=PINECONE_API_KEY)
 embedding_model_name = 'text-embedding-3-small'
 embedding_function_callables = [
     get_embeddings_client(OPENAI_API_KEY, model_name='text-embedding-3-small'),  # API, OpenAI, 1536 dimensions
-    embedding_functions.ONNXMiniLM_L6_V2(preferred_providers=['DmlExecutionProvider']),  # Local (GPU), Open Source, 384 dimensions
-    embedding_functions.SentenceTransformerEmbeddingFunction(model_name='all-MiniLM-L6-v2'),  # Local, Open Source, 384 dimensions
+    #embedding_functions.ONNXMiniLM_L6_V2(preferred_providers=['DmlExecutionProvider']),  # Local (GPU), Open Source, 384 dimensions
+    #embedding_functions.SentenceTransformerEmbeddingFunction(model_name='all-MiniLM-L6-v2'),  # Local, Open Source, 384 dimensions
 ]
 
 # Get or create vectorstore
-vectorstore_name = 'felipe-dev-picpay-prj-ai-rag-llm-table'
+vectorstore_name = 'felipe-dev-picpay-prj-ai-rag-llm-table-1'
 delete_vectorstore(vectorstore_name, database_client)
 vectorstore = get_vectorstore(
     name=vectorstore_name,
@@ -73,4 +59,9 @@ vectorstore = get_vectorstore(
 
 # Add documents
 get_embedding_cost(documents=documents, model_name='text-embedding-3-small')  # If using OpenAI Embeddings
-add_documents(vectorstore, documents)  # Add only 10 documents for testing purposes
+add_documents(
+    vectorstore=vectorstore,
+    documents=documents,
+    embedding_function=embedding_function_callables[0],
+    vectorstore_name=vectorstore_name,
+)

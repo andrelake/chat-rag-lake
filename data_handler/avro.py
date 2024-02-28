@@ -12,6 +12,7 @@ import pandas as pd
 from faker import Faker
 from fastavro import block_reader, parse_schema, writer
 from langchain_core.documents import Document
+from langchain.chains.query_constructor.base import AttributeInfo
 
 
 def generate_dummy_data(
@@ -103,7 +104,7 @@ def generate_dummy_data(
         count_transactions_portfolio = 0
         for consumer_id in range(int(n_consumers_officer * (1 + random.uniform(-chaos_consumers_officer, chaos_consumers_officer)))):
             data_chunk = []
-            consumer_document = fake.cpf()
+            consumer_document = fake.cpf().replace('-', '').replace('.', '').rjust(11, '0')
             consumer_name = fake.name()
             for transaction_date in pd.date_range(start=start_date, end=end_date, freq='D'):
                 for _ in range(int(n_transactions_consumer_day * (1 + random.uniform(-chaos_transactions_client_day, chaos_transactions_client_day)))):
@@ -125,7 +126,7 @@ def generate_dummy_data(
                         'product': random.choice(['', 'credit', 'debit']),
                         'card_variant': random.choice(['', 'black', 'gold', 'platinum', 'standard']),
                         'transaction_value': random.uniform(1, 5000),
-                        'seller_description': fake.company()
+                        'seller_description': fake.company().strip()
                     })
             if data_chunk:
                 count_transactions_portfolio += len(data_chunk)
@@ -168,19 +169,18 @@ def generate_dummy_data(
 
 def extract_documents_from_file(
     file_path: str,
-    group_by: str,
-    group_body: Callable[[Any], str],
-    aggregated_body: Callable[[Any], str],
+    page_content_body: Callable[[Any], str],
+    metadata_body: Callable[[Any], str],
     filter: Optional[Callable[[Any], bool]] = None
 ) -> List[Document]:  # TODO: Test pandas implementation
-    document: Document = None
     documents: List[Document] = list()
-    stream_last_group_headers = None
-    stream_current_group_headers = None
     count_processed_rows: int = 0
     count_total_rows: int = 0
 
     log(f'Reading data from `{file_path}`')
+    documents: List[Document] = list()
+    count_processed_rows: int = 0
+    count_total_rows: int = 0
     with open(file_path, 'rb') as fp:
         for block in block_reader(fp):
             count_total_rows += block.num_records
@@ -188,31 +188,21 @@ def extract_documents_from_file(
                 for record in block:
                     if not filter(record):
                         continue
-                    stream_current_group_headers = tuple(record[header] for header in group_by)
-                    if stream_current_group_headers != stream_last_group_headers:
-                        if document:
-                            documents.append(document)
-                        document = Document(
-                            page_content=group_body(record),
-                            metadata=dict(record)
-                        )
-                        stream_last_group_headers = stream_current_group_headers
-                    document.page_content += aggregated_body(record)
+                    documents.append(Document(
+                        page_content=page_content_body(record),
+                        metadata=metadata_body(record)
+                    ))
                     count_processed_rows += 1
             except Exception as e:
                 log(f'Error: {e}. Skipping record.', end='\n')
                 continue
-        if document:
-            documents.append(document)
-    log(f'Processed {count_processed_rows:_}/{count_total_rows:_} rows from `{file_path}` into {len(documents)} documents.')
     return documents
 
 
 def extract_documents(
     path: str,
-    group_by: str,
-    group_body: Callable[[Any], str],
-    aggregated_body: Callable[[Any], str],
+    page_content_body: Callable[[Any], str],
+    metadata_body: Callable[[Any], str],
     filter: Optional[Callable[[Any], bool]] = None
 ) -> List[Document]:  # TODO: Test pandas implementation
     
@@ -233,9 +223,8 @@ def extract_documents(
         documents.extend(
             extract_documents_from_file(
                 file_path=file_path,
-                group_by=group_by,
-                group_body=group_body,
-                aggregated_body=aggregated_body,
+                page_content_body=page_content_body,
+                metadata_body=metadata_body,
                 filter=filter
             )
         )
@@ -243,6 +232,109 @@ def extract_documents(
     with open(os.path.join('data', 'refined', 'card_transactions_documents', 'card_transactions_documents.json'), 'w') as fo:
         json.dump([dict(document) for document in documents], fo)
     return documents
+
+
+def get_documents_metadata() -> List[AttributeInfo]:
+    description = 'Card transactions made by consumers.'
+    attributes = [
+        AttributeInfo(
+            name='transaction_id',
+            type='integer',
+            nullable=False,
+            description='Unique transaction identifier.'
+        ),
+        AttributeInfo(
+            name='transaction_at',
+            type='string',
+            nullable=False,
+            description='Date and time of the transaction formatted as "YYYY-MM-DDTHH:MM:SS.sssZ".'
+        ),
+        AttributeInfo(
+            name='transaction_year',
+            type='integer',
+            nullable=False,
+            description='Year of the transaction.'
+        ),
+        AttributeInfo(
+            name='transaction_month',
+            type='integer',
+            nullable=False,
+            description='Month of the transaction.'
+        ),
+        AttributeInfo(
+            name='transaction_day',
+            type='integer',
+            nullable=False,
+            description='Day of the transaction.'
+        ),
+        AttributeInfo(
+            name='consumer_id_hash',
+            type='integer',
+            nullable=False,
+            description='Unique consumer identifier hash (anonymized).'
+        ),
+        AttributeInfo(
+            name='consumer_id',
+            type='integer',
+            nullable=False,
+            description='Unique consumer identifier (anonymized).'
+        ),
+        AttributeInfo(
+            name='consumer_document',
+            type='string',
+            nullable=False,
+            description='Brazilian 11-digit CPF identification document number of the consumer. Formatted as "00000000000"'
+        ),
+        AttributeInfo(
+            name='consumer_name',
+            type='string',
+            nullable=False,
+            description='Name of the consumer/costumer that made the transaction.'
+        ),
+        AttributeInfo(
+            name='portfolio_id',
+            type='integer',
+            nullable=False,
+            description='Unique identifier of the portfolio of clients managed by the officer.'
+        ),
+        AttributeInfo(
+            name='officer_id',
+            type='integer',
+            nullable=False,
+            description='Unique identifier of the officer (bank account manager) managing the portfolio of clients.'
+        ),
+        AttributeInfo(
+            name='officer_name',
+            type='string',
+            nullable=False,
+            description='Name of the officer managing the portfolio of clients.'
+        ),
+        AttributeInfo(
+            name='product',
+            type='string',
+            nullable=True,
+            description='Type of card used: "credit", "debit".'
+        ),
+        AttributeInfo(
+            name='card_variant',
+            type='string',
+            nullable=True,
+            description='Variant of the card used: "black", "gold", "platinum", "standard".'
+        ),
+        AttributeInfo(
+            name='transaction_value',
+            type='double',
+            nullable=False,
+            description='Value of the transaction in BRL (Brazilian Real).'
+        ),
+        AttributeInfo(
+            name='seller_description',
+            type='string',
+            nullable=False,
+            description='Description of the seller/establishment that received the transaction.'
+        )
+    ]
+    return description, attributes
 
 
 def validation_quiz(df: pd.DataFrame, log: callable = log):
@@ -263,6 +355,11 @@ def validation_quiz(df: pd.DataFrame, log: callable = log):
     log(f'Query: Quantas transações foram realizadas nas 3 carteiras com o maior valor total de transações em abril de 2023?', end='\n')
     result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 4)].groupby('portfolio_id').transaction_value.sum().nlargest(3)
     log(f'Correct answer: `{result}`.')
+
+    # Soma de #
+
+    # Quantos % dos clientes da carteira do gerente # fizeram transações com cartão de crédito nos últimos 6 meses?
+
 
 
 if __name__ == '__main__':
