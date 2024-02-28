@@ -16,3 +16,4 @@ pandas
 Faker
 sentence_transformers
 tqdm
+lark
