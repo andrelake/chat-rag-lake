@@ -12,6 +12,7 @@ import pandas as pd
 from faker import Faker
 from fastavro import block_reader, parse_schema, writer
 from langchain_core.documents import Document
+from langchain.chains.query_constructor.base import AttributeInfo
 
 
 def generate_dummy_data(
@@ -125,7 +126,7 @@ def generate_dummy_data(
                         'product': random.choice(['', 'credit', 'debit']),
                         'card_variant': random.choice(['', 'black', 'gold', 'platinum', 'standard']),
                         'transaction_value': random.uniform(1, 5000),
-                        'seller_description': fake.company()
+                        'seller_description': fake.company().strip()
                     })
             if data_chunk:
                 count_transactions_portfolio += len(data_chunk)
@@ -168,19 +169,18 @@ def generate_dummy_data(
 
 def extract_documents_from_file(
     file_path: str,
-    group_by: str,
-    group_body: Callable[[Any], str],
-    aggregated_body: Callable[[Any], str],
+    page_content_body: Callable[[Any], str],
+    metadata_body: Callable[[Any], str],
     filter: Optional[Callable[[Any], bool]] = None
 ) -> List[Document]:  # TODO: Test pandas implementation
-    document: Document = None
     documents: List[Document] = list()
-    stream_last_group_headers = None
-    stream_current_group_headers = None
     count_processed_rows: int = 0
     count_total_rows: int = 0
 
     log(f'Reading data from `{file_path}`')
+    documents: List[Document] = list()
+    count_processed_rows: int = 0
+    count_total_rows: int = 0
     with open(file_path, 'rb') as fp:
         for block in block_reader(fp):
             count_total_rows += block.num_records
@@ -188,31 +188,21 @@ def extract_documents_from_file(
                 for record in block:
                     if not filter(record):
                         continue
-                    stream_current_group_headers = tuple(record[header] for header in group_by)
-                    if stream_current_group_headers != stream_last_group_headers:
-                        if document:
-                            documents.append(document)
-                        document = Document(
-                            page_content=group_body(record),
-                            metadata=dict(record)
-                        )
-                        stream_last_group_headers = stream_current_group_headers
-                    document.page_content += aggregated_body(record)
+                    documents.append(Document(
+                        page_content=page_content_body(record),
+                        metadata=metadata_body(record)
+                    ))
                     count_processed_rows += 1
             except Exception as e:
                 log(f'Error: {e}. Skipping record.', end='\n')
                 continue
-        if document:
-            documents.append(document)
-    log(f'Processed {count_processed_rows:_}/{count_total_rows:_} rows from `{file_path}` into {len(documents)} documents.')
     return documents
 
 
 def extract_documents(
     path: str,
-    group_by: str,
-    group_body: Callable[[Any], str],
-    aggregated_body: Callable[[Any], str],
+    page_content_body: Callable[[Any], str],
+    metadata_body: Callable[[Any], str],
     filter: Optional[Callable[[Any], bool]] = None
 ) -> List[Document]:  # TODO: Test pandas implementation
     
@@ -233,9 +223,8 @@ def extract_documents(
         documents.extend(
             extract_documents_from_file(
                 file_path=file_path,
-                group_by=group_by,
-                group_body=group_body,
-                aggregated_body=aggregated_body,
+                page_content_body=page_content_body,
+                metadata_body=metadata_body,
                 filter=filter
             )
         )
@@ -243,6 +232,109 @@ def extract_documents(
     with open(os.path.join('data', 'refined', 'card_transactions_documents', 'card_transactions_documents.json'), 'w') as fo:
         json.dump([dict(document) for document in documents], fo)
     return documents
+
+
+def get_documents_metadata() -> List[AttributeInfo]:
+    description = 'Transações de cartão de crédito e débito.'
+    attributes = [
+        AttributeInfo(
+            name='transaction_id',
+            type='integer',
+            nullable=False,
+            description='Identificador único da transação.'
+        ),
+        AttributeInfo(
+            name='transaction_at',
+            type='timestamp',
+            nullable=False,
+            description='Data e hora da transação em formato "%Y-%m-%dT%H:%M:%S.%f%z".'
+        ),
+        AttributeInfo(
+            name='transaction_year',
+            type='integer',
+            nullable=False,
+            description='Ano da transação.'
+        ),
+        AttributeInfo(
+            name='transaction_month',
+            type='integer',
+            nullable=False,
+            description='Mês da transação.'
+        ),
+        AttributeInfo(
+            name='transaction_day',
+            type='integer',
+            nullable=False,
+            description='Dia da transação.'
+        ),
+        AttributeInfo(
+            name='consumer_id_hash',
+            type='integer',
+            nullable=False,
+            description='Identificador único do consumidor hasheado.'
+        ),
+        AttributeInfo(
+            name='consumer_id',
+            type='integer',
+            nullable=False,
+            description='Identificador único do consumidor.'
+        ),
+        AttributeInfo(
+            name='consumer_document',
+            type='string',
+            nullable=False,
+            description='O número do CPF do consumidor.'
+        ),
+        AttributeInfo(
+            name='consumer_name',
+            type='string',
+            nullable=False,
+            description='Nome do consumidor.'
+        ),
+        AttributeInfo(
+            name='portfolio_id',
+            type='integer',
+            nullable=False,
+            description='Identificador único da carteira de clientes a que o consumidor pertence.'
+        ),
+        AttributeInfo(
+            name='officer_id',
+            type='integer',
+            nullable=False,
+            description='Identificador único do gerente da carteira de clientes.'
+        ),
+        AttributeInfo(
+            name='officer_name',
+            type='string',
+            nullable=False,
+            description='Nome do gerente da carteira de clientes.'
+        ),
+        AttributeInfo(
+            name='product',
+            type='string',
+            nullable=True,
+            description='Modalidade de cartão utilizado: "credit", "debit".'
+        ),
+        AttributeInfo(
+            name='card_variant',
+            type='string',
+            nullable=True,
+            description='Variante do cartão utilizado: "black", "gold", "platinum", "standard".'
+        ),
+        AttributeInfo(
+            name='transaction_value',
+            type='integer',
+            nullable=False,
+            description='Valor da transação em reais (R$).'
+        ),
+        AttributeInfo(
+            name='seller_description',
+            type='string',
+            nullable=False,
+            description='Descrição do estabelecimento onde a transação foi realizada.'
+        )
+    ]
+    return description, attributes
 
 
 def validation_quiz(df: pd.DataFrame, log: callable = log):
