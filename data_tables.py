@@ -8,9 +8,11 @@ import pandas as pd
 import numpy as np
 
 from utils import Logger, log
+from data_handler import read_orc, write_orc
 
 
 class CardTransactions:
+    path = os.path.join('data', 'landing', 'card_transactions.orc')
     schema = {
         'pandas': {
             'transaction_id': np.uint32,
@@ -190,10 +192,10 @@ class CardTransactions:
 
 
         # Query: Quantas transações foram realizadas nas 3 carteiras com o maior
-        ask(f'Query: Quantas transações foram realizadas nas 3 carteiras com o maior valor total de transações em abril de 2023?')
+        ask(f'Query: Quantas transações foram realizadas pelos 3 clientes com o maior valor total de transações em abril de 2023?')
         df2 = df.copy()
-        portfolios = df2.groupby('portfolio_id').transaction_value.sum().nlargest(3).index
-        result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 4) & (df2.portfolio_id.isin(portfolios))].shape[0]
+        consumers = df2[df2.officer_id == hypothetical_officer_id].groupby('consumer_id').transaction_value.sum().nlargest(3).index
+        result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 4) & (df2.consumer_id.isin(consumers))].shape[0]
         answer(f'{result} transações.')
 
 
@@ -344,6 +346,18 @@ class CardTransactions:
 
         # Perguntas adicionais
         # Quantos % dos clientes da carteira do gerente # fizeram transações com cartão de crédito nos últimos 6 meses?
+
+    def read() -> pd.DataFrame:
+        return read_orc(path=CardTransactions.path, log=log)
+    
+    def write(df: pd.DataFrame):
+        write_orc(
+            df=df,
+            path=CardTransactions.path,
+            partitionBy=['transaction_year'],
+            compression='zstd',
+            log=log
+        )
 
 
 if __name__ == '__main__':
