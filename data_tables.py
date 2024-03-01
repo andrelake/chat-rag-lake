@@ -161,10 +161,13 @@ class CardTransactions:
         hypothetical_current_month = df2.transaction_month.max()
         hypothetical_current_year = df2.transaction_year.max()
 
+
+        # Query: Qual o valor total de transações em janeiro de 2023 feitas pelos clientes da carteira do gerente?
         ask(f'Query: Qual o valor total de transações em janeiro de 2023 feitas pelos clientes da carteira do gerente {hypothetical_officer_name}?')
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 1) & (df2.officer_id == hypothetical_officer_id)].transaction_value.sum()
         answer(f'R$ {result:.2f}')
+
 
         # Query: Quantos clientes possuem um cartão de crédito e quantos possuem um de débito?
         ask(f'Query: Quantos clientes possuem um cartão de crédito e quantos possuem um de débito?')
@@ -178,11 +181,15 @@ class CardTransactions:
         )
         answer(result)
 
+
+        # Query: Quantos clientes realizaram mais de R$ 8000 em transações com cartão platinum em um único mês?
         ask(f'Query: Quantos clientes realizaram mais de R$ 8000 em transações com cartão platinum em um único mês?')
         df2 = df.copy()
         result = df2[df2.card_variant == 'platinum'].groupby(['transaction_year', 'transaction_month', 'consumer_id']).transaction_value.sum().gt(8000).sum()
         answer(f'{result} clientes')
 
+
+        # Query: Quantas transações foram realizadas nas 3 carteiras com o maior
         ask(f'Query: Quantas transações foram realizadas nas 3 carteiras com o maior valor total de transações em abril de 2023?')
         df2 = df.copy()
         portfolios = df2.groupby('portfolio_id').transaction_value.sum().nlargest(3).index
@@ -207,6 +214,7 @@ class CardTransactions:
         )
         answer(result)
 
+
         # Qual é o total de gastos feito no cartão dos clientes da minha carteira?
         # Resposta: Valor total de gastos
         ask('Qual é o total de gastos feito no cartão dos clientes da minha carteira?')
@@ -214,6 +222,7 @@ class CardTransactions:
         df2 = df.copy()
         result = df2[df2.officer_id == hypothetical_officer_id].transaction_value.sum()
         answer(f'{result:.2f}')
+
 
         # Mostre o ranking entre gastos de cartão dos clientes por team leader
         # Fora do escopo de carteira por gerente

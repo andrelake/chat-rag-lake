@@ -29,12 +29,14 @@ df = read_orc(path=os.path.join('data', 'landing', 'card_transactions.orc'), log
 documents = generate_documents(
     df=df,
     where=None,
-    group_by=['portfolio_id', 'transaction_year', 'transaction_month', 'consumer_id'],
+    group_by=None,
     order_by=['portfolio_id', 'transaction_year', 'transaction_month', 'consumer_id', 'transaction_at'],
     limit=None,
-    parse_content_header=lambda record: f'''O cliente {record['consumer_name']} (CPF: {record['consumer_document']}) efetuou um transação de R$ {record['transaction_value']:.2f} '''
-                                     f'''no dia {record['transaction_day']}/{record['transaction_month']}/{record['transaction_year']} (dd/MM/yyyy) '''
-                                     f'''com cartão de {threat_product(record['product'])} {record['card_variant']} para o estabelecimento "{record['seller_description']}"''',
+    parse_content_header=lambda record: f'''O cliente {record['consumer_name']} (CPF: {record['consumer_document']}), '''
+                                        f'''que pertence à carteira do gerente de contas {record['manager_name']} (ID {record['manager_id']}), '''
+                                        f'''efetuou um transação de R$ {record['transaction_value']:.2f} '''
+                                        f'''no dia {record['transaction_day']}/{record['transaction_month']}/{record['transaction_year']} (dd/MM/yyyy) '''
+                                        f'''com cartão de {threat_product(record['product'])} {record['card_variant']} para o estabelecimento "{record['seller_description']}"''',
     parse_content_body=None,
     parse_metadata=lambda record: dict(record)
 )
