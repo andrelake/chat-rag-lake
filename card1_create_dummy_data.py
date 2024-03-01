@@ -30,10 +30,4 @@ df = CardTransactions.generate_dummy_data(
     log=log
 )
 CardTransactions.quiz(df, log)
-write_orc(
-    df=df,
-    path=path,
-    partitionBy=['transaction_year'],
-    compression='zstd',
-    log=log
-)
+CardTransactions.write(df)

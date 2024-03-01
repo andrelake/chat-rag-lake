@@ -40,7 +40,8 @@ def generate_documents(
     df['_page_content_header'] = df.apply(lambda record: parse_content_header(record), axis=1)
     df['_metadata'] = df.apply(lambda record: parse_metadata(record), axis=1)
     if order_by:
-        order_by = (group_by or []) + [col for col in order_by if col not in group_by]
+        if group_by:
+            order_by = (group_by or []) + [col for col in order_by if col not in group_by]
         df = df.sort_values(order_by)
     df = df.drop(columns=[col for col in df.columns if col not in ['_page_content_header', '_page_content_body', '_metadata']])
     if limit:

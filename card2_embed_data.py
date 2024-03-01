@@ -1,8 +1,11 @@
 import os
 from env import PINECONE_API_KEY, OPENAI_API_KEY
 from datetime import date
+from typing import Optional, Any, Callable, List, Dict
 
 from utils import log, get_month_name, threat_product
+from data_handler import read_orc, generate_documents
+from data_tables import CardTransactions
 
 from chromadb.utils import embedding_functions
 from connections.pinecone import (
@@ -14,7 +17,8 @@ from connections.pinecone import (
     query_documents,
 )
 from connections.openai import get_embeddings_client, get_embedding_cost
-from data_handler import read_orc, generate_documents
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
 
 
 # Configure Logger
@@ -22,24 +26,44 @@ log.verbose = True
 log.end = '\n\n'
 
 # Load data
-df = read_orc(path=os.path.join('data', 'landing', 'card_transactions.orc'), log=log)
+df = CardTransactions.read()
 
 # Generate documents
-## By portfolio, year, month, and consumer
+## By portfolio, year, month, day, portfolio, consumer, and transaction
 documents = generate_documents(
     df=df,
     where=None,
     group_by=None,
-    order_by=['portfolio_id', 'transaction_year', 'transaction_month', 'consumer_id', 'transaction_at'],
+    order_by=['transaction_year', 'transaction_month', 'transaction_day', 'portfolio_id', 'consumer_id', 'transaction_at'],
     limit=None,
     parse_content_header=lambda record: f'''O cliente {record['consumer_name']} (CPF: {record['consumer_document']}), '''
-                                        f'''que pertence à carteira do gerente de contas {record['manager_name']} (ID {record['manager_id']}), '''
+                                        f'''que pertence à carteira do gerente de contas {record['officer_name']} (ID {record['officer_id']}), '''
                                         f'''efetuou um transação de R$ {record['transaction_value']:.2f} '''
                                         f'''no dia {record['transaction_day']}/{record['transaction_month']}/{record['transaction_year']} (dd/MM/yyyy) '''
                                         f'''com cartão de {threat_product(record['product'])} {record['card_variant']} para o estabelecimento "{record['seller_description']}"''',
     parse_content_body=None,
     parse_metadata=lambda record: dict(record)
 )
+
+# Test with LangChain TextSplitter
+def redistribute_by_characters(documents: List[Document], chunk_size: int, chunk_overlap: int) -> List[Document]:
+    log(f'Total de documentos original: {len(documents)}')
+
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+        length_function=len
+    )
+    text = '\n'.join(document.page_content for document in documents)
+    documents = [Document(page_content=t) for t in text_splitter.split_text(text)]
+
+    log(f'Total de documentos: {len(documents)}')
+    for i in range(3):
+        log(documents[i], end='\n')
+        log(len(documents[i].page_content))
+    return documents
+
+documents = redistribute_by_characters(documents, chunk_size=1000, chunk_overlap=50)
 
 # Get database client
 database_client = get_database_client(api_key=PINECONE_API_KEY)
