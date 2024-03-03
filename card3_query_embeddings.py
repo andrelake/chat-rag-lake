@@ -10,7 +10,7 @@ log.end = '\n\n'
 from env import PINECONE_API_KEY, OPENAI_API_KEY
 from connections.openai import get_embeddings_client, get_self_query_retriever
 from connections.pinecone import get_database_client, get_vectorstore, query_documents
-from data_handler import get_documents_metadata
+from data_tables import CardTransactions
 
 
 # Get database client
@@ -31,21 +31,19 @@ vectorstore = get_vectorstore(
 )
 
 # Get documents metadata
-documents_description, documents_metadata = get_documents_metadata()
-retriever = get_self_query_retriever(vectorstore, documents_description, documents_metadata)
+table_description = CardTransactions.metadata['table_description']
+columns_description = CardTransactions.metadata['columns_description']
 
 # Ask user for prompt until user types "exit"
 while True:
     # Ask for prompt
+    # prompt = "O cliente de João Vitor Aragão (CPF: 79568130420) efetuou quais transaçoes em março de 2023?"
     prompt = input("Enter a prompt (type 'exit' to quit): ")
     if prompt == "exit":
         break
-    response = retriever.invoke(prompt)
-    print(response)
 
-# Search for similar documents
-# prompt = "O cliente de CPF 149.206.583-89 efetuou quais transaçoes em março de 2023?"
-# result_documents = query_documents(vectorstore, query, k=3)
-# for document in result_documents:
-#     pprint(document.metadata)
-#     print(document.page_content, end='\n\n')
+    # Search for similar documents
+    result_documents = query_documents(vectorstore, prompt, k=3)
+    for document in result_documents:
+        pprint(document.metadata)
+        print(document.page_content, end='\n\n')

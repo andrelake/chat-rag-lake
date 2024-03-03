@@ -4,7 +4,7 @@ from datetime import date
 from typing import Optional, Any, Callable, List, Dict
 
 from utils import log, get_month_name, threat_product
-from data_handler import read_orc, generate_documents
+from data_handler import read_orc, generate_documents, redistribute_by_characters
 from data_tables import CardTransactions
 
 from chromadb.utils import embedding_functions
@@ -17,8 +17,6 @@ from connections.pinecone import (
     query_documents,
 )
 from connections.openai import get_embeddings_client, get_embedding_cost
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_core.documents import Document
 
 
 # Configure Logger
@@ -46,23 +44,6 @@ documents = generate_documents(
 )
 
 # Test with LangChain TextSplitter
-def redistribute_by_characters(documents: List[Document], chunk_size: int, chunk_overlap: int) -> List[Document]:
-    log(f'Total de documentos original: {len(documents)}')
-
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap,
-        length_function=len
-    )
-    text = '\n'.join(document.page_content for document in documents)
-    documents = [Document(page_content=t) for t in text_splitter.split_text(text)]
-
-    log(f'Total de documentos: {len(documents)}')
-    for i in range(3):
-        log(documents[i], end='\n')
-        log(len(documents[i].page_content))
-    return documents
-
 documents = redistribute_by_characters(documents, chunk_size=1000, chunk_overlap=50)
 
 # Get database client

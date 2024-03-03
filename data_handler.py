@@ -164,3 +164,21 @@ def read_json(path: str, log: Optional[Logger] = log) -> pd.DataFrame:
     log(f'Reading JSONL file from `{path}`...')
     df = pd.read_json(path)
     return df
+
+
+def redistribute_by_characters(documents: List[Document], chunk_size: int, chunk_overlap: int) -> List[Document]:
+    log(f'Total de documentos original: {len(documents)}')
+
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+        length_function=len
+    )
+    text = '\n'.join(document.page_content for document in documents)
+    documents = [Document(page_content=t) for t in text_splitter.split_text(text)]
+
+    log(f'Total de documentos: {len(documents)}')
+    for i in range(3):
+        log(documents[i], end='\n')
+        log(len(documents[i].page_content))
+    return documents
