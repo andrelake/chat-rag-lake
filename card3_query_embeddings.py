@@ -22,7 +22,7 @@ embedding_model_name = 'text-embedding-3-small'
 embedding_function = get_embeddings_client(model_name=embedding_model_name, type='api', api_key=OPENAI_API_KEY)
 
 # Get vectorstore
-vectorstore_name = 'felipe-dev-picpay-prj-ai-rag-llm-table-1'
+vectorstore_name = 'felipe-dev-picpay-prj-ai-rag-llm-table-2'
 vectorstore = get_vectorstore(
     name=vectorstore_name,
     embedding_function=embedding_function,

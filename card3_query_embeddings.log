@@ -1,0 +1,380 @@
+PS C:\Users\felip\Documents\GitHub\chat-rag-lake> & "C:/Program Files/Python311/python.exe" c:/Users/felip/Documents/GitHub/chat-rag-lake/card3_query_embeddings.py
+Found vectorstore: "felipe-dev-picpay-prj-ai-rag-llm-table-2"
+
+Enter a prompt (type 'exit' to quit): O cliente Brenda Pereira efetuou quais transaçoes em março de 2023?                          
+Querying vectorstore with O cliente Brenda Pereira efetuou quais transaçoes em março de 2023?
+
+{'_page_content_body': '',
+ '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
+                         'pertence à carteira do gerente de contas Leandro '
+                         'Moura (ID 0), efetuou um transação de R$ 2275.85 no '
+                         'dia 9 do mês de março do ano de 2023 (09/03/2023) '
+                         'com cartão de débito INTERNACIONAL para o '
+                         'estabelecimento "Ribeiro"',
+ 'card_variant': '',
+ 'consumer_document': '59413602824',
+ 'consumer_id': 3.0,
+ 'consumer_id_hash': 3.0,
+ 'consumer_name': 'Brenda Pereira',
+ 'officer_id': 0.0,
+ 'officer_name': 'Leandro Moura',
+ 'portfolio_id': 0.0,
+ 'product': 'debit',
+ 'seller_description': 'Ribeiro',
+ 'transaction_at': '2023-03-09T14:58:26.000000+0000',
+ 'transaction_day': 9.0,
+ 'transaction_id': 0.0,
+ 'transaction_month': 3.0,
+ 'transaction_value': 2275.8519984036047,
+ 'transaction_year': 2023.0}
+O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 2275.85 no dia 9 do mês de março do ano de 2023 (09/03/2023) com cartão de débito INTERNACIONAL para o estabelecimento "Ribeiro"
+
+{'_page_content_body': '',
+ '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
+                         'pertence à carteira do gerente de contas Leandro '
+                         'Moura (ID 0), efetuou um transação de R$ 2884.00 no '
+                         'dia 29 do mês de março do ano de 2023 (29/03/2023) '
+                         'com cartão de débito INTERNACIONAL para o '
+                         'estabelecimento "Correia"',
+ 'card_variant': '',
+ 'consumer_document': '59413602824',
+ 'consumer_id': 3.0,
+ 'consumer_id_hash': 3.0,
+ 'consumer_name': 'Brenda Pereira',
+ 'officer_id': 0.0,
+ 'officer_name': 'Leandro Moura',
+ 'portfolio_id': 0.0,
+ 'product': 'debit',
+ 'seller_description': 'Correia',
+ 'transaction_at': '2023-03-29T21:32:18.000000+0000',
+ 'transaction_day': 29.0,
+ 'transaction_id': 0.0,
+ 'transaction_month': 3.0,
+ 'transaction_value': 2883.997215468075,
+ 'transaction_year': 2023.0}
+O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 2884.00 no dia 29 do mês de março do ano de 2023 (29/03/2023) com cartão de débito INTERNACIONAL para o estabelecimento "Correia"
+
+{'_page_content_body': '',
+ '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
+                         'pertence à carteira do gerente de contas Leandro '
+                         'Moura (ID 0), efetuou um transação de R$ 3873.43 no '
+                         'dia 2 do mês de março do ano de 2023 (02/03/2023) '
+                         'com cartão de débito STANDARD para o estabelecimento '
+                         '"Ramos"',
+ 'card_variant': 'standard',
+ 'consumer_document': '59413602824',
+ 'consumer_id': 3.0,
+ 'consumer_id_hash': 3.0,
+ 'consumer_name': 'Brenda Pereira',
+ 'officer_id': 0.0,
+ 'officer_name': 'Leandro Moura',
+ 'portfolio_id': 0.0,
+ 'product': 'debit',
+ 'seller_description': 'Ramos',
+ 'transaction_at': '2023-03-02T14:05:11.000000+0000',
+ 'transaction_day': 2.0,
+ 'transaction_id': 0.0,
+ 'transaction_month': 3.0,
+ 'transaction_value': 3873.42735136413,
+ 'transaction_year': 2023.0}
+O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 3873.43 no dia 2 do mês de março do ano de 2023 (02/03/2023) com cartão de débito STANDARD para o estabelecimento "Ramos"
+
+{'_page_content_body': '',
+ '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
+                         'pertence à carteira do gerente de contas Leandro '
+                         'Moura (ID 0), efetuou um transação de R$ 4993.97 no '
+                         'dia 28 do mês de março do ano de 2023 (28/03/2023) '
+                         'com cartão de crédito INTERNACIONAL para o '
+                         'estabelecimento "Pires"',
+ 'card_variant': '',
+ 'consumer_document': '59413602824',
+ 'consumer_id': 3.0,
+ 'consumer_id_hash': 3.0,
+ 'consumer_name': 'Brenda Pereira',
+ 'officer_id': 0.0,
+ 'officer_name': 'Leandro Moura',
+ 'portfolio_id': 0.0,
+ 'product': 'credit',
+ 'seller_description': 'Pires',
+ 'transaction_at': '2023-03-28T12:46:19.000000+0000',
+ 'transaction_day': 28.0,
+ 'transaction_id': 0.0,
+ 'transaction_month': 3.0,
+ 'transaction_value': 4993.971927246612,
+ 'transaction_year': 2023.0}
+O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 4993.97 no dia 28 do mês de março do ano de 2023 (28/03/2023) com cartão de crédito INTERNACIONAL para o estabelecimento "Pires"
+
+{'_page_content_body': '',
+ '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
+                         'pertence à carteira do gerente de contas Leandro '
+                         'Moura (ID 0), efetuou um transação de R$ 3728.98 no '
+                         'dia 11 do mês de março do ano de 2023 (11/03/2023) '
+                         'com cartão de benefícios INTERNACIONAL para o '
+                         'estabelecimento "Silva"',
+ 'card_variant': '',
+ 'consumer_document': '59413602824',
+ 'consumer_id': 3.0,
+ 'consumer_id_hash': 3.0,
+ 'consumer_name': 'Brenda Pereira',
+ 'officer_id': 0.0,
+ 'officer_name': 'Leandro Moura',
+ 'portfolio_id': 0.0,
+ 'product': '',
+ 'seller_description': 'Silva',
+ 'transaction_at': '2023-03-11T00:25:03.000000+0000',
+ 'transaction_day': 11.0,
+ 'transaction_id': 0.0,
+ 'transaction_month': 3.0,
+ 'transaction_value': 3728.978482533277,
+ 'transaction_year': 2023.0}
+O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 3728.98 no dia 11 do mês de março do ano de 2023 (11/03/2023) com cartão de benefícios INTERNACIONAL para o estabelecimento "Silva"
+
+{'_page_content_body': '',
+ '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
+                         'pertence à carteira do gerente de contas Leandro '
+                         'Moura (ID 0), efetuou um transação de R$ 2254.70 no '
+                         'dia 2 do mês de março do ano de 2023 (02/03/2023) '
+                         'com cartão de benefícios INTERNACIONAL para o '
+                         'estabelecimento "Gonçalves"',
+ 'card_variant': '',
+ 'consumer_document': '59413602824',
+ 'consumer_id': 3.0,
+ 'consumer_id_hash': 3.0,
+ 'consumer_name': 'Brenda Pereira',
+ 'officer_id': 0.0,
+ 'officer_name': 'Leandro Moura',
+ 'portfolio_id': 0.0,
+ 'product': '',
+ 'seller_description': 'Gonçalves',
+ 'transaction_at': '2023-03-02T06:48:51.000000+0000',
+ 'transaction_day': 2.0,
+ 'transaction_id': 0.0,
+ 'transaction_month': 3.0,
+ 'transaction_value': 2254.6976270387872,
+ 'transaction_year': 2023.0}
+O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 2254.70 no dia 2 do mês de março do ano de 2023 (02/03/2023) com cartão de benefícios INTERNACIONAL para o estabelecimento "Gonçalves"
+
+{'_page_content_body': '',
+ '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
+                         'pertence à carteira do gerente de contas Leandro '
+                         'Moura (ID 0), efetuou um transação de R$ 1445.27 no '
+                         'dia 1 do mês de março do ano de 2023 (01/03/2023) '
+                         'com cartão de crédito BLACK para o estabelecimento '
+                         '"Farias"',
+ 'card_variant': 'black',
+ 'consumer_document': '59413602824',
+ 'consumer_id': 3.0,
+ 'consumer_id_hash': 3.0,
+ 'consumer_name': 'Brenda Pereira',
+ 'officer_id': 0.0,
+ 'officer_name': 'Leandro Moura',
+ 'portfolio_id': 0.0,
+ 'product': 'credit',
+ 'seller_description': 'Farias',
+ 'transaction_at': '2023-03-01T11:09:51.000000+0000',
+ 'transaction_day': 1.0,
+ 'transaction_id': 0.0,
+ 'transaction_month': 3.0,
+ 'transaction_value': 1445.2695759797027,
+ 'transaction_year': 2023.0}
+O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 1445.27 no dia 1 do mês de março do ano de 2023 (01/03/2023) com cartão de crédito BLACK para o estabelecimento "Farias"
+
+{'_page_content_body': '',
+ '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
+                         'pertence à carteira do gerente de contas Leandro '
+                         'Moura (ID 0), efetuou um transação de R$ 57.68 no '
+                         'dia 10 do mês de março do ano de 2023 (10/03/2023) '
+                         'com cartão de benefícios INTERNACIONAL para o '
+                         'estabelecimento "Araújo Silva - ME"',
+ 'card_variant': '',
+ 'consumer_document': '59413602824',
+ 'consumer_id': 3.0,
+ 'consumer_id_hash': 3.0,
+ 'consumer_name': 'Brenda Pereira',
+ 'officer_id': 0.0,
+ 'officer_name': 'Leandro Moura',
+ 'portfolio_id': 0.0,
+ 'product': '',
+ 'seller_description': 'Araújo Silva - ME',
+ 'transaction_at': '2023-03-10T14:21:45.000000+0000',
+ 'transaction_day': 10.0,
+ 'transaction_id': 0.0,
+ 'transaction_month': 3.0,
+ 'transaction_value': 57.68114812833782,
+ 'transaction_year': 2023.0}
+O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 57.68 no dia 10 do mês de março do ano de 2023 (10/03/2023) com cartão de benefícios INTERNACIONAL para o estabelecimento "Araújo Silva - ME"
+
+{'_page_content_body': '',
+ '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
+                         'pertence à carteira do gerente de contas Leandro '
+                         'Moura (ID 0), efetuou um transação de R$ 847.75 no '
+                         'dia 3 do mês de janeiro do ano de 2023 (03/01/2023) '
+                         'com cartão de benefícios INTERNACIONAL para o '
+                         'estabelecimento "Ramos Peixoto e Filhos"',
+ 'card_variant': '',
+ 'consumer_document': '59413602824',
+ 'consumer_id': 3.0,
+ 'consumer_id_hash': 3.0,
+ 'consumer_name': 'Brenda Pereira',
+ 'officer_id': 0.0,
+ 'officer_name': 'Leandro Moura',
+ 'portfolio_id': 0.0,
+ 'product': '',
+ 'seller_description': 'Ramos Peixoto e Filhos',
+ 'transaction_at': '2023-01-03T05:11:54.000000+0000',
+ 'transaction_day': 3.0,
+ 'transaction_id': 0.0,
+ 'transaction_month': 1.0,
+ 'transaction_value': 847.7486570561034,
+ 'transaction_year': 2023.0}
+O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 847.75 no dia 3 do mês de janeiro do ano de 2023 (03/01/2023) com cartão de benefícios INTERNACIONAL para o estabelecimento "Ramos Peixoto e Filhos"
+
+{'_page_content_body': '',
+ '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
+                         'pertence à carteira do gerente de contas Leandro '
+                         'Moura (ID 0), efetuou um transação de R$ 4810.76 no '
+                         'dia 17 do mês de março do ano de 2023 (17/03/2023) '
+                         'com cartão de benefícios INTERNACIONAL para o '
+                         'estabelecimento "Ramos Costela - EI"',
+ 'card_variant': '',
+ 'consumer_document': '59413602824',
+ 'consumer_id': 3.0,
+ 'consumer_id_hash': 3.0,
+ 'consumer_name': 'Brenda Pereira',
+ 'officer_id': 0.0,
+ 'officer_name': 'Leandro Moura',
+ 'portfolio_id': 0.0,
+ 'product': '',
+ 'seller_description': 'Ramos Costela - EI',
+ 'transaction_at': '2023-03-17T21:27:30.000000+0000',
+ 'transaction_day': 17.0,
+ 'transaction_id': 0.0,
+ 'transaction_month': 3.0,
+ 'transaction_value': 4810.7632311812185,
+ 'transaction_year': 2023.0}
+O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 4810.76 no dia 17 do mês de março do ano de 2023 (17/03/2023) com cartão de benefícios INTERNACIONAL para o estabelecimento "Ramos Costela - EI"
+
+{'_page_content_body': '',
+ '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
+                         'pertence à carteira do gerente de contas Leandro '
+                         'Moura (ID 0), efetuou um transação de R$ 2441.72 no '
+                         'dia 31 do mês de março do ano de 2023 (31/03/2023) '
+                         'com cartão de crédito BLACK para o estabelecimento '
+                         '"Correia e Filhos"',
+ 'card_variant': 'black',
+ 'consumer_document': '59413602824',
+ 'consumer_id': 3.0,
+ 'consumer_id_hash': 3.0,
+ 'consumer_name': 'Brenda Pereira',
+ 'officer_id': 0.0,
+ 'officer_name': 'Leandro Moura',
+ 'portfolio_id': 0.0,
+ 'product': 'credit',
+ 'seller_description': 'Correia e Filhos',
+ 'transaction_at': '2023-03-31T10:37:55.000000+0000',
+ 'transaction_day': 31.0,
+ 'transaction_id': 0.0,
+ 'transaction_month': 3.0,
+ 'transaction_value': 2441.7226633898526,
+ 'transaction_year': 2023.0}
+O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 2441.72 no dia 31 do mês de março do ano de 2023 (31/03/2023) com cartão de crédito BLACK para o estabelecimento "Correia e Filhos"
+
+{'_page_content_body': '',
+ '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
+                         'pertence à carteira do gerente de contas Leandro '
+                         'Moura (ID 0), efetuou um transação de R$ 1043.24 no '
+                         'dia 26 do mês de março do ano de 2023 (26/03/2023) '
+                         'com cartão de crédito INTERNACIONAL para o '
+                         'estabelecimento "Nunes"',
+ 'card_variant': '',
+ 'consumer_document': '59413602824',
+ 'consumer_id': 3.0,
+ 'consumer_id_hash': 3.0,
+ 'consumer_name': 'Brenda Pereira',
+ 'officer_id': 0.0,
+ 'officer_name': 'Leandro Moura',
+ 'portfolio_id': 0.0,
+ 'product': 'credit',
+ 'seller_description': 'Nunes',
+ 'transaction_at': '2023-03-26T04:18:45.000000+0000',
+ 'transaction_day': 26.0,
+ 'transaction_id': 0.0,
+ 'transaction_month': 3.0,
+ 'transaction_value': 1043.241199028884,
+ 'transaction_year': 2023.0}
+O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 1043.24 no dia 26 do mês de março do ano de 2023 (26/03/2023) com cartão de crédito INTERNACIONAL para o estabelecimento "Nunes"
+
+{'_page_content_body': '',
+ '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
+                         'pertence à carteira do gerente de contas Leandro '
+                         'Moura (ID 0), efetuou um transação de R$ 3757.18 no '
+                         'dia 1 do mês de março do ano de 2023 (01/03/2023) '
+                         'com cartão de crédito BLACK para o estabelecimento '
+                         '"Barbosa"',
+ 'card_variant': 'black',
+ 'consumer_document': '59413602824',
+ 'consumer_id': 3.0,
+ 'consumer_id_hash': 3.0,
+ 'consumer_name': 'Brenda Pereira',
+ 'officer_id': 0.0,
+ 'officer_name': 'Leandro Moura',
+ 'portfolio_id': 0.0,
+ 'product': 'credit',
+ 'seller_description': 'Barbosa',
+ 'transaction_at': '2023-03-01T19:08:27.000000+0000',
+ 'transaction_day': 1.0,
+ 'transaction_id': 0.0,
+ 'transaction_month': 3.0,
+ 'transaction_value': 3757.183477165694,
+ 'transaction_year': 2023.0}
+O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 3757.18 no dia 1 do mês de março do ano de 2023 (01/03/2023) com cartão de crédito BLACK para o estabelecimento "Barbosa"
+
+{'_page_content_body': '',
+ '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
+                         'pertence à carteira do gerente de contas Leandro '
+                         'Moura (ID 0), efetuou um transação de R$ 2729.97 no '
+                         'dia 14 do mês de março do ano de 2023 (14/03/2023) '
+                         'com cartão de crédito STANDARD para o '
+                         'estabelecimento "Moraes e Filhos"',
+ 'card_variant': 'standard',
+ 'consumer_document': '59413602824',
+ 'consumer_id': 3.0,
+ 'consumer_id_hash': 3.0,
+ 'consumer_name': 'Brenda Pereira',
+ 'officer_id': 0.0,
+ 'officer_name': 'Leandro Moura',
+ 'portfolio_id': 0.0,
+ 'product': 'credit',
+ 'seller_description': 'Moraes e Filhos',
+ 'transaction_at': '2023-03-14T10:07:06.000000+0000',
+ 'transaction_day': 14.0,
+ 'transaction_id': 0.0,
+ 'transaction_month': 3.0,
+ 'transaction_value': 2729.9745181576764,
+ 'transaction_year': 2023.0}
+O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 2729.97 no dia 14 do mês de março do ano de 2023 (14/03/2023) com cartão de crédito STANDARD para o estabelecimento "Moraes e Filhos"
+
+{'_page_content_body': '',
+ '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
+                         'pertence à carteira do gerente de contas Leandro '
+                         'Moura (ID 0), efetuou um transação de R$ 3996.56 no '
+                         'dia 13 do mês de março do ano de 2023 (13/03/2023) '
+                         'com cartão de crédito STANDARD para o '
+                         'estabelecimento "Araújo"',
+ 'card_variant': 'standard',
+ 'consumer_document': '59413602824',
+ 'consumer_id': 3.0,
+ 'consumer_id_hash': 3.0,
+ 'consumer_name': 'Brenda Pereira',
+ 'officer_id': 0.0,
+ 'officer_name': 'Leandro Moura',
+ 'portfolio_id': 0.0,
+ 'product': 'credit',
+ 'seller_description': 'Araújo',
+ 'transaction_at': '2023-03-13T23:50:36.000000+0000',
+ 'transaction_day': 13.0,
+ 'transaction_id': 0.0,
+ 'transaction_month': 3.0,
+ 'transaction_value': 3996.5561580384256,
+ 'transaction_year': 2023.0}
+O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 3996.56 no dia 13 do mês de março do ano de 2023 (13/03/2023) com cartão de crédito STANDARD para o estabelecimento "Araújo"
