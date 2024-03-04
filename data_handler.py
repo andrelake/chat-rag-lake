@@ -5,12 +5,14 @@ import random
 import json
 
 from utils import Logger, log
+from connections.openai import get_embeddings_client as _openai_get_embeddings_client, get_embedding_cost as _openai_get_embedding_cost
 
 import pandas as pd
 import numpy as np
 import pyorc
 from faker import Faker
 from fastavro import block_reader, writer
+from chromadb.utils import embedding_functions as _chromadb_embedding_functions
 from langchain_core.documents import Document
 from langchain.chains.query_constructor.base import AttributeInfo
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -149,7 +151,6 @@ def read_orc(path: str, log: Optional[Logger] = log) -> pd.DataFrame:
                 df = pd.DataFrame(data, columns=list(schema.fields))
                 dfs.append(df)
     df = pd.concat(dfs, ignore_index=True)
-    print(df.dtypes)
     return df
 
 
@@ -182,3 +183,30 @@ def redistribute_by_characters(documents: List[Document], chunk_size: int, chunk
         log(documents[i], end='\n')
         log(len(documents[i].page_content))
     return documents
+
+
+def get_embeddings_client(model_name: str, type: str = 'api', api_key: str = None) -> Callable:
+    kwargs = {'model_name': model_name, 'type': type, 'api_key': api_key}
+    embedding_functions = {
+        'cpu': {
+            'all-MiniLM-L6-v2': lambda **kwargs: _chromadb_embedding_functions.SentenceTransformerEmbeddingFunction(model_name='all-MiniLM-L6-v2'),  # Local, Open Source, 384 dimensions
+        },
+        'gpu': {
+            'all-MiniLM-L6-v2': lambda **kwargs: _chromadb_embedding_functions.ONNXMiniLM_L6_V2(preferred_providers=['DmlExecutionProvider']),  # Local (GPU), Open Source, 384 dimensions
+        },
+        'api': {
+            'text-embedding-3-small': lambda **kargs: _openai_get_embeddings_client(kargs['api_key'], model_name='text-embedding-3-small'),  # API, OpenAI, 1536 dimensions
+            'text-embedding-3-large': lambda **kargs: _openai_get_embeddings_client(kargs['api_key'], model_name='text-embedding-3-large'),  # API, OpenAI, 1536 dimensions
+            'text-embedding-ada-002': lambda **kargs: _openai_get_embeddings_client(kargs['api_key'], model_name='text-embedding-ada-002'),  # API, OpenAI, 1536 dimensions
+        },
+    }
+    return embedding_functions[type][model_name](**kwargs)
+
+
+def get_embedding_cost(documents: List[Document], model_name: str, log: Optional[Logger] = log) -> None:
+    log(f'Calculating embedding cost for {len(documents)} documents using model `{model_name}`...')
+    cost = _openai_get_embedding_cost(documents, model_name)
+    log(f'Total tokens: {cost["total_tokens"]}\n'
+        f'Total documents: {cost["total_documents"]} (~{cost["total_tokens"]/cost["total_documents"]:.1f}/doc)\n'
+        f'Embedding cost: ${cost["embedding_cost"]:.05f}')
+    return cost

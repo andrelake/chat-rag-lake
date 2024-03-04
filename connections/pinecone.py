@@ -56,6 +56,9 @@ def get_vectorstore(name: str, embedding_function: OpenAIEmbeddings, database_cl
 
 def delete_vectorstore(name: str, database_client: Pinecone) -> None:
     log(f'Deleting vectorstore: {name}')
+    if name not in database_client.list_indexes().names():
+        log(f'Vectorstore "{name}" not found, skipping deletion')
+        return
     database_client.delete_index(name)
     log(f'Successfully deleted vectorstore: {name}.')
 

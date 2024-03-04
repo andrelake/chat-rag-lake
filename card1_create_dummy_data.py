@@ -3,7 +3,6 @@ from datetime import date
 
 from utils import log
 from data_tables import CardTransactions
-from data_handler import write_orc
 
 
 # Configure Logger
