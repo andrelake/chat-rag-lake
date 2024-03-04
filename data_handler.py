@@ -5,7 +5,10 @@ import random
 import json
 
 from utils import Logger, log
-from connections.openai import get_embeddings_client as _openai_get_embeddings_client, get_embedding_cost as _openai_get_embedding_cost
+from connections.openai import (
+    get_embeddings_client as _openai_get_embeddings_client,
+    get_embedding_cost as _openai_get_embedding_cost
+)
 
 import pandas as pd
 import numpy as np
@@ -30,6 +33,7 @@ def generate_documents(
     log: Optional[Logger] = log
 ) -> List[Document]:
     log('Generating documents...')
+    temp_columns = ['_page_content_header', '_page_content_body', '_metadata']
     if where:
         df = df[where(df)].copy()
     if group_by:
@@ -42,12 +46,13 @@ def generate_documents(
     else:
         df['_page_content_body'] = ''
     df['_page_content_header'] = df.apply(lambda record: parse_content_header(record), axis=1)
-    df['_metadata'] = df.apply(lambda record: parse_metadata(record), axis=1)
+    df['_metadata'] = df[[c for c in df.columns if c not in temp_columns]] \
+                        .apply(lambda record: parse_metadata(record), axis=1)
     if order_by:
         if group_by:
             order_by = (group_by or []) + [col for col in order_by if col not in group_by]
         df = df.sort_values(order_by)
-    df = df.drop(columns=[col for col in df.columns if col not in ['_page_content_header', '_page_content_body', '_metadata']])
+    df = df[temp_columns]
     if limit:
         df = df.head(limit)
     documents = df.apply(
@@ -207,6 +212,6 @@ def get_embedding_cost(documents: List[Document], model_name: str, log: Optional
     log(f'Calculating embedding cost for {len(documents)} documents using model `{model_name}`...')
     cost = _openai_get_embedding_cost(documents, model_name)
     log(f'Total tokens: {cost["total_tokens"]}\n'
-        f'Total documents: {cost["total_documents"]} (~{cost["total_tokens"]/cost["total_documents"]:.1f}/doc)\n'
+        f'Total documents: {cost["total_documents"]} (~{cost["total_tokens"]/cost["total_documents"]:.1f} tokens/document)\n'
         f'Embedding cost: ${cost["embedding_cost"]:.05f}')
     return cost
