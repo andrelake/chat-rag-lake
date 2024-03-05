@@ -1,6 +1,7 @@
 import os
 from shutil import rmtree
 from typing import Optional, Any, Callable, List, Dict
+from datetime import datetime, date
 import random
 import json
 
@@ -32,7 +33,7 @@ def generate_documents(
     parse_metadata: Optional[Callable[[Any], dict]] = lambda record: dict(record),
     log: Optional[Logger] = log
 ) -> List[Document]:
-    log('Generating documents...')
+    log('Generating documents...', end='\n')
     temp_columns = ['_page_content_header', '_page_content_body', '_metadata']
     if where:
         df = df[where(df)].copy()
@@ -47,7 +48,11 @@ def generate_documents(
         df['_page_content_body'] = ''
     df['_page_content_header'] = df.apply(lambda record: parse_content_header(record), axis=1)
     df['_metadata'] = df[[c for c in df.columns if c not in temp_columns]] \
+                        .astype('object') \
                         .apply(lambda record: parse_metadata(record), axis=1)
+    # TODO: Verify why sometimes the int values are presented as numpy.float64 instead of Python's int after aplying dict() to the record
+    # print(df.iloc[-1]['_metadata'])
+    # print({k: type(v) for k, v in df.iloc[-1]['_metadata'].items()})
     if order_by:
         if group_by:
             order_by = (group_by or []) + [col for col in order_by if col not in group_by]
@@ -62,6 +67,7 @@ def generate_documents(
         ),
         axis=1
     ).to_list()
+    log(f'Generated {len(documents)} documents')
     return documents
 
 

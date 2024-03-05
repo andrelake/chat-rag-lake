@@ -2,60 +2,48 @@ PS C:\Users\felip\Documents\GitHub\chat-rag-lake> & "C:/Program Files/Python311/
 Reading ORC files from `data\landing\card_transactions.orc`...
 
 Generating documents...
-
-Total de documentos original: 9102
-
-Total de documentos: 3034
-
-page_content='O cliente Isaac da Conceição (CPF: 87106392413), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 1612.32 no dia 1 do mês de janeiro do ano de 2023 (01/01/2023) com cartão de débito BLACK para o estabelecimento "Souza"\nO cliente Daniel Viana (CPF: 82794516337), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 4620.03 no dia 1 do mês de janeiro do ano de 2023 (01/01/2023) com cartão de débito GOLD para o estabelecimento "Araújo"\nO cliente Otávio Moraes (CPF: 64520793106), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 74.91 no dia 1 do mês de janeiro do ano de 2023 (01/01/2023) com cartão de débito GOLD para o estabelecimento "Castro Porto S.A."'
-789
-
-page_content='O cliente Otávio Moraes (CPF: 64520793106), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 4536.33 no dia 1 do mês de janeiro do ano de 2023 (01/01/2023) com cartão de benefícios INTERNACIONAL para o estabelecimento "da Rocha S/A"\nO cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 62.35 no dia 1 do mês de janeiro do ano de 2023 (01/01/2023) com cartão de crédito STANDARD para o estabelecimento "Souza"\nO cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 1387.45 no dia 1 do mês de janeiro do ano de 2023 (01/01/2023) com cartão de crédito STANDARD para o estabelecimento "Costa S/A"'
-807
-
-page_content='O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 607.29 no dia 1 do mês de janeiro do ano de 2023 (01/01/2023) com cartão de benefícios STANDARD para o estabelecimento "Gonçalves"\nO cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 3890.66 no dia 1 do mês de janeiro do ano de 2023 (01/01/2023) com cartão de crédito BLACK para o estabelecimento "Gomes - EI"\nO cliente Kaique Cunha (CPF: 17246538062), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 935.80 no dia 1 do mês de janeiro do ano de 2023 (01/01/2023) com cartão de débito STANDARD para o estabelecimento "Ramos Correia S.A."'
-808
-
-Deleting vectorstore: felipe-dev-picpay-prj-ai-rag-llm-table-1
-
-Successfully deleted vectorstore: felipe-dev-picpay-prj-ai-rag-llm-table-1.
-
-Vectorstore "felipe-dev-picpay-prj-ai-rag-llm-table-1" not found, creating
-
-Creating vectorstore felipe-dev-picpay-prj-ai-rag-llm-table-1
-
-Found vectorstore: "felipe-dev-picpay-prj-ai-rag-llm-table-1"
-
-Calculating embedding cost for 3034 documents using model `text-embedding-3-small`...
-
-Total tokens: 867202
-Total documents: 3034 (~285.8/doc)
-Embedding cost: $0.01734
-
-100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 6/6 [01:12<00:00, 12.16s/it]
-Added 3034 documents to vectorstore
-
-Deleting vectorstore: felipe-dev-picpay-prj-ai-rag-llm-table-2
-
-Reading ORC files from `data\landing\card_transactions.orc`...
+Generated 9086 documents
 
 Generating documents...
+Generated 6534 documents
 
-Deleting vectorstore: felipe-dev-picpay-prj-ai-rag-llm-table-2
+Generating documents...
+Generated 360 documents
 
-Vectorstore "felipe-dev-picpay-prj-ai-rag-llm-table-2" not found, skipping deletion
+Generating documents...
+Generated 30 documents
 
-Vectorstore "felipe-dev-picpay-prj-ai-rag-llm-table-2" not found, creating
+Generating documents...
+Generated 365 documents
 
-Creating vectorstore felipe-dev-picpay-prj-ai-rag-llm-table-2
+Generating documents...
+Generated 12 documents
 
-Found vectorstore: "felipe-dev-picpay-prj-ai-rag-llm-table-2"
+Generating documents...
+Generated 1 documents
 
-Calculating embedding cost for 9102 documents using model `text-embedding-3-small`...
+Deleting vectorstore: felipe-dev-picpay-prj-ai-rag-llm-table-3
 
-Total tokens: 867202
-Total documents: 9102 (~95.3/doc)
-Embedding cost: $0.01734
+Vectorstore "felipe-dev-picpay-prj-ai-rag-llm-table-3" not found, skipping deletion
 
-100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 18/18 [02:44<00:00,  9.16s/it]
-Added 9102 documents to vectorstore
+Vectorstore "felipe-dev-picpay-prj-ai-rag-llm-table-3" not found, creating
+
+Creating vectorstore felipe-dev-picpay-prj-ai-rag-llm-table-3
+
+Found vectorstore: "felipe-dev-picpay-prj-ai-rag-llm-table-3"
+
+Calculating embedding cost for 16388 documents using model `text-embedding-3-small`...
+
+Total tokens: 1829843
+Total documents: 16388 (~111.7 tokens/document)
+Embedding cost: $0.03660
+
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 33/33 [05:28<00:00,  9.96s/it]
+
+
+Added 16388/16388 documents to vectorstore
+
+{'dimension': 1536,
+ 'index_fullness': 0.0,
+ 'namespaces': {'': {'vector_count': 16388}},
+ 'total_vector_count': 16388}

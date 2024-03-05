@@ -348,7 +348,9 @@ class CardTransactions:
         # Quantos % dos clientes da carteira do gerente # fizeram transações com cartão de crédito nos últimos 6 meses?
 
     def read() -> pd.DataFrame:
-        return read_orc(path=CardTransactions.path, log=log)
+        schema = CardTransactions.schema['pandas']
+        df = read_orc(path=CardTransactions.path, log=log).astype(schema)
+        return df
     
     def write(df: pd.DataFrame):
         write_orc(

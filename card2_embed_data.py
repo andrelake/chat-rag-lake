@@ -50,6 +50,7 @@ def insert_documents(vectorstore_name: str, documents: List[Document]):
         embedding_function=embedding_function,
         vectorstore_name=vectorstore_name,
     )
+    log(vectorstore._index.describe_index_stats())
 
 
 # Storytelling for each transaction, chunked by 1000 characters
@@ -132,12 +133,13 @@ def test_3():
     #     chaos_transactions_client_day=0.66,
     #     log=log
     # )
+
     source_df['product'] = source_df['product'].map(threat_product)
     source_df['card_variant'] = source_df['card_variant'].map(threat_card_variant)
 
     ## By year, month, day, portfolio, officer, consumer, product, variant, seller, and transaction
     df = source_df.copy()
-    documents = generate_documents(
+    level_documents = generate_documents(
         df=df,
         where=None,
         group_by=None,
@@ -152,6 +154,7 @@ def test_3():
         parse_content_body=None,
         parse_metadata=lambda record: dict(record)
     )
+    documents = level_documents
 
     aggregations = {
         'transaction_value_sum': ('transaction_value', 'sum'),
@@ -168,9 +171,9 @@ def test_3():
 
     ## By year, month, day, consumer, product
     groupby = ['transaction_year', 'transaction_month', 'transaction_day', 'consumer_id', 'consumer_document', 'consumer_name', 'product']
-    df = source_df.groupby(groupby).agg(**aggregations).reset_index()
+    df = source_df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
     df = df[df.transaction_value_count > 0]
-    documents += generate_documents(
+    level_documents = generate_documents(
         df=df,
         where=None,
         group_by=None,
@@ -188,12 +191,13 @@ def test_3():
             f'''- Valor da maior transação: R$ {record['transaction_value_max']:.2f}; '''
             f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
     )
+    documents += level_documents
 
     ## By year, month, consumer, product
     groupby = ['transaction_year', 'transaction_month', 'consumer_id', 'consumer_document', 'consumer_name', 'product']
-    df = source_df.groupby(groupby).agg(**aggregations).reset_index()
+    df = source_df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
     df = df[df.transaction_value_count > 0]
-    documents += generate_documents(
+    level_documents = generate_documents(
         df=df,
         where=None,
         group_by=None,
@@ -211,12 +215,13 @@ def test_3():
             f'''- Valor da maior transação: R$ {record['transaction_value_max']:.2f}; '''
             f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
     )
+    documents += level_documents
 
     ## By year, consumer, product
     groupby = ['transaction_year', 'consumer_id', 'consumer_document', 'consumer_name', 'product']
-    df = source_df.groupby(groupby).agg(**aggregations).reset_index()
+    df = source_df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
     df = df[df.transaction_value_count > 0]
-    documents += generate_documents(
+    level_documents = generate_documents(
         df=df,
         where=None,
         group_by=None,
@@ -233,12 +238,14 @@ def test_3():
             f'''- Valor da maior transação: R$ {record['transaction_value_max']:.2f}; '''
             f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
     )
+    documents += level_documents
+
 
     ## By year, month, day, portfolio
     groupby = ['transaction_year', 'transaction_month', 'transaction_day', 'portfolio_id']
-    df = source_df.groupby(groupby).agg(**aggregations).reset_index()
+    df = source_df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
     df = df[df.transaction_value_count > 0]
-    documents += generate_documents(
+    level_documents = generate_documents(
         df=df,
         where=None,
         group_by=None,
@@ -256,12 +263,13 @@ def test_3():
             f'''- Valor da maior transação: R$ {record['transaction_value_max']:.2f}; '''
             f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
     )
+    documents += level_documents
 
     ## By year, month, portfolio
     groupby = ['transaction_year', 'transaction_month', 'portfolio_id']
-    df = source_df.groupby(groupby).agg(**aggregations).reset_index()
+    df = source_df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
     df = df[df.transaction_value_count > 0]
-    documents += generate_documents(
+    level_documents = generate_documents(
         df=df,
         where=None,
         group_by=None,
@@ -279,12 +287,13 @@ def test_3():
             f'''- Valor da maior transação: R$ {record['transaction_value_max']:.2f}; '''
             f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
     )
+    documents += level_documents
 
     ## By year, portfolio
     groupby = ['transaction_year', 'portfolio_id']
-    df = source_df.groupby(groupby).agg(**aggregations).reset_index()
+    df = source_df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
     df = df[df.transaction_value_count > 0]
-    documents += generate_documents(
+    level_documents = generate_documents(
         df=df,
         where=None,
         group_by=None,
@@ -301,11 +310,13 @@ def test_3():
             f'''- Valor da maior transação: R$ {record['transaction_value_max']:.2f}; '''
             f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
     )
+    documents += level_documents
 
     # Insert documents into vectorstore
-    vectorstore_name = 'felipe-dev-picpay-prj-ai-rag-llm-table-2'
-    get_embedding_cost(documents=documents, model_name=embedding_model_name)  # If using OpenAI Embeddings
-    with open('data/card2_embed_data_test3.txt', 'w') as fo:
+    vectorstore_name = 'felipe-dev-picpay-prj-ai-rag-llm-table-3'
+    text_path = 'data/refined/card_transactions_documents_test3'
+    os.makedirs(text_path, exist_ok=True)
+    with open(f'{text_path}/data.txt', 'w') as fo:
         fo.write('\n\n'.join([doc.page_content for doc in documents]))
     insert_documents(vectorstore_name, documents=documents)
 

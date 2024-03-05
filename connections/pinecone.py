@@ -1,5 +1,7 @@
 from typing import Union, Tuple, List, Set
 from time import sleep
+import os
+import json
 
 from env import OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_ENVIRONMENT
 from utils import log
@@ -65,10 +67,22 @@ def delete_vectorstore(name: str, database_client: Pinecone) -> None:
 
 def add_documents(vectorstore: LangchainPineconeVectorstore, documents: List[Document], embedding_function: OpenAIEmbeddings, vectorstore_name: str) -> None:
     batch_size = 512
+    total_documents = len(documents)
+    added_documents = 0
+    logs = []
     for i in tqdm(range(0, len(documents), batch_size)):
         i_end = min(i+batch_size, len(documents))
-        vectorstore.from_documents(documents[i:i_end], embedding_function, index_name=vectorstore_name)
-    log(f'Added {len(documents)} documents to vectorstore')
+        try:
+            vectorstore.from_documents(documents[i:i_end], embedding_function, index_name=vectorstore_name)
+            added_documents += i_end - i
+        except Exception as e:
+            logs.append(f'Error adding documents {i}-{i_end} to vectorstore: {e}')
+            error_path = os.path.join('data', 'errors')
+            os.makedirs(error_path, exist_ok=True)
+            with open(os.path.join(error_path, f'error_{vectorstore_name}_{i}to{i_end}.log'), 'w') as fi:
+                fi.write('\n\n'.join([doc.page_content + '\n' + json.dumps(doc.metadata) for doc in documents[i:i_end]]))
+    log('\n'.join(logs))
+    log(f'Added {added_documents}/{total_documents} documents to vectorstore')
 
 
 def query_documents(vectorstore: LangchainPineconeVectorstore, query: Union[str, List[str]], k: int = 10) -> Tuple[List[str], List[float]]:

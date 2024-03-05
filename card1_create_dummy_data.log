@@ -3,46 +3,46 @@ Generating dummy data for `1` officers and `10` consumers per officer...
 
 Generating transactions...
 
-        Generated `9102` transactions for portfolio `0` (officer `0`: `Leandro Moura`).
+        Generated `9086` transactions for portfolio `0` (officer `0`: `Dra. Ana Cunha`).
 
-Generated `9102` transactions in total.
+Generated `9086` transactions in total.
 
 Dataframe info:
 
 <class 'pandas.core.frame.DataFrame'>
-RangeIndex: 9102 entries, 0 to 9101
+RangeIndex: 9086 entries, 0 to 9085
 Data columns (total 16 columns):
- #   Column              Non-Null Count  Dtype
----  ------              --------------  -----
- 0   transaction_id      9102 non-null   uint32
- 1   transaction_at      9102 non-null   string
- 2   transaction_year    9102 non-null   uint16
- 3   transaction_month   9102 non-null   uint8
- 4   transaction_day     9102 non-null   uint8
- 5   consumer_id_hash    9102 non-null   uint32
- 6   consumer_id         9102 non-null   uint32
- 7   consumer_document   9102 non-null   string
- 8   consumer_name       9102 non-null   string
- 9   portfolio_id        9102 non-null   uint32
- 10  officer_id          9102 non-null   uint32
- 11  officer_name        9102 non-null   string
- 12  product             9102 non-null   category
- 13  card_variant        9102 non-null   category
- 14  transaction_value   9102 non-null   float64
- 15  seller_description  9102 non-null   string
+ #   Column              Non-Null Count  Dtype   
+---  ------              --------------  -----   
+ 0   transaction_id      9086 non-null   uint32  
+ 1   transaction_at      9086 non-null   string  
+ 2   transaction_year    9086 non-null   uint16  
+ 3   transaction_month   9086 non-null   uint8   
+ 4   transaction_day     9086 non-null   uint8   
+ 5   consumer_id_hash    9086 non-null   uint32  
+ 6   consumer_id         9086 non-null   uint32  
+ 7   consumer_document   9086 non-null   string  
+ 8   consumer_name       9086 non-null   string  
+ 9   portfolio_id        9086 non-null   uint32  
+ 10  officer_id          9086 non-null   uint32  
+ 11  officer_name        9086 non-null   string  
+ 12  product             9086 non-null   category
+ 13  card_variant        9086 non-null   category
+ 14  transaction_value   9086 non-null   float64 
+ 15  seller_description  9086 non-null   string  
 dtypes: category(2), float64(1), string(5), uint16(1), uint32(5), uint8(2)
-memory usage: 658.2 KB
+memory usage: 657.1 KB
 None
-Dataframe size: `(9102, 16)`
+Dataframe size: `(9086, 16)`
 Dataframe memory usage: `3.56 MB`
 
-Prompt: Query: Qual o valor total de transações em janeiro de 2023 feitas pelos clientes da carteira do gerente Leandro Moura?
-Answer: R$ 1835297.29
+Prompt: Query: Qual o valor total de transações em janeiro de 2023 feitas pelos clientes da carteira do gerente Dra. Ana Cunha?
+Answer: R$ 1960970.66
 
 Prompt: Query: Quantos clientes possuem um cartão de crédito e quantos possuem um de débito?
 c:\Users\felip\Documents\GitHub\chat-rag-lake\data_tables.py:179: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
   .groupby(['product']) \
-Answer:
+Answer: 
         : 10 clientes
         credit: 10 clientes
         debit: 10 clientes
@@ -51,105 +51,110 @@ Prompt: Query: Quantos clientes realizaram mais de R$ 8000 em transações com c
 Answer: 120 clientes
 
 Prompt: Query: Quantas transações foram realizadas pelos 3 clientes com o maior valor total de transações em abril de 2023?
-Answer: 232 transações.
+Answer: 236 transações.
 
 Prompt: Quem são os 10 clientes que mais gastam no crédito?
-Prompt: ...Eu me chamo Leandro Moura.
+Prompt: ...Eu me chamo Dra. Ana Cunha.
 Answer: 
-        [ID 000000005] Srta. Joana Fernandes  >  R$ 845140.19
-        [ID 000000003] Brenda Pereira  >  R$ 819656.49
-        [ID 000000009] Srta. Ana Beatriz Campos  >  R$ 808402.09
-        [ID 000000000] Isaac da Conceição  >  R$ 793355.56
-        [ID 000000001] Daniel Viana  >  R$ 775309.77
-        [ID 000000006] Heitor Aragão  >  R$ 768264.74
-        [ID 000000008] Davi Moura  >  R$ 733271.14
-        [ID 000000007] Nicole da Luz  >  R$ 727747.45
-        [ID 000000004] Kaique Cunha  >  R$ 724160.86
-        [ID 000000002] Otávio Moraes  >  R$ 634314.58
+        [ID 000000008] Ana Lívia da Cruz  >  R$ 842226.42
+        [ID 000000006] Carlos Eduardo Rodrigues  >  R$ 830660.00
+        [ID 000000003] Raul Cardoso  >  R$ 817149.87
+        [ID 000000009] Levi Fogaça  >  R$ 769380.30
+        [ID 000000005] Lucas Viana  >  R$ 750585.63
+        [ID 000000004] Sr. André Peixoto  >  R$ 731259.78
+        [ID 000000000] Kaique da Luz  >  R$ 729602.92
+        [ID 000000007] Sra. Elisa Teixeira  >  R$ 726857.13
+        [ID 000000001] Enrico da Cruz  >  R$ 687073.79
+        [ID 000000002] Arthur Sales  >  R$ 673829.17
 
 Prompt: Qual é o total de gastos feito no cartão dos clientes da minha carteira?
-Prompt: ...Eu me chamo Leandro Moura.
-Answer: 22826262.64
+Prompt: ...Eu me chamo Dra. Ana Cunha.
+Answer: 22776775.64
 
 Prompt: Mostre a evolução de gastos dos últimos 4 meses para 3 clientes da carteira
 Answer:
-        Isaac da Conceição (0):
-                > 08/2023: R$ 223865.90
-                > 09/2023: R$ 165332.36
-                > 10/2023: R$ 202438.55
-                > 11/2023: R$ 185252.47
-                > 12/2023: R$ 184074.80
-        Daniel Viana (1):
-                > 08/2023: R$ 222760.70
-                > 09/2023: R$ 190808.50
-                > 10/2023: R$ 203009.09
-                > 11/2023: R$ 196680.90
-                > 12/2023: R$ 186789.10
-        Srta. Joana Fernandes (5):
-                > 08/2023: R$ 217946.49
-                > 09/2023: R$ 195552.59
-                > 10/2023: R$ 202996.97
-                > 11/2023: R$ 168467.18
-                > 12/2023: R$ 176928.26
+        Kaique da Luz (0):
+                > 08/2023: R$ 183445.50
+                > 09/2023: R$ 197340.64
+                > 10/2023: R$ 203820.59
+                > 11/2023: R$ 163486.72
+                > 12/2023: R$ 204737.28
+        Sr. André Peixoto (4):
+                > 08/2023: R$ 185867.79
+                > 09/2023: R$ 168083.16
+                > 10/2023: R$ 205887.64
+                > 11/2023: R$ 181499.25
+                > 12/2023: R$ 193387.04
+        Lucas Viana (5):
+                > 08/2023: R$ 197254.49
+                > 09/2023: R$ 163232.36
+                > 10/2023: R$ 269224.83
+                > 11/2023: R$ 172991.98
+                > 12/2023: R$ 175434.71
 
 Prompt: Mostre o ranking de gastos de cartão dos clientes por estabelecimento
 Answer: 
-        Cardoso: R$ 299963.83
-        Moraes: R$ 242615.65
-        Silva: R$ 241186.68
-        Moreira: R$ 214168.14
-        Farias: R$ 210486.26
+        Cardoso: R$ 277796.61
+        da Paz: R$ 237867.08
+        Porto: R$ 223820.27
+        Cunha: R$ 209465.26
+        da Rosa: R$ 203318.21
 
 Prompt: Liste quem são os clientes com gastos mensais abaixo de R$ 3000
 Answer:
-        Isaac da Conceição (ID 000000000)
-        Daniel Viana (ID 000000001)
-        Otávio Moraes (ID 000000002)
-        Brenda Pereira (ID 000000003)
-        Kaique Cunha (ID 000000004)
-        Srta. Joana Fernandes (ID 000000005)
-        Heitor Aragão (ID 000000006)
-        Nicole da Luz (ID 000000007)
-        Davi Moura (ID 000000008)
-        Srta. Ana Beatriz Campos (ID 000000009)
+        Kaique da Luz (ID 000000000)
+        Enrico da Cruz (ID 000000001)
+        Arthur Sales (ID 000000002)
+        Raul Cardoso (ID 000000003)
+        Sr. André Peixoto (ID 000000004)
+        Lucas Viana (ID 000000005)
+        Carlos Eduardo Rodrigues (ID 000000006)
+        Sra. Elisa Teixeira (ID 000000007)
+        Ana Lívia da Cruz (ID 000000008)
+        Levi Fogaça (ID 000000009)
 
 Prompt: Liste os clientes das carteiras que vem reduzindo os gastos com cartão nos últimos 4 meses
 Answer: 
-        Isaac da Conceição (ID 000000000):
-                > 08/2023: R$ 223865.90
-                > 09/2023: R$ 165332.36
-                > 10/2023: R$ 202438.55
-                > 11/2023: R$ 185252.47
-        Daniel Viana (ID 000000001):
-                > 08/2023: R$ 222760.70
-                > 09/2023: R$ 190808.50
-                > 10/2023: R$ 203009.09
-                > 11/2023: R$ 196680.90
-        Otávio Moraes (ID 000000002):
-                > 08/2023: R$ 231769.54
-                > 09/2023: R$ 140439.40
-                > 10/2023: R$ 175547.34
-                > 11/2023: R$ 166912.58
-        Brenda Pereira (ID 000000003):
-                > 08/2023: R$ 179309.70
-                > 09/2023: R$ 207243.43
-                > 10/2023: R$ 215426.10
-                > 11/2023: R$ 184423.87
-        Srta. Joana Fernandes (ID 000000005):
-                > 08/2023: R$ 217946.49
-                > 09/2023: R$ 195552.59
-                > 10/2023: R$ 202996.97
-                > 11/2023: R$ 168467.18
-        Nicole da Luz (ID 000000007):
-                > 08/2023: R$ 192041.20
-                > 09/2023: R$ 178539.01
-                > 10/2023: R$ 230590.82
-                > 11/2023: R$ 189253.06
-        Davi Moura (ID 000000008):
-                > 08/2023: R$ 217689.89
-                > 09/2023: R$ 202633.62
-                > 10/2023: R$ 176327.06
-                > 11/2023: R$ 178045.24
+        Kaique da Luz (ID 000000000):
+                > 08/2023: R$ 183445.50
+                > 09/2023: R$ 197340.64
+                > 10/2023: R$ 203820.59
+                > 11/2023: R$ 163486.72
+        Arthur Sales (ID 000000002):
+                > 08/2023: R$ 169682.17
+                > 09/2023: R$ 184892.28
+                > 10/2023: R$ 201149.37
+                > 11/2023: R$ 173831.94
+        Sr. André Peixoto (ID 000000004):
+                > 08/2023: R$ 185867.79
+                > 09/2023: R$ 168083.16
+                > 10/2023: R$ 205887.64
+                > 11/2023: R$ 181499.25
+        Lucas Viana (ID 000000005):
+                > 08/2023: R$ 197254.49
+                > 09/2023: R$ 163232.36
+                > 10/2023: R$ 269224.83
+                > 11/2023: R$ 172991.98
+        Carlos Eduardo Rodrigues (ID 000000006):
+                > 08/2023: R$ 213096.99
+                > 09/2023: R$ 163412.13
+                > 10/2023: R$ 216710.75
+                > 11/2023: R$ 147592.03
+        Sra. Elisa Teixeira (ID 000000007):
+                > 08/2023: R$ 204401.91
+                > 09/2023: R$ 202410.93
+                > 10/2023: R$ 215465.38
+                > 11/2023: R$ 172621.26
+        Ana Lívia da Cruz (ID 000000008):
+                > 08/2023: R$ 206843.82
+                > 09/2023: R$ 197671.72
+                > 10/2023: R$ 199823.01
+                > 11/2023: R$ 176755.11
+        Levi Fogaça (ID 000000009):
+                > 08/2023: R$ 195910.29
+                > 09/2023: R$ 223540.87
+                > 10/2023: R$ 194507.09
+                > 11/2023: R$ 168596.84
 
 Deleting old data from `data\landing\card_transactions.orc`...
 

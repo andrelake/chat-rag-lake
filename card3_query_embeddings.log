@@ -1,380 +1,68 @@
 PS C:\Users\felip\Documents\GitHub\chat-rag-lake> & "C:/Program Files/Python311/python.exe" c:/Users/felip/Documents/GitHub/chat-rag-lake/card3_query_embeddings.py
-Found vectorstore: "felipe-dev-picpay-prj-ai-rag-llm-table-2"
+Found vectorstore: "felipe-dev-picpay-prj-ai-rag-llm-table-3"
 
-Enter a prompt (type 'exit' to quit): O cliente Brenda Pereira efetuou quais transaçoes em março de 2023?                          
-Querying vectorstore with O cliente Brenda Pereira efetuou quais transaçoes em março de 2023?
+Enter a prompt (type 'exit' to quit): O cliente Carlos Eduardo Rodrigues (CPF: 80763159212) efetuou quais transaçoes em março de 2023?
+Querying vectorstore with O cliente Carlos Eduardo Rodrigues (CPF: 80763159212) efetuou quais transaçoes em março de 2023?
 
-{'_page_content_body': '',
- '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
-                         'pertence à carteira do gerente de contas Leandro '
-                         'Moura (ID 0), efetuou um transação de R$ 2275.85 no '
-                         'dia 9 do mês de março do ano de 2023 (09/03/2023) '
-                         'com cartão de débito INTERNACIONAL para o '
-                         'estabelecimento "Ribeiro"',
- 'card_variant': '',
- 'consumer_document': '59413602824',
- 'consumer_id': 3.0,
- 'consumer_id_hash': 3.0,
- 'consumer_name': 'Brenda Pereira',
- 'officer_id': 0.0,
- 'officer_name': 'Leandro Moura',
- 'portfolio_id': 0.0,
- 'product': 'debit',
- 'seller_description': 'Ribeiro',
- 'transaction_at': '2023-03-09T14:58:26.000000+0000',
- 'transaction_day': 9.0,
- 'transaction_id': 0.0,
- 'transaction_month': 3.0,
- 'transaction_value': 2275.8519984036047,
- 'transaction_year': 2023.0}
-O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 2275.85 no dia 9 do mês de março do ano de 2023 (09/03/2023) com cartão de débito INTERNACIONAL para o estabelecimento "Ribeiro"
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 618.81 no dia 2 do mês de março do ano de 2023 (02/03/2023) com cartão de débito BLACK para o estabelecimento "Azevedo S/A"
 
-{'_page_content_body': '',
- '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
-                         'pertence à carteira do gerente de contas Leandro '
-                         'Moura (ID 0), efetuou um transação de R$ 2884.00 no '
-                         'dia 29 do mês de março do ano de 2023 (29/03/2023) '
-                         'com cartão de débito INTERNACIONAL para o '
-                         'estabelecimento "Correia"',
- 'card_variant': '',
- 'consumer_document': '59413602824',
- 'consumer_id': 3.0,
- 'consumer_id_hash': 3.0,
- 'consumer_name': 'Brenda Pereira',
- 'officer_id': 0.0,
- 'officer_name': 'Leandro Moura',
- 'portfolio_id': 0.0,
- 'product': 'debit',
- 'seller_description': 'Correia',
- 'transaction_at': '2023-03-29T21:32:18.000000+0000',
- 'transaction_day': 29.0,
- 'transaction_id': 0.0,
- 'transaction_month': 3.0,
- 'transaction_value': 2883.997215468075,
- 'transaction_year': 2023.0}
-O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 2884.00 no dia 29 do mês de março do ano de 2023 (29/03/2023) com cartão de débito INTERNACIONAL para o estabelecimento "Correia"
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 3062.11 no dia 7 do mês de março do ano de 2023 (07/03/2023) com cartão de débito INTERNACIONAL para o estabelecimento "Moreira"
 
-{'_page_content_body': '',
- '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
-                         'pertence à carteira do gerente de contas Leandro '
-                         'Moura (ID 0), efetuou um transação de R$ 3873.43 no '
-                         'dia 2 do mês de março do ano de 2023 (02/03/2023) '
-                         'com cartão de débito STANDARD para o estabelecimento '
-                         '"Ramos"',
- 'card_variant': 'standard',
- 'consumer_document': '59413602824',
- 'consumer_id': 3.0,
- 'consumer_id_hash': 3.0,
- 'consumer_name': 'Brenda Pereira',
- 'officer_id': 0.0,
- 'officer_name': 'Leandro Moura',
- 'portfolio_id': 0.0,
- 'product': 'debit',
- 'seller_description': 'Ramos',
- 'transaction_at': '2023-03-02T14:05:11.000000+0000',
- 'transaction_day': 2.0,
- 'transaction_id': 0.0,
- 'transaction_month': 3.0,
- 'transaction_value': 3873.42735136413,
- 'transaction_year': 2023.0}
-O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 3873.43 no dia 2 do mês de março do ano de 2023 (02/03/2023) com cartão de débito STANDARD para o estabelecimento "Ramos"
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 2826.37 no dia 6 do mês de março do ano de 2023 (06/03/2023) com cartão de débito STANDARD para o estabelecimento "Pires"
 
-{'_page_content_body': '',
- '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
-                         'pertence à carteira do gerente de contas Leandro '
-                         'Moura (ID 0), efetuou um transação de R$ 4993.97 no '
-                         'dia 28 do mês de março do ano de 2023 (28/03/2023) '
-                         'com cartão de crédito INTERNACIONAL para o '
-                         'estabelecimento "Pires"',
- 'card_variant': '',
- 'consumer_document': '59413602824',
- 'consumer_id': 3.0,
- 'consumer_id_hash': 3.0,
- 'consumer_name': 'Brenda Pereira',
- 'officer_id': 0.0,
- 'officer_name': 'Leandro Moura',
- 'portfolio_id': 0.0,
- 'product': 'credit',
- 'seller_description': 'Pires',
- 'transaction_at': '2023-03-28T12:46:19.000000+0000',
- 'transaction_day': 28.0,
- 'transaction_id': 0.0,
- 'transaction_month': 3.0,
- 'transaction_value': 4993.971927246612,
- 'transaction_year': 2023.0}
-O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 4993.97 no dia 28 do mês de março do ano de 2023 (28/03/2023) com cartão de crédito INTERNACIONAL para o estabelecimento "Pires"
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 3498.25 no dia 29 do mês de março do ano de 2023 (29/03/2023) com cartão de débito INTERNACIONAL para o estabelecimento "Dias"
 
-{'_page_content_body': '',
- '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
-                         'pertence à carteira do gerente de contas Leandro '
-                         'Moura (ID 0), efetuou um transação de R$ 3728.98 no '
-                         'dia 11 do mês de março do ano de 2023 (11/03/2023) '
-                         'com cartão de benefícios INTERNACIONAL para o '
-                         'estabelecimento "Silva"',
- 'card_variant': '',
- 'consumer_document': '59413602824',
- 'consumer_id': 3.0,
- 'consumer_id_hash': 3.0,
- 'consumer_name': 'Brenda Pereira',
- 'officer_id': 0.0,
- 'officer_name': 'Leandro Moura',
- 'portfolio_id': 0.0,
- 'product': '',
- 'seller_description': 'Silva',
- 'transaction_at': '2023-03-11T00:25:03.000000+0000',
- 'transaction_day': 11.0,
- 'transaction_id': 0.0,
- 'transaction_month': 3.0,
- 'transaction_value': 3728.978482533277,
- 'transaction_year': 2023.0}
-O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 3728.98 no dia 11 do mês de março do ano de 2023 (11/03/2023) com cartão de benefícios INTERNACIONAL para o estabelecimento "Silva"
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 1974.66 no dia 1 do mês de março do ano de 2023 (01/03/2023) com cartão de benefícios INTERNACIONAL para o estabelecimento "Carvalho Almeida - EI"
 
-{'_page_content_body': '',
- '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
-                         'pertence à carteira do gerente de contas Leandro '
-                         'Moura (ID 0), efetuou um transação de R$ 2254.70 no '
-                         'dia 2 do mês de março do ano de 2023 (02/03/2023) '
-                         'com cartão de benefícios INTERNACIONAL para o '
-                         'estabelecimento "Gonçalves"',
- 'card_variant': '',
- 'consumer_document': '59413602824',
- 'consumer_id': 3.0,
- 'consumer_id_hash': 3.0,
- 'consumer_name': 'Brenda Pereira',
- 'officer_id': 0.0,
- 'officer_name': 'Leandro Moura',
- 'portfolio_id': 0.0,
- 'product': '',
- 'seller_description': 'Gonçalves',
- 'transaction_at': '2023-03-02T06:48:51.000000+0000',
- 'transaction_day': 2.0,
- 'transaction_id': 0.0,
- 'transaction_month': 3.0,
- 'transaction_value': 2254.6976270387872,
- 'transaction_year': 2023.0}
-O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 2254.70 no dia 2 do mês de março do ano de 2023 (02/03/2023) com cartão de benefícios INTERNACIONAL para o estabelecimento "Gonçalves"
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 4715.41 no dia 2 do mês de fevereiro do ano de 2023 (02/02/2023) com cartão de débito BLACK para o estabelecimento "Cardoso Rodrigues e Filhos"
 
-{'_page_content_body': '',
- '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
-                         'pertence à carteira do gerente de contas Leandro '
-                         'Moura (ID 0), efetuou um transação de R$ 1445.27 no '
-                         'dia 1 do mês de março do ano de 2023 (01/03/2023) '
-                         'com cartão de crédito BLACK para o estabelecimento '
-                         '"Farias"',
- 'card_variant': 'black',
- 'consumer_document': '59413602824',
- 'consumer_id': 3.0,
- 'consumer_id_hash': 3.0,
- 'consumer_name': 'Brenda Pereira',
- 'officer_id': 0.0,
- 'officer_name': 'Leandro Moura',
- 'portfolio_id': 0.0,
- 'product': 'credit',
- 'seller_description': 'Farias',
- 'transaction_at': '2023-03-01T11:09:51.000000+0000',
- 'transaction_day': 1.0,
- 'transaction_id': 0.0,
- 'transaction_month': 3.0,
- 'transaction_value': 1445.2695759797027,
- 'transaction_year': 2023.0}
-O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 1445.27 no dia 1 do mês de março do ano de 2023 (01/03/2023) com cartão de crédito BLACK para o estabelecimento "Farias"
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 1006.30 no dia 29 do mês de março do ano de 2023 (29/03/2023) com cartão de débito BLACK para o estabelecimento "Pinto Alves S/A"
 
-{'_page_content_body': '',
- '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
-                         'pertence à carteira do gerente de contas Leandro '
-                         'Moura (ID 0), efetuou um transação de R$ 57.68 no '
-                         'dia 10 do mês de março do ano de 2023 (10/03/2023) '
-                         'com cartão de benefícios INTERNACIONAL para o '
-                         'estabelecimento "Araújo Silva - ME"',
- 'card_variant': '',
- 'consumer_document': '59413602824',
- 'consumer_id': 3.0,
- 'consumer_id_hash': 3.0,
- 'consumer_name': 'Brenda Pereira',
- 'officer_id': 0.0,
- 'officer_name': 'Leandro Moura',
- 'portfolio_id': 0.0,
- 'product': '',
- 'seller_description': 'Araújo Silva - ME',
- 'transaction_at': '2023-03-10T14:21:45.000000+0000',
- 'transaction_day': 10.0,
- 'transaction_id': 0.0,
- 'transaction_month': 3.0,
- 'transaction_value': 57.68114812833782,
- 'transaction_year': 2023.0}
-O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 57.68 no dia 10 do mês de março do ano de 2023 (10/03/2023) com cartão de benefícios INTERNACIONAL para o estabelecimento "Araújo Silva - ME"
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 47.65 no dia 8 do mês de março do ano de 2023 (08/03/2023) com cartão de débito INTERNACIONAL para o estabelecimento "Freitas"
 
-{'_page_content_body': '',
- '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
-                         'pertence à carteira do gerente de contas Leandro '
-                         'Moura (ID 0), efetuou um transação de R$ 847.75 no '
-                         'dia 3 do mês de janeiro do ano de 2023 (03/01/2023) '
-                         'com cartão de benefícios INTERNACIONAL para o '
-                         'estabelecimento "Ramos Peixoto e Filhos"',
- 'card_variant': '',
- 'consumer_document': '59413602824',
- 'consumer_id': 3.0,
- 'consumer_id_hash': 3.0,
- 'consumer_name': 'Brenda Pereira',
- 'officer_id': 0.0,
- 'officer_name': 'Leandro Moura',
- 'portfolio_id': 0.0,
- 'product': '',
- 'seller_description': 'Ramos Peixoto e Filhos',
- 'transaction_at': '2023-01-03T05:11:54.000000+0000',
- 'transaction_day': 3.0,
- 'transaction_id': 0.0,
- 'transaction_month': 1.0,
- 'transaction_value': 847.7486570561034,
- 'transaction_year': 2023.0}
-O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 847.75 no dia 3 do mês de janeiro do ano de 2023 (03/01/2023) com cartão de benefícios INTERNACIONAL para o estabelecimento "Ramos Peixoto e Filhos"
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 4496.44 no dia 5 do mês de março do ano de 2023 (05/03/2023) com cartão de débito STANDARD para o estabelecimento "Fernandes da Rosa Ltda."
 
-{'_page_content_body': '',
- '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
-                         'pertence à carteira do gerente de contas Leandro '
-                         'Moura (ID 0), efetuou um transação de R$ 4810.76 no '
-                         'dia 17 do mês de março do ano de 2023 (17/03/2023) '
-                         'com cartão de benefícios INTERNACIONAL para o '
-                         'estabelecimento "Ramos Costela - EI"',
- 'card_variant': '',
- 'consumer_document': '59413602824',
- 'consumer_id': 3.0,
- 'consumer_id_hash': 3.0,
- 'consumer_name': 'Brenda Pereira',
- 'officer_id': 0.0,
- 'officer_name': 'Leandro Moura',
- 'portfolio_id': 0.0,
- 'product': '',
- 'seller_description': 'Ramos Costela - EI',
- 'transaction_at': '2023-03-17T21:27:30.000000+0000',
- 'transaction_day': 17.0,
- 'transaction_id': 0.0,
- 'transaction_month': 3.0,
- 'transaction_value': 4810.7632311812185,
- 'transaction_year': 2023.0}
-O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 4810.76 no dia 17 do mês de março do ano de 2023 (17/03/2023) com cartão de benefícios INTERNACIONAL para o estabelecimento "Ramos Costela - EI"
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 3273.39 no dia 5 do mês de fevereiro do ano de 2023 (05/02/2023) com cartão de débito INTERNACIONAL para o estabelecimento "Araújo"
 
-{'_page_content_body': '',
- '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
-                         'pertence à carteira do gerente de contas Leandro '
-                         'Moura (ID 0), efetuou um transação de R$ 2441.72 no '
-                         'dia 31 do mês de março do ano de 2023 (31/03/2023) '
-                         'com cartão de crédito BLACK para o estabelecimento '
-                         '"Correia e Filhos"',
- 'card_variant': 'black',
- 'consumer_document': '59413602824',
- 'consumer_id': 3.0,
- 'consumer_id_hash': 3.0,
- 'consumer_name': 'Brenda Pereira',
- 'officer_id': 0.0,
- 'officer_name': 'Leandro Moura',
- 'portfolio_id': 0.0,
- 'product': 'credit',
- 'seller_description': 'Correia e Filhos',
- 'transaction_at': '2023-03-31T10:37:55.000000+0000',
- 'transaction_day': 31.0,
- 'transaction_id': 0.0,
- 'transaction_month': 3.0,
- 'transaction_value': 2441.7226633898526,
- 'transaction_year': 2023.0}
-O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 2441.72 no dia 31 do mês de março do ano de 2023 (31/03/2023) com cartão de crédito BLACK para o estabelecimento "Correia e Filhos"
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 1913.29 no dia 18 do mês de março do ano de 2023 (18/03/2023) com cartão de débito BLACK para o estabelecimento "Freitas"
 
-{'_page_content_body': '',
- '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
-                         'pertence à carteira do gerente de contas Leandro '
-                         'Moura (ID 0), efetuou um transação de R$ 1043.24 no '
-                         'dia 26 do mês de março do ano de 2023 (26/03/2023) '
-                         'com cartão de crédito INTERNACIONAL para o '
-                         'estabelecimento "Nunes"',
- 'card_variant': '',
- 'consumer_document': '59413602824',
- 'consumer_id': 3.0,
- 'consumer_id_hash': 3.0,
- 'consumer_name': 'Brenda Pereira',
- 'officer_id': 0.0,
- 'officer_name': 'Leandro Moura',
- 'portfolio_id': 0.0,
- 'product': 'credit',
- 'seller_description': 'Nunes',
- 'transaction_at': '2023-03-26T04:18:45.000000+0000',
- 'transaction_day': 26.0,
- 'transaction_id': 0.0,
- 'transaction_month': 3.0,
- 'transaction_value': 1043.241199028884,
- 'transaction_year': 2023.0}
-O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 1043.24 no dia 26 do mês de março do ano de 2023 (26/03/2023) com cartão de crédito INTERNACIONAL para o estabelecimento "Nunes"
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 3712.98 no dia 31 do mês de março do ano de 2023 (31/03/2023) com cartão de débito BLACK para o estabelecimento "Porto - ME"
 
-{'_page_content_body': '',
- '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
-                         'pertence à carteira do gerente de contas Leandro '
-                         'Moura (ID 0), efetuou um transação de R$ 3757.18 no '
-                         'dia 1 do mês de março do ano de 2023 (01/03/2023) '
-                         'com cartão de crédito BLACK para o estabelecimento '
-                         '"Barbosa"',
- 'card_variant': 'black',
- 'consumer_document': '59413602824',
- 'consumer_id': 3.0,
- 'consumer_id_hash': 3.0,
- 'consumer_name': 'Brenda Pereira',
- 'officer_id': 0.0,
- 'officer_name': 'Leandro Moura',
- 'portfolio_id': 0.0,
- 'product': 'credit',
- 'seller_description': 'Barbosa',
- 'transaction_at': '2023-03-01T19:08:27.000000+0000',
- 'transaction_day': 1.0,
- 'transaction_id': 0.0,
- 'transaction_month': 3.0,
- 'transaction_value': 3757.183477165694,
- 'transaction_year': 2023.0}
-O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 3757.18 no dia 1 do mês de março do ano de 2023 (01/03/2023) com cartão de crédito BLACK para o estabelecimento "Barbosa"
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 4280.17 no dia 27 do mês de março do ano de 2023 (27/03/2023) com cartão de crédito INTERNACIONAL para o estabelecimento "Freitas S/A"
 
-{'_page_content_body': '',
- '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
-                         'pertence à carteira do gerente de contas Leandro '
-                         'Moura (ID 0), efetuou um transação de R$ 2729.97 no '
-                         'dia 14 do mês de março do ano de 2023 (14/03/2023) '
-                         'com cartão de crédito STANDARD para o '
-                         'estabelecimento "Moraes e Filhos"',
- 'card_variant': 'standard',
- 'consumer_document': '59413602824',
- 'consumer_id': 3.0,
- 'consumer_id_hash': 3.0,
- 'consumer_name': 'Brenda Pereira',
- 'officer_id': 0.0,
- 'officer_name': 'Leandro Moura',
- 'portfolio_id': 0.0,
- 'product': 'credit',
- 'seller_description': 'Moraes e Filhos',
- 'transaction_at': '2023-03-14T10:07:06.000000+0000',
- 'transaction_day': 14.0,
- 'transaction_id': 0.0,
- 'transaction_month': 3.0,
- 'transaction_value': 2729.9745181576764,
- 'transaction_year': 2023.0}
-O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 2729.97 no dia 14 do mês de março do ano de 2023 (14/03/2023) com cartão de crédito STANDARD para o estabelecimento "Moraes e Filhos"
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 1371.20 no dia 13 do mês de março do ano de 2023 (13/03/2023) com cartão de crédito STANDARD para o estabelecimento "Silva Gomes - ME"
 
-{'_page_content_body': '',
- '_page_content_header': 'O cliente Brenda Pereira (CPF: 59413602824), que '
-                         'pertence à carteira do gerente de contas Leandro '
-                         'Moura (ID 0), efetuou um transação de R$ 3996.56 no '
-                         'dia 13 do mês de março do ano de 2023 (13/03/2023) '
-                         'com cartão de crédito STANDARD para o '
-                         'estabelecimento "Araújo"',
- 'card_variant': 'standard',
- 'consumer_document': '59413602824',
- 'consumer_id': 3.0,
- 'consumer_id_hash': 3.0,
- 'consumer_name': 'Brenda Pereira',
- 'officer_id': 0.0,
- 'officer_name': 'Leandro Moura',
- 'portfolio_id': 0.0,
- 'product': 'credit',
- 'seller_description': 'Araújo',
- 'transaction_at': '2023-03-13T23:50:36.000000+0000',
- 'transaction_day': 13.0,
- 'transaction_id': 0.0,
- 'transaction_month': 3.0,
- 'transaction_value': 3996.5561580384256,
- 'transaction_year': 2023.0}
-O cliente Brenda Pereira (CPF: 59413602824), que pertence à carteira do gerente de contas Leandro Moura (ID 0), efetuou um transação de R$ 3996.56 no dia 13 do mês de março do ano de 2023 (13/03/2023) com cartão de crédito STANDARD para o estabelecimento "Araújo"
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 184.34 no dia 30 do mês de abril do ano de 2023 (30/04/2023) com cartão de débito INTERNACIONAL para o estabelecimento "Ribeiro"
+
+Enter a prompt (type 'exit' to quit): Qual a soma do valor das transações do cliente Carlos Eduardo Rodrigues em março de 2023?
+Querying vectorstore with Qual a soma do valor das transações do cliente Carlos Eduardo Rodrigues em março de 2023?
+
+Sumário mensal de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de débito para o mês de março do ano de 2023 (03/2023): - Contagem de transações: 25, (4 com cartão BLACK, 4 com cartão GOLD, 4 com cartão PLATINUM, 5 com cartão STANDARD, 8 com cartão INTERNACIONAL); - Valor total: R$ 62126.99; - Valor médio: R$ 2485.08; - Valor da maior transação: R$ 4809.23; - Valor da menor transação: R$ 47.65. 
+
+Sumário mensal de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de crédito para o mês de março do ano de 2023 (03/2023): - Contagem de transações: 27, (2 com cartão BLACK, 5 com cartão GOLD, 5 com cartão PLATINUM, 10 com cartão STANDARD, 5 com cartão INTERNACIONAL); - Valor total: R$ 67713.88; - Valor médio: R$ 2507.92; - Valor da maior transação: R$ 4973.22; - Valor da menor transação: R$ 387.59. 
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de débito para o dia 3 do mês de março do ano de 2023 (03/03/2023): - Contagem de transações: 2, (0 com cartão BLACK, 0 com cartão GOLD, 1 com cartão PLATINUM, 0 com cartão STANDARD, 1 com cartão INTERNACIONAL); - Valor total: R$ 7595.53; - Valor médio: R$ 3797.77; - Valor da maior transação: R$ 4139.89; - Valor da menor transação: R$ 3455.64. 
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de débito para o dia 31 do mês de março do ano de 2023 (31/03/2023): - Contagem de transações: 1, (1 com cartão BLACK, 0 com cartão GOLD, 0 com cartão PLATINUM, 0 com cartão STANDARD, 0 com cartão INTERNACIONAL); - Valor total: R$ 3712.98; - Valor médio: R$ 3712.98; - Valor da maior transação: R$ 3712.98; - Valor da menor transação: R$ 3712.98. 
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de crédito para o dia 14 do mês de março do ano de 2023 (14/03/2023): - Contagem de transações: 1, (0 com cartão BLACK, 0 com cartão GOLD, 0 com cartão PLATINUM, 1 com cartão STANDARD, 0 com cartão INTERNACIONAL); - Valor total: R$ 4973.22; - Valor médio: R$ 4973.22; - Valor da maior transação: R$ 4973.22; - Valor da menor transação: R$ 4973.22.
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de crédito para o dia 20 do mês de março do ano de 2023 (20/03/2023): - Contagem de transações: 3, (0 com cartão BLACK, 0 com cartão GOLD, 1 com cartão PLATINUM, 2 com cartão STANDARD, 0 com cartão INTERNACIONAL); - Valor total: R$ 9411.75; - Valor médio: R$ 3137.25; - Valor da maior transação: R$ 4274.35; - Valor da menor transação: R$ 2011.27.
+
+Sumário mensal de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de crédito para o mês de fevereiro do ano de 2023 (02/2023): - Contagem de transações: 25, (6 com cartão BLACK, 4 com cartão GOLD, 6 com cartão PLATINUM, 7 com cartão STANDARD, 2 com cartão INTERNACIONAL); - Valor total: R$ 57670.96; - Valor médio: R$ 2306.84; - Valor da maior transação: R$ 4615.96; - Valor da menor transação: R$ 412.54.
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de crédito para o dia 12 do mês de março do ano de 2023 (12/03/2023): - Contagem de transações: 1, (0 com cartão BLACK, 0 com cartão GOLD, 0 com cartão PLATINUM, 1 com cartão STANDARD, 0 com cartão INTERNACIONAL); - Valor total: R$ 3403.66; - Valor médio: R$ 3403.66; - Valor da maior transação: R$ 3403.66; - Valor da menor transação: R$ 3403.66.
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de débito para o dia 23 do mês de março do ano de 2023 (23/03/2023): - Contagem de transações: 1, (0 com cartão BLACK, 0 com cartão GOLD, 1 com cartão PLATINUM, 0 com cartão STANDARD, 0 com cartão INTERNACIONAL); - Valor total: R$ 2770.28; - Valor médio: R$ 2770.28; - Valor da maior transação: R$ 2770.28; - Valor da menor transação: R$ 2770.28.
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de débito para o dia 8 do mês de março do ano de 2023 (08/03/2023): - Contagem de transações: 2, (0 com cartão BLACK, 1 com cartão GOLD, 0 com cartão PLATINUM, 0 com cartão STANDARD, 1 com cartão INTERNACIONAL); - Valor total: R$ 4571.30; - Valor médio: R$ 2285.65; - Valor da maior transação: R$ 4523.65; - Valor da menor transação: R$ 47.65.
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de débito para o dia 5 do mês de março do ano de 2023 (05/03/2023): - Contagem de transações: 1, (0 com cartão BLACK, 0 com cartão GOLD, 0 com cartão PLATINUM, 1 com cartão STANDARD, 0 com cartão INTERNACIONAL); - Valor total: R$ 4496.44; - Valor médio: R$ 4496.44; - Valor da maior transação: R$ 4496.44; - Valor da menor transação: R$ 4496.44.
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de crédito para o dia 13 do mês de março do ano de 2023 (13/03/2023): - Contagem de transações: 2, (1 com cartão BLACK, 0 com cartão GOLD, 0 com cartão PLATINUM, 1 com cartão STANDARD, 0 com cartão INTERNACIONAL); - Valor total: R$ 3770.67; - Valor médio: R$ 1885.34; - Valor da maior transação: R$ 2399.48; - Valor da menor transação: R$ 1371.20.
+
+Sumário mensal de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de débito para o mês de fevereiro do ano de 2023 (02/2023): - Contagem de transações: 26, (7 com cartão BLACK, 6 com cartão GOLD, 4 com cartão PLATINUM, 4 com cartão STANDARD, 5 com cartão INTERNACIONAL); - Valor total: R$ 67463.74; - Valor médio: R$ 2594.76; - Valor da maior transação: R$ 4811.50; - Valor da menor transação: R$ 221.18.
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de débito para o dia 30 do mês de março do ano de 2023 (30/03/2023): - Contagem de transações: 2, (0 com cartão BLACK, 0 com cartão GOLD, 0 com cartão PLATINUM, 1 com cartão STANDARD, 1 com cartão INTERNACIONAL); - Valor total: R$ 4387.96; - Valor médio: R$ 2193.98; - Valor da maior transação: R$ 4230.47; - Valor da menor transação: R$ 157.48.
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de crédito para o dia 5 do mês de março do ano de 2023 (05/03/2023): - Contagem de transações: 2, (0 com cartão BLACK, 0 com cartão GOLD, 1 com cartão PLATINUM, 0 com cartão STANDARD, 1 com cartão INTERNACIONAL); - Valor total: R$ 4191.84; - Valor médio: R$ 2095.92; - Valor da maior transação: R$ 3249.06; - Valor da menor transação: R$ 942.78.
