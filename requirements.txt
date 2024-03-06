@@ -12,8 +12,11 @@ tiktoken
 chromadb-client
 sentence-transformers
 cramjam
-pandas
+pandas~=2.1.4
 Faker
 sentence_transformers
 tqdm
 lark
+ragas
+datasets
+pyarrow

@@ -28,7 +28,7 @@ def get_retriever(vs):
 def get_llm() -> ChatOpenAI:
     return ChatOpenAI(openai_api_key=OPENAI_API_KEY,
                       model_name=OPENAI_MODEL_NAME,
-                      temperature=0.2,
+                      temperature=0,
                       streaming=True,
                       callbacks=[StreamingStdOutCallbackHandler()])
 
@@ -121,12 +121,12 @@ def build_rag_chain():
     )
 
     chain = pass_through | conversation_retriever_chain
-    return conversation_retriever_chain, memory, chain
+    return retriever, conversation_retriever_chain, memory, chain
 
 
 def ask_rag_chain(question):
-    retriever, memory, rag_chain = build_rag_chain()
-    response = rag_chain.invoke({"input": question, "context": retriever})
+    _, conversation_retriever_chain, memory, rag_chain = build_rag_chain()
+    response = rag_chain.invoke({"input": question, "context": conversation_retriever_chain})
     memory.save_context({"input": question}, {"output": response["answer"]})
     memory.load_memory_variables({})
     return response["answer"]
