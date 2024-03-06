@@ -347,6 +347,34 @@ class CardTransactions:
         # Perguntas adicionais
         # Quantos % dos clientes da carteira do gerente # fizeram transações com cartão de crédito nos últimos 6 meses?
 
+        # Quanto o cliente Maria gastou em 5 de abril de 2023?
+        # Quando o cliente João gastou em abril de 2023?
+        # Quanto o cliente Maria gastou em 2023?
+        # Quanto o cliente Maria gastou em abril, maio e junho de 2023?
+        # Quanto o cliente Maria gastou em abril comparado com junho de 2023?
+
+        # Qual o total transacionado na carteira em 5 de abril de 2023?
+        # Qual o total transacionado na carteira em abril de 2023?
+        # Qual o total transacionado na carteira em 2023?
+        # Qual o total transacionado na carteira em abril, maio e junho de 2023?
+        # Qual o total transacionado na carteira em abril comparado com junho de 2023?
+
+        # Qual o total transacionado no cartão de crédito em 5 de abril de 2023?
+        # Qual o total transacionado no cartão de crédito em abril de 2023?
+        # Qual o total transacionado no cartão de crédito em 2023?
+        # Qual o total transacionado no cartão de crédito em abril, maio e junho de 2023?
+        # Qual o total transacionado no cartão de crédito em abril comparado com junho de 2023?
+
+        # Qual o total transacionado no cartão de crédito BLACK em 5 de abril de 2023?
+        # Qual o total transacionado no cartão de crédito BLACK em abril de 2023?
+        # Qual o total transacionado no cartão de crédito BLACK em abril, maio e junho de 2023?
+        # Qual o total transacionado no cartão de crédito BLACK em abril comparado com junho de 2023?
+
+        # Qual a evolução mensal dos gastos do cliente Maria nos últimos 6 meses (julho, agosto, setembro, outubro, novembro e dezembro de 2023)?
+        # Qual a evolução anual dos gastos do cliente Maria nos últimos 2 anos (2023, 2024)?
+        # Em relação à média de gastos de todos os clientes em abril, como a cliente Maria se compara?
+
+
     def read() -> pd.DataFrame:
         schema = CardTransactions.schema['pandas']
         df = read_orc(path=CardTransactions.path, log=log).astype(schema)
