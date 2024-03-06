@@ -1,0 +1,49 @@
+PS C:\Users\felip\Documents\GitHub\chat-rag-lake> & "C:/Program Files/Python311/python.exe" c:/Users/felip/Documents/GitHub/chat-rag-lake/card2_embed_data.py
+Reading ORC files from `data\landing\card_transactions.orc`...
+
+Generating documents...
+Generated 9086 documents
+
+Generating documents...
+Generated 6534 documents
+
+Generating documents...
+Generated 360 documents
+
+Generating documents...
+Generated 30 documents
+
+Generating documents...
+Generated 365 documents
+
+Generating documents...
+Generated 12 documents
+
+Generating documents...
+Generated 1 documents
+
+Deleting vectorstore: felipe-dev-picpay-prj-ai-rag-llm-table-3
+
+Vectorstore "felipe-dev-picpay-prj-ai-rag-llm-table-3" not found, skipping deletion
+
+Vectorstore "felipe-dev-picpay-prj-ai-rag-llm-table-3" not found, creating
+
+Creating vectorstore felipe-dev-picpay-prj-ai-rag-llm-table-3
+
+Found vectorstore: "felipe-dev-picpay-prj-ai-rag-llm-table-3"
+
+Calculating embedding cost for 16388 documents using model `text-embedding-3-small`...
+
+Total tokens: 1829843
+Total documents: 16388 (~111.7 tokens/document)
+Embedding cost: $0.03660
+
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 33/33 [05:28<00:00,  9.96s/it]
+
+
+Added 16388/16388 documents to vectorstore
+
+{'dimension': 1536,
+ 'index_fullness': 0.0,
+ 'namespaces': {'': {'vector_count': 16388}},
+ 'total_vector_count': 16388}

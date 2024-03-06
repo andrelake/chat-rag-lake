@@ -17,3 +17,5 @@ Faker
 sentence_transformers
 tqdm
 lark
+pyarrow
+pyorc

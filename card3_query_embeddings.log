@@ -1,0 +1,68 @@
+PS C:\Users\felip\Documents\GitHub\chat-rag-lake> & "C:/Program Files/Python311/python.exe" c:/Users/felip/Documents/GitHub/chat-rag-lake/card3_query_embeddings.py
+Found vectorstore: "felipe-dev-picpay-prj-ai-rag-llm-table-3"
+
+Enter a prompt (type 'exit' to quit): O cliente Carlos Eduardo Rodrigues (CPF: 80763159212) efetuou quais transaçoes em março de 2023?
+Querying vectorstore with O cliente Carlos Eduardo Rodrigues (CPF: 80763159212) efetuou quais transaçoes em março de 2023?
+
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 618.81 no dia 2 do mês de março do ano de 2023 (02/03/2023) com cartão de débito BLACK para o estabelecimento "Azevedo S/A"
+
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 3062.11 no dia 7 do mês de março do ano de 2023 (07/03/2023) com cartão de débito INTERNACIONAL para o estabelecimento "Moreira"
+
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 2826.37 no dia 6 do mês de março do ano de 2023 (06/03/2023) com cartão de débito STANDARD para o estabelecimento "Pires"
+
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 3498.25 no dia 29 do mês de março do ano de 2023 (29/03/2023) com cartão de débito INTERNACIONAL para o estabelecimento "Dias"
+
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 1974.66 no dia 1 do mês de março do ano de 2023 (01/03/2023) com cartão de benefícios INTERNACIONAL para o estabelecimento "Carvalho Almeida - EI"
+
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 4715.41 no dia 2 do mês de fevereiro do ano de 2023 (02/02/2023) com cartão de débito BLACK para o estabelecimento "Cardoso Rodrigues e Filhos"
+
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 1006.30 no dia 29 do mês de março do ano de 2023 (29/03/2023) com cartão de débito BLACK para o estabelecimento "Pinto Alves S/A"
+
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 47.65 no dia 8 do mês de março do ano de 2023 (08/03/2023) com cartão de débito INTERNACIONAL para o estabelecimento "Freitas"
+
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 4496.44 no dia 5 do mês de março do ano de 2023 (05/03/2023) com cartão de débito STANDARD para o estabelecimento "Fernandes da Rosa Ltda."
+
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 3273.39 no dia 5 do mês de fevereiro do ano de 2023 (05/02/2023) com cartão de débito INTERNACIONAL para o estabelecimento "Araújo"
+
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 1913.29 no dia 18 do mês de março do ano de 2023 (18/03/2023) com cartão de débito BLACK para o estabelecimento "Freitas"
+
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 3712.98 no dia 31 do mês de março do ano de 2023 (31/03/2023) com cartão de débito BLACK para o estabelecimento "Porto - ME"
+
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 4280.17 no dia 27 do mês de março do ano de 2023 (27/03/2023) com cartão de crédito INTERNACIONAL para o estabelecimento "Freitas S/A"
+
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 1371.20 no dia 13 do mês de março do ano de 2023 (13/03/2023) com cartão de crédito STANDARD para o estabelecimento "Silva Gomes - ME"
+
+O cliente Carlos Eduardo Rodrigues (CPF: 80763159212), efetuou um transação de R$ 184.34 no dia 30 do mês de abril do ano de 2023 (30/04/2023) com cartão de débito INTERNACIONAL para o estabelecimento "Ribeiro"
+
+Enter a prompt (type 'exit' to quit): Qual a soma do valor das transações do cliente Carlos Eduardo Rodrigues em março de 2023?
+Querying vectorstore with Qual a soma do valor das transações do cliente Carlos Eduardo Rodrigues em março de 2023?
+
+Sumário mensal de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de débito para o mês de março do ano de 2023 (03/2023): - Contagem de transações: 25, (4 com cartão BLACK, 4 com cartão GOLD, 4 com cartão PLATINUM, 5 com cartão STANDARD, 8 com cartão INTERNACIONAL); - Valor total: R$ 62126.99; - Valor médio: R$ 2485.08; - Valor da maior transação: R$ 4809.23; - Valor da menor transação: R$ 47.65. 
+
+Sumário mensal de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de crédito para o mês de março do ano de 2023 (03/2023): - Contagem de transações: 27, (2 com cartão BLACK, 5 com cartão GOLD, 5 com cartão PLATINUM, 10 com cartão STANDARD, 5 com cartão INTERNACIONAL); - Valor total: R$ 67713.88; - Valor médio: R$ 2507.92; - Valor da maior transação: R$ 4973.22; - Valor da menor transação: R$ 387.59. 
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de débito para o dia 3 do mês de março do ano de 2023 (03/03/2023): - Contagem de transações: 2, (0 com cartão BLACK, 0 com cartão GOLD, 1 com cartão PLATINUM, 0 com cartão STANDARD, 1 com cartão INTERNACIONAL); - Valor total: R$ 7595.53; - Valor médio: R$ 3797.77; - Valor da maior transação: R$ 4139.89; - Valor da menor transação: R$ 3455.64. 
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de débito para o dia 31 do mês de março do ano de 2023 (31/03/2023): - Contagem de transações: 1, (1 com cartão BLACK, 0 com cartão GOLD, 0 com cartão PLATINUM, 0 com cartão STANDARD, 0 com cartão INTERNACIONAL); - Valor total: R$ 3712.98; - Valor médio: R$ 3712.98; - Valor da maior transação: R$ 3712.98; - Valor da menor transação: R$ 3712.98. 
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de crédito para o dia 14 do mês de março do ano de 2023 (14/03/2023): - Contagem de transações: 1, (0 com cartão BLACK, 0 com cartão GOLD, 0 com cartão PLATINUM, 1 com cartão STANDARD, 0 com cartão INTERNACIONAL); - Valor total: R$ 4973.22; - Valor médio: R$ 4973.22; - Valor da maior transação: R$ 4973.22; - Valor da menor transação: R$ 4973.22.
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de crédito para o dia 20 do mês de março do ano de 2023 (20/03/2023): - Contagem de transações: 3, (0 com cartão BLACK, 0 com cartão GOLD, 1 com cartão PLATINUM, 2 com cartão STANDARD, 0 com cartão INTERNACIONAL); - Valor total: R$ 9411.75; - Valor médio: R$ 3137.25; - Valor da maior transação: R$ 4274.35; - Valor da menor transação: R$ 2011.27.
+
+Sumário mensal de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de crédito para o mês de fevereiro do ano de 2023 (02/2023): - Contagem de transações: 25, (6 com cartão BLACK, 4 com cartão GOLD, 6 com cartão PLATINUM, 7 com cartão STANDARD, 2 com cartão INTERNACIONAL); - Valor total: R$ 57670.96; - Valor médio: R$ 2306.84; - Valor da maior transação: R$ 4615.96; - Valor da menor transação: R$ 412.54.
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de crédito para o dia 12 do mês de março do ano de 2023 (12/03/2023): - Contagem de transações: 1, (0 com cartão BLACK, 0 com cartão GOLD, 0 com cartão PLATINUM, 1 com cartão STANDARD, 0 com cartão INTERNACIONAL); - Valor total: R$ 3403.66; - Valor médio: R$ 3403.66; - Valor da maior transação: R$ 3403.66; - Valor da menor transação: R$ 3403.66.
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de débito para o dia 23 do mês de março do ano de 2023 (23/03/2023): - Contagem de transações: 1, (0 com cartão BLACK, 0 com cartão GOLD, 1 com cartão PLATINUM, 0 com cartão STANDARD, 0 com cartão INTERNACIONAL); - Valor total: R$ 2770.28; - Valor médio: R$ 2770.28; - Valor da maior transação: R$ 2770.28; - Valor da menor transação: R$ 2770.28.
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de débito para o dia 8 do mês de março do ano de 2023 (08/03/2023): - Contagem de transações: 2, (0 com cartão BLACK, 1 com cartão GOLD, 0 com cartão PLATINUM, 0 com cartão STANDARD, 1 com cartão INTERNACIONAL); - Valor total: R$ 4571.30; - Valor médio: R$ 2285.65; - Valor da maior transação: R$ 4523.65; - Valor da menor transação: R$ 47.65.
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de débito para o dia 5 do mês de março do ano de 2023 (05/03/2023): - Contagem de transações: 1, (0 com cartão BLACK, 0 com cartão GOLD, 0 com cartão PLATINUM, 1 com cartão STANDARD, 0 com cartão INTERNACIONAL); - Valor total: R$ 4496.44; - Valor médio: R$ 4496.44; - Valor da maior transação: R$ 4496.44; - Valor da menor transação: R$ 4496.44.
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de crédito para o dia 13 do mês de março do ano de 2023 (13/03/2023): - Contagem de transações: 2, (1 com cartão BLACK, 0 com cartão GOLD, 0 com cartão PLATINUM, 1 com cartão STANDARD, 0 com cartão INTERNACIONAL); - Valor total: R$ 3770.67; - Valor médio: R$ 1885.34; - Valor da maior transação: R$ 2399.48; - Valor da menor transação: R$ 1371.20.
+
+Sumário mensal de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de débito para o mês de fevereiro do ano de 2023 (02/2023): - Contagem de transações: 26, (7 com cartão BLACK, 6 com cartão GOLD, 4 com cartão PLATINUM, 4 com cartão STANDARD, 5 com cartão INTERNACIONAL); - Valor total: R$ 67463.74; - Valor médio: R$ 2594.76; - Valor da maior transação: R$ 4811.50; - Valor da menor transação: R$ 221.18.
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de débito para o dia 30 do mês de março do ano de 2023 (30/03/2023): - Contagem de transações: 2, (0 com cartão BLACK, 0 com cartão GOLD, 0 com cartão PLATINUM, 1 com cartão STANDARD, 1 com cartão INTERNACIONAL); - Valor total: R$ 4387.96; - Valor médio: R$ 2193.98; - Valor da maior transação: R$ 4230.47; - Valor da menor transação: R$ 157.48.
+
+Sumário diário de transações do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) com cartão de crédito para o dia 5 do mês de março do ano de 2023 (05/03/2023): - Contagem de transações: 2, (0 com cartão BLACK, 0 com cartão GOLD, 1 com cartão PLATINUM, 0 com cartão STANDARD, 1 com cartão INTERNACIONAL); - Valor total: R$ 4191.84; - Valor médio: R$ 2095.92; - Valor da maior transação: R$ 3249.06; - Valor da menor transação: R$ 942.78.

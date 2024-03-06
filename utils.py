@@ -15,7 +15,11 @@ def get_month_name(n: int) -> str:
 
 
 def threat_product(product):
-    return {'debit': 'débito', 'credit': 'crédito', '': 'desconhecido'}[product or '']
+    return {'debit': 'débito', 'credit': 'crédito', '': 'benefícios'}[product or '']
+
+
+def threat_card_variant(card_variant):
+    return {'black': 'BLACK', 'gold': 'GOLD', 'platinum': 'PLATINUM', 'standard': 'STANDARD', '': 'INTERNACIONAL'}[card_variant or '']
 
 
 log = Logger()
