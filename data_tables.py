@@ -1,14 +1,16 @@
 import os
-from typing import Optional, List
+from typing import Optional, List, Tuple, Dict, Any
 from datetime import date
 import pytz
 import random
+
+from utils import Logger, log, threat_product, threat_card_variant
+from data_handler import read_orc, write_orc
+
+from langchain_core.documents import Document
 from faker import Faker
 import pandas as pd
 import numpy as np
-
-from utils import Logger, log
-from data_handler import read_orc, write_orc
 
 
 class CardTransactions:
@@ -147,6 +149,80 @@ class CardTransactions:
         log(f'Dataframe memory usage: `{df.memory_usage(deep=True).sum() / 1024 ** 2:.2f} MB`')
         
         return df
+
+    ## By year, month, day, portfolio, officer, consumer, product, variant, seller, and transaction
+    def group_by_transaction(df: pd.DataFrame) -> Tuple[pd.DataFrame, List[Document]]:
+        df = df.copy()
+        df['product'] = df['product'].map(threat_product)
+        df['card_variant'] = df['card_variant'].map(threat_card_variant)
+        return df
+
+
+    ## By year, month, day, consumer, product
+    def group_by_year_month_day_consumer_product(df: pd.DataFrame, aggregations: Dict[str, Tuple[str, Any]]) -> Tuple[pd.DataFrame, List[Document]]:
+        df = df.copy()
+        df['product'] = df['product'].map(threat_product)
+        df['card_variant'] = df['card_variant'].map(threat_card_variant)
+        groupby = ['transaction_year', 'transaction_month', 'transaction_day', 'consumer_id', 'consumer_document', 'consumer_name', 'product']
+        df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
+        df = df[df.transaction_value_count > 0]
+        return df
+
+
+    ## By year, month, consumer, product
+    def group_by_year_month_consumer_product(df: pd.DataFrame, aggregations: Dict[str, Tuple[str, Any]]) -> Tuple[pd.DataFrame, List[Document]]:
+        df = df.copy()
+        df['product'] = df['product'].map(threat_product)
+        df['card_variant'] = df['card_variant'].map(threat_card_variant)
+        groupby = ['transaction_year', 'transaction_month', 'consumer_id', 'consumer_document', 'consumer_name', 'product']
+        df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
+        df = df[df.transaction_value_count > 0]
+        return df
+
+
+    ## By year, consumer, product
+    def group_by_year_consumer_product(df: pd.DataFrame, aggregations: Dict[str, Tuple[str, Any]]) -> Tuple[pd.DataFrame, List[Document]]:
+        df = df.copy()
+        df['product'] = df['product'].map(threat_product)
+        df['card_variant'] = df['card_variant'].map(threat_card_variant)
+        groupby = ['transaction_year', 'consumer_id', 'consumer_document', 'consumer_name', 'product']
+        df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
+        df = df[df.transaction_value_count > 0]
+        return df
+
+
+    ## By year, month, day, portfolio
+    def group_by_year_month_day_portfolio(df: pd.DataFrame, aggregations: Dict[str, Tuple[str, Any]]) -> Tuple[pd.DataFrame, List[Document]]:
+        df = df.copy()
+        df['product'] = df['product'].map(threat_product)
+        df['card_variant'] = df['card_variant'].map(threat_card_variant)
+        groupby = ['transaction_year', 'transaction_month', 'transaction_day', 'portfolio_id']
+        df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
+        df = df[df.transaction_value_count > 0]
+        return df
+
+
+    ## By year, month, portfolio
+    def group_by_year_month_portfolio(df: pd.DataFrame, aggregations: Dict[str, Tuple[str, Any]]) -> Tuple[pd.DataFrame, List[Document]]:
+        df = df.copy()
+        df['product'] = df['product'].map(threat_product)
+        df['card_variant'] = df['card_variant'].map(threat_card_variant)
+        groupby = ['transaction_year', 'transaction_month', 'portfolio_id']
+        df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
+        df = df[df.transaction_value_count > 0]
+        return df
+
+
+    ## By year, portfolio
+    def group_by_year_portfolio(df: pd.DataFrame, aggregations: Dict[str, Tuple[str, Any]]) -> Tuple[pd.DataFrame, List[Document]]:
+        df = df.copy()
+        df['product'] = df['product'].map(threat_product)
+        df['card_variant'] = df['card_variant'].map(threat_card_variant)
+        groupby = ['transaction_year', 'portfolio_id']
+        df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
+        df = df[df.transaction_value_count > 0]
+        return df
+    
 
     def quiz(df: pd.DataFrame, log: Optional[Logger] = log):
         def ask(message):

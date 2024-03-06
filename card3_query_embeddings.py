@@ -22,7 +22,7 @@ embedding_model_name = 'text-embedding-3-small'
 embedding_function = get_embeddings_client(model_name=embedding_model_name, type='api', api_key=OPENAI_API_KEY)
 
 # Get vectorstore
-vectorstore_name = 'felipe-dev-picpay-prj-ai-rag-llm-table-3'
+vectorstore_name = 'felipe-dev-picpay-prj-ai-rag-llm-table-1'
 vectorstore = get_vectorstore(
     name=vectorstore_name,
     embedding_function=embedding_function,
@@ -34,7 +34,7 @@ vectorstore = get_vectorstore(
 # Ask user for prompt until user types "exit"
 while True:
     # Example: "O cliente Carlos Eduardo Rodrigues (CPF: 80763159212) efetuou quais transaçoes em março de 2023?"
-    prompt = input("Enter a prompt (type 'exit' to quit): ")
+    prompt = input("\033[96mEnter a prompt (type 'exit' to quit):\033[0m ")
     if prompt == "exit":
         break
 
