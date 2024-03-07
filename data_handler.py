@@ -46,7 +46,7 @@ def generate_documents(
             df = df.groupby(group_by).agg({'_page_content_body': ''.join}).reset_index()
     else:
         df['_page_content_body'] = ''
-    df['_page_content_header'] = df.apply(lambda record: parse_content_header(record), axis=1)
+    df['_page_content_header'] = df.apply((lambda record: parse_content_header(record)), axis=1)
     df['_metadata'] = df[[c for c in df.columns if c not in temp_columns]] \
                         .astype('object') \
                         .apply(lambda record: parse_metadata(record), axis=1)

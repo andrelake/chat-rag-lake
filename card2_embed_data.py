@@ -4,7 +4,7 @@ from datetime import date
 from typing import Optional, Any, Callable, List, Dict, Tuple
 import json
 
-from utils import log, get_month_name, threat_product, threat_card_variant
+from utils import log, get_month_name
 from data_handler import read_orc, generate_documents, redistribute_by_characters, get_embeddings_client, get_embedding_cost
 from data_tables import CardTransactions
 from connections.pinecone import (
@@ -61,7 +61,8 @@ def write_documents_txt(vectorstore_name: str, documents: List[Document]) -> Non
         fo.write('\n\n'.join([doc.page_content for doc in documents]))
 
 
-def test_1(df: DataFrame, aggregations: Dict[str, Tuple[str, Any]]) -> Tuple[DataFrame, List[Document]]:
+# Standard processing
+def test_1(df: DataFrame, aggregations: Dict[str, Tuple[str, Any]], insert: bool = False) -> Tuple[DataFrame, List[Document]]:
     result_dfs = []
     documents = []
 
@@ -73,12 +74,10 @@ def test_1(df: DataFrame, aggregations: Dict[str, Tuple[str, Any]]) -> Tuple[Dat
             f'''efetuou um transação de R$ {record['transaction_value']:.2f} '''
             f'''no dia {record['transaction_day']} do mês de {get_month_name(record['transaction_month'])} do ano de {record['transaction_year']} '''
             f'''({record['transaction_day']:02}/{record['transaction_month']:02}/{record['transaction_year']:04}) '''
-            f'''com cartão de {record['product']} {record['card_variant']} para o estabelecimento "{record['seller_description']}"''',
-        parse_content_body=None,
-        parse_metadata=lambda record: dict(record)
+            f'''com cartão de {record['product']} {record['card_variant']} para o estabelecimento "{record['seller_description']}"'''
     )
 
-    result_dfs.append(CardTransactions.group_by_year_month_day_consumer_product(df_transactions))
+    result_dfs.append(CardTransactions.group_by_year_month_day_consumer_product(df, aggregations))
     documents += generate_documents(
         df=result_dfs[-1],
         parse_content_header=lambda record:
@@ -94,7 +93,7 @@ def test_1(df: DataFrame, aggregations: Dict[str, Tuple[str, Any]]) -> Tuple[Dat
             f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
     )
 
-    result_dfs.append(CardTransactions.group_by_year_month_consumer_product(df))
+    result_dfs.append(CardTransactions.group_by_year_month_consumer_product(df, aggregations))
     documents += generate_documents(
         df=result_dfs[-1],
         parse_content_header=lambda record:
@@ -110,7 +109,7 @@ def test_1(df: DataFrame, aggregations: Dict[str, Tuple[str, Any]]) -> Tuple[Dat
             f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
     )
 
-    result_dfs.append(CardTransactions.group_by_year_consumer_product(df))
+    result_dfs.append(CardTransactions.group_by_year_consumer_product(df, aggregations))
     documents += generate_documents(
         df=result_dfs[-1],
         parse_content_header=lambda record:
@@ -125,7 +124,7 @@ def test_1(df: DataFrame, aggregations: Dict[str, Tuple[str, Any]]) -> Tuple[Dat
             f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
     )
     
-    result_dfs.append(CardTransactions.group_by_year_month_day_portfolio(df))
+    result_dfs.append(CardTransactions.group_by_year_month_day_portfolio(df, aggregations))
     documents += generate_documents(
         df=result_dfs[-1],
         parse_content_header=lambda record:
@@ -141,7 +140,7 @@ def test_1(df: DataFrame, aggregations: Dict[str, Tuple[str, Any]]) -> Tuple[Dat
             f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
     )
 
-    result_dfs.append(CardTransactions.group_by_year_month_portfolio(df))
+    result_dfs.append(CardTransactions.group_by_year_month_portfolio(df, aggregations))
     documents += generate_documents(
         df=result_dfs[-1],
         parse_content_header=lambda record:
@@ -157,7 +156,7 @@ def test_1(df: DataFrame, aggregations: Dict[str, Tuple[str, Any]]) -> Tuple[Dat
             f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
     )
 
-    result_dfs.append(CardTransactions.group_by_year_portfolio(df))
+    result_dfs.append(CardTransactions.group_by_year_portfolio(df, aggregations))
     documents += generate_documents(
         df=result_dfs[-1],
         parse_content_header=lambda record:
@@ -172,44 +171,390 @@ def test_1(df: DataFrame, aggregations: Dict[str, Tuple[str, Any]]) -> Tuple[Dat
             f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
     )
 
-    df = concat([group[0] for group in result_dfs])
+    df = concat(result_dfs)
+    vectorstore_name = 'prj-ai-rag-llm-table-1-standard'
+    if insert:
+        write_documents_txt(vectorstore_name, documents)
+        insert_documents(vectorstore_name, documents)
     return df, documents
 
 
-df = CardTransactions.read()
-aggregations = {
-    'transaction_value_sum': ('transaction_value', 'sum'),
-    'transaction_value_max': ('transaction_value', 'max'),
-    'transaction_value_min': ('transaction_value', 'min'),
-    'transaction_value_count': ('transaction_value', 'count'),
-    'transaction_value_mean': ('transaction_value', 'mean'),
-    'card_variant_black_count': ('card_variant', lambda x: x.value_counts().loc['BLACK']),
-    'card_variant_gold_count': ('card_variant', lambda x: x.value_counts().loc['GOLD']),
-    'card_variant_platinum_count': ('card_variant', lambda x: x.value_counts().loc['PLATINUM']),
-    'card_variant_standard_count': ('card_variant', lambda x: x.value_counts().loc['STANDARD']),
-    'card_variant_international_count': ('card_variant', lambda x: x.value_counts().loc['INTERNACIONAL'])
-}
+# Discursive text content
+def test_2(df: DataFrame, aggregations: Dict[str, Tuple[str, Any]], insert: bool = False) -> Tuple[DataFrame, List[Document]]:
+    result_dfs = []
+    documents = []
 
-# With metadata
-vectorstore_name = 'prj-ai-rag-llm-table-1-standard'
-df_transactions, documents = test_1(df, aggregations)
-write_documents_txt(vectorstore_name, documents)
-insert_documents(vectorstore_name, documents)
+    result_dfs.append(CardTransactions.group_by_transaction(df))
+    documents = generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''O cliente {record['consumer_name']} (CPF: {record['consumer_document']}), '''
+            f'''efetuou um transação com cartão de {record['product']} {record['card_variant']} de R$ {record['transaction_value']:.2f} '''
+            f'''no dia {record['transaction_day']} do mês de {get_month_name(record['transaction_month'])} do ano de {record['transaction_year']} '''
+            f'''({record['transaction_day']:02}/{record['transaction_month']:02}/{record['transaction_year']:04}) '''
+            f'''para o estabelecimento "{record['seller_description']}"'''
+    )
 
-# Without metadata
-vectorstore_name = 'prj-ai-rag-llm-table-2-discursive'
-documents = [Document(page_content=doc.page_content) for doc in documents]
-write_documents_txt(vectorstore_name, documents)
-insert_documents(vectorstore_name, documents)
+    result_dfs.append(CardTransactions.group_by_year_month_day_consumer_product(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário diário de transações do cliente {record['consumer_name']} (CPF: {record['consumer_document']}) com cartão de {record['product']} '''
+            f'''para o dia {record['transaction_day']} do mês de {get_month_name(record['transaction_month'])} do ano de {record['transaction_year']} '''
+            f'''({record['transaction_day']:02}/{record['transaction_month']:02}/{record['transaction_year']:04}) com um total de '''
+            f'''{int(record['transaction_value_count'])} transações, dentre elas {int(record['card_variant_black_count'])} foram realizadas com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD e {int(record['card_variant_international_count'])} com cartão INTERNACIONAL, '''
+            f'''a soma do valor de todas as transações é de R$ {record['transaction_value_sum']:.2f}, '''
+            f'''a média é de R$ {record['transaction_value_mean']:.2f}, '''
+            f'''o valor da maior das transações é de R$ {record['transaction_value_max']:.2f} e '''
+            f'''o valor da menor das transações é de R$ {record['transaction_value_min']:.2f}. '''
+    )
 
-# df, documents = test_3()
-# vectorstore_name = 'prj-ai-rag-llm-table-3-standard-creditcard'
-# documents = [Document(page_content=doc.page_content) for doc in documents]
-# write_documents_txt(vectorstore_name, documents)
-# insert_documents(vectorstore_name, documents)
+    result_dfs.append(CardTransactions.group_by_year_month_consumer_product(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário mensal de transações do cliente {record['consumer_name']} (CPF: {record['consumer_document']}) com cartão de {record['product']} '''
+            f'''para o mês de {get_month_name(record['transaction_month'])} do ano de {record['transaction_year']} '''
+            f'''({record['transaction_month']:02}/{record['transaction_year']:04}) com um total de '''
+            f'''{int(record['transaction_value_count'])} transações, dentre elas {int(record['card_variant_black_count'])} foram realizadas com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD e {int(record['card_variant_international_count'])} com cartão INTERNACIONAL, '''
+            f'''a soma do valor de todas as transações é de R$ {record['transaction_value_sum']:.2f}, '''
+            f'''a média é de R$ {record['transaction_value_mean']:.2f}, '''
+            f'''o valor da maior das transações é de R$ {record['transaction_value_max']:.2f} e '''
+            f'''o valor da menor das transações é de R$ {record['transaction_value_min']:.2f}. '''
+    )
 
-# df, documents = test_4()
-# vectorstore_name = 'prj-ai-rag-llm-table-4-discursive-creditcard'
-# documents = [Document(page_content=doc.page_content) for doc in documents]
-# write_documents_txt(vectorstore_name, documents)
-# insert_documents(vectorstore_name, documents)
+    result_dfs.append(CardTransactions.group_by_year_consumer_product(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário anual de transações do cliente {record['consumer_name']} (CPF: {record['consumer_document']}) com cartão de {record['product']} '''
+            f'''para o ano de {record['transaction_year']} com um total de '''
+            f'''{int(record['transaction_value_count'])} transações, dentre elas {int(record['card_variant_black_count'])} foram realizadas com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD e {int(record['card_variant_international_count'])} com cartão INTERNACIONAL, '''
+            f'''a soma do valor de todas as transações é de R$ {record['transaction_value_sum']:.2f}, '''
+            f'''a média é de R$ {record['transaction_value_mean']:.2f}, '''
+            f'''o valor da maior das transações é de R$ {record['transaction_value_max']:.2f} e '''
+            f'''o valor da menor das transações é de R$ {record['transaction_value_min']:.2f}. '''
+    )
+    
+    result_dfs.append(CardTransactions.group_by_year_month_day_portfolio(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário diário de transações de todos os clientes da carteira {record['portfolio_id']} '''
+            f'''para o dia {record['transaction_day']} do mês de {get_month_name(record['transaction_month'])} do ano de {record['transaction_year']} '''
+            f'''({record['transaction_day']:02}/{record['transaction_month']:02}/{record['transaction_year']:04}) com um total de '''
+            f'''{int(record['transaction_value_count'])} transações, dentre elas {int(record['card_variant_black_count'])} foram realizadas com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD e {int(record['card_variant_international_count'])} com cartão INTERNACIONAL, '''
+            f'''a soma do valor de todas as transações é de R$ {record['transaction_value_sum']:.2f}, '''
+            f'''a média é de R$ {record['transaction_value_mean']:.2f}, '''
+            f'''o valor da maior das transações é de R$ {record['transaction_value_max']:.2f} e '''
+            f'''o valor da menor das transações é de R$ {record['transaction_value_min']:.2f}. '''
+    )
+
+    result_dfs.append(CardTransactions.group_by_year_month_portfolio(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário mensal de transações de todos os clientes da carteira {record['portfolio_id']} '''
+            f'''para o mês de {get_month_name(record['transaction_month'])} do ano de {record['transaction_year']} '''
+            f'''({record['transaction_month']:02}/{record['transaction_year']:04}) com um total de '''
+            f'''{int(record['transaction_value_count'])} transações, dentre elas {int(record['card_variant_black_count'])} foram realizadas com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD e {int(record['card_variant_international_count'])} com cartão INTERNACIONAL, '''
+            f'''a soma do valor de todas as transações é de R$ {record['transaction_value_sum']:.2f}, '''
+            f'''a média é de R$ {record['transaction_value_mean']:.2f}, '''
+            f'''o valor da maior das transações é de R$ {record['transaction_value_max']:.2f} e '''
+            f'''o valor da menor das transações é de R$ {record['transaction_value_min']:.2f}. '''
+    )
+
+    result_dfs.append(CardTransactions.group_by_year_portfolio(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário anual de transações de todos os clientes da carteira {record['portfolio_id']} '''
+            f'''para o ano de {record['transaction_year']} com um total de '''
+            f'''{int(record['transaction_value_count'])} transações, dentre elas {int(record['card_variant_black_count'])} foram realizadas com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD e {int(record['card_variant_international_count'])} com cartão INTERNACIONAL, '''
+            f'''a soma do valor de todas as transações é de R$ {record['transaction_value_sum']:.2f}, '''
+            f'''a média é de R$ {record['transaction_value_mean']:.2f}, '''
+            f'''o valor da maior das transações é de R$ {record['transaction_value_max']:.2f} e '''
+            f'''o valor da menor das transações é de R$ {record['transaction_value_min']:.2f}. '''
+    )
+
+    df = concat(result_dfs)
+    vectorstore_name = 'prj-ai-rag-llm-table-2-discursive'
+    if insert:
+        write_documents_txt(vectorstore_name, documents)
+        insert_documents(vectorstore_name, documents)
+    return df, documents
+
+
+# Process credit cards only
+def test_3(df: DataFrame, aggregations: Dict[str, Tuple[str, Any]], insert: bool = False) -> Tuple[DataFrame, List[Document]]:
+    result_dfs = []
+    documents = []
+
+    df = df[df['product'] == 'crédito']
+
+    result_dfs.append(CardTransactions.group_by_transaction(df))
+    documents = generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''O cliente {record['consumer_name']} (CPF: {record['consumer_document']}), '''
+            f'''efetuou um transação com cartão de crédito {record['card_variant']} no valor de R$ {record['transaction_value']:.2f} '''
+            f'''no dia {record['transaction_day']} do mês de {get_month_name(record['transaction_month'])} do ano de {record['transaction_year']} '''
+            f'''({record['transaction_day']:02}/{record['transaction_month']:02}/{record['transaction_year']:04}) '''
+            f'''para o estabelecimento "{record['seller_description']}"'''
+    )
+
+    result_dfs.append(CardTransactions.group_by_year_month_day_consumer(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário diário de transações com cartão de crédito do cliente {record['consumer_name']} (CPF: {record['consumer_document']}) '''
+            f'''para o dia {record['transaction_day']} do mês de {get_month_name(record['transaction_month'])} do ano de {record['transaction_year']} '''
+            f'''({record['transaction_day']:02}/{record['transaction_month']:02}/{record['transaction_year']:04}): '''
+            f'''- Contagem de transações: {int(record['transaction_value_count'])}, ({int(record['card_variant_black_count'])} com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD, {int(record['card_variant_international_count'])} com cartão INTERNACIONAL); '''
+            f'''- Valor total: R$ {record['transaction_value_sum']:.2f}; '''
+            f'''- Valor médio: R$ {record['transaction_value_mean']:.2f}; '''
+            f'''- Valor da maior transação: R$ {record['transaction_value_max']:.2f}; '''
+            f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
+    )
+
+    result_dfs.append(CardTransactions.group_by_year_month_consumer(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário mensal de transações com cartão de crédito do cliente {record['consumer_name']} (CPF: {record['consumer_document']}) '''
+            f'''para o mês de {get_month_name(record['transaction_month'])} do ano de {record['transaction_year']} '''
+            f'''({record['transaction_month']:02}/{record['transaction_year']:04}): '''
+            f'''- Contagem de transações: {int(record['transaction_value_count'])}, ({int(record['card_variant_black_count'])} com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD, {int(record['card_variant_international_count'])} com cartão INTERNACIONAL); '''
+            f'''- Valor total: R$ {record['transaction_value_sum']:.2f}; '''
+            f'''- Valor médio: R$ {record['transaction_value_mean']:.2f}; '''
+            f'''- Valor da maior transação: R$ {record['transaction_value_max']:.2f}; '''
+            f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
+    )
+
+    result_dfs.append(CardTransactions.group_by_year_consumer(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário anual de transações com cartão de crédito do cliente {record['consumer_name']} (CPF: {record['consumer_document']}) '''
+            f'''para o ano de {record['transaction_year']}: '''
+            f'''- Contagem de transações: {int(record['transaction_value_count'])}, ({int(record['card_variant_black_count'])} com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD, {int(record['card_variant_international_count'])} com cartão INTERNACIONAL); '''
+            f'''- Valor total: R$ {record['transaction_value_sum']:.2f}; '''
+            f'''- Valor médio: R$ {record['transaction_value_mean']:.2f}; '''
+            f'''- Valor da maior transação: R$ {record['transaction_value_max']:.2f}; '''
+            f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
+    )
+    
+    result_dfs.append(CardTransactions.group_by_year_month_day_portfolio(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário diário de transações com cartão de crédito de todos os clientes da carteira {record['portfolio_id']} '''
+            f'''para o dia {record['transaction_day']} do mês de {get_month_name(record['transaction_month'])} do ano de {record['transaction_year']} '''
+            f'''({record['transaction_day']:02}/{record['transaction_month']:02}/{record['transaction_year']:04}): '''
+            f'''- Contagem de transações: {int(record['transaction_value_count'])}, ({int(record['card_variant_black_count'])} com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD, {int(record['card_variant_international_count'])} com cartão INTERNACIONAL); '''
+            f'''- Valor total: R$ {record['transaction_value_sum']:.2f}; '''
+            f'''- Valor médio: R$ {record['transaction_value_mean']:.2f}; '''
+            f'''- Valor da maior transação: R$ {record['transaction_value_max']:.2f}; '''
+            f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
+    )
+
+    result_dfs.append(CardTransactions.group_by_year_month_portfolio(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário mensal de transações com cartão de crédito de todos os clientes da carteira {record['portfolio_id']} '''
+            f'''para o mês de {get_month_name(record['transaction_month'])} do ano de {record['transaction_year']} '''
+            f'''({record['transaction_month']:02}/{record['transaction_year']:04}): '''
+            f'''- Contagem de transações: {int(record['transaction_value_count'])}, ({int(record['card_variant_black_count'])} com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD, {int(record['card_variant_international_count'])} com cartão INTERNACIONAL); '''
+            f'''- Valor total: R$ {record['transaction_value_sum']:.2f}; '''
+            f'''- Valor médio: R$ {record['transaction_value_mean']:.2f}; '''
+            f'''- Valor da maior transação: R$ {record['transaction_value_max']:.2f}; '''
+            f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
+    )
+
+    result_dfs.append(CardTransactions.group_by_year_portfolio(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário anual de transações com cartão de crédito de todos os clientes da carteira {record['portfolio_id']} '''
+            f'''para o ano de {record['transaction_year']}: '''
+            f'''- Contagem de transações: {int(record['transaction_value_count'])}, ({int(record['card_variant_black_count'])} com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD, {int(record['card_variant_international_count'])} com cartão INTERNACIONAL); '''
+            f'''- Valor total: R$ {record['transaction_value_sum']:.2f}; '''
+            f'''- Valor médio: R$ {record['transaction_value_mean']:.2f}; '''
+            f'''- Valor da maior transação: R$ {record['transaction_value_max']:.2f}; '''
+            f'''- Valor da menor transação: R$ {record['transaction_value_min']:.2f}. '''
+    )
+
+    df = concat(result_dfs)
+    vectorstore_name = 'prj-ai-rag-llm-table-3-standard-creditcard'
+    if insert:
+        write_documents_txt(vectorstore_name, documents)
+        insert_documents(vectorstore_name, documents)
+    return df, documents
+
+
+# Discursive text content and only credit cards data
+def test_4(df: DataFrame, aggregations: Dict[str, Tuple[str, Any]], insert: bool = False) -> Tuple[DataFrame, List[Document]]:
+    result_dfs = []
+    documents = []
+
+    df = df[df['product'] == 'crédito']
+
+    result_dfs.append(CardTransactions.group_by_transaction(df))
+    documents = generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''O cliente {record['consumer_name']} (CPF: {record['consumer_document']}), '''
+            f'''efetuou um transação com cartão de crédito {record['card_variant']} de R$ {record['transaction_value']:.2f} '''
+            f'''no dia {record['transaction_day']} do mês de {get_month_name(record['transaction_month'])} do ano de {record['transaction_year']} '''
+            f'''({record['transaction_day']:02}/{record['transaction_month']:02}/{record['transaction_year']:04}) '''
+            f'''{record['card_variant']} para o estabelecimento "{record['seller_description']}"'''
+    )
+
+    result_dfs.append(CardTransactions.group_by_year_month_day_consumer(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário diário de transações com cartão de crédito do cliente {record['consumer_name']} (CPF: {record['consumer_document']}) '''
+            f'''para o dia {record['transaction_day']} do mês de {get_month_name(record['transaction_month'])} do ano de {record['transaction_year']} '''
+            f'''({record['transaction_day']:02}/{record['transaction_month']:02}/{record['transaction_year']:04}) com um total de '''
+            f'''{int(record['transaction_value_count'])} transações, dentre elas {int(record['card_variant_black_count'])} foram realizadas com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD e {int(record['card_variant_international_count'])} com cartão INTERNACIONAL, '''
+            f'''a soma do valor de todas as transações é de R$ {record['transaction_value_sum']:.2f}, '''
+            f'''a média é de R$ {record['transaction_value_mean']:.2f}, '''
+            f'''o valor da maior das transações é de R$ {record['transaction_value_max']:.2f} e '''
+            f'''o valor da menor das transações é de R$ {record['transaction_value_min']:.2f}. '''
+    )
+
+    result_dfs.append(CardTransactions.group_by_year_month_consumer(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário mensal de transações com cartão de crédito do cliente {record['consumer_name']} (CPF: {record['consumer_document']}) '''
+            f'''para o mês de {get_month_name(record['transaction_month'])} do ano de {record['transaction_year']} '''
+            f'''({record['transaction_month']:02}/{record['transaction_year']:04}) com um total de '''
+            f'''{int(record['transaction_value_count'])} transações, dentre elas {int(record['card_variant_black_count'])} foram realizadas com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD e {int(record['card_variant_international_count'])} com cartão INTERNACIONAL, '''
+            f'''a soma do valor de todas as transações é de R$ {record['transaction_value_sum']:.2f}, '''
+            f'''a média é de R$ {record['transaction_value_mean']:.2f}, '''
+            f'''o valor da maior das transações é de R$ {record['transaction_value_max']:.2f} e '''
+            f'''o valor da menor das transações é de R$ {record['transaction_value_min']:.2f}. '''
+    )
+
+    result_dfs.append(CardTransactions.group_by_year_consumer(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário anual de transações com cartão de crédito do cliente {record['consumer_name']} (CPF: {record['consumer_document']}) '''
+            f'''para o ano de {record['transaction_year']} com um total de '''
+            f'''{int(record['transaction_value_count'])} transações, dentre elas {int(record['card_variant_black_count'])} foram realizadas com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD e {int(record['card_variant_international_count'])} com cartão INTERNACIONAL, '''
+            f'''a soma do valor de todas as transações é de R$ {record['transaction_value_sum']:.2f}, '''
+            f'''a média é de R$ {record['transaction_value_mean']:.2f}, '''
+            f'''o valor da maior das transações é de R$ {record['transaction_value_max']:.2f} e '''
+            f'''o valor da menor das transações é de R$ {record['transaction_value_min']:.2f}. '''
+    )
+    
+    result_dfs.append(CardTransactions.group_by_year_month_day_portfolio(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário diário de transações com cartão de crédito de todos os clientes da carteira {record['portfolio_id']} '''
+            f'''para o dia {record['transaction_day']} do mês de {get_month_name(record['transaction_month'])} do ano de {record['transaction_year']} '''
+            f'''({record['transaction_day']:02}/{record['transaction_month']:02}/{record['transaction_year']:04}) com um total de '''
+            f'''{int(record['transaction_value_count'])} transações, dentre elas {int(record['card_variant_black_count'])} foram realizadas com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD e {int(record['card_variant_international_count'])} com cartão INTERNACIONAL, '''
+            f'''a soma do valor de todas as transações é de R$ {record['transaction_value_sum']:.2f}, '''
+            f'''a média é de R$ {record['transaction_value_mean']:.2f}, '''
+            f'''o valor da maior das transações é de R$ {record['transaction_value_max']:.2f} e '''
+            f'''o valor da menor das transações é de R$ {record['transaction_value_min']:.2f}. '''
+    )
+
+    result_dfs.append(CardTransactions.group_by_year_month_portfolio(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário mensal de transações com cartão de crédito de todos os clientes da carteira {record['portfolio_id']} '''
+            f'''para o mês de {get_month_name(record['transaction_month'])} do ano de {record['transaction_year']} '''
+            f'''({record['transaction_month']:02}/{record['transaction_year']:04}) com um total de '''
+            f'''{int(record['transaction_value_count'])} transações, dentre elas {int(record['card_variant_black_count'])} foram realizadas com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD e {int(record['card_variant_international_count'])} com cartão INTERNACIONAL, '''
+            f'''a soma do valor de todas as transações é de R$ {record['transaction_value_sum']:.2f}, '''
+            f'''a média é de R$ {record['transaction_value_mean']:.2f}, '''
+            f'''o valor da maior das transações é de R$ {record['transaction_value_max']:.2f} e '''
+            f'''o valor da menor das transações é de R$ {record['transaction_value_min']:.2f}. '''
+    )
+
+    result_dfs.append(CardTransactions.group_by_year_portfolio(df, aggregations))
+    documents += generate_documents(
+        df=result_dfs[-1],
+        parse_content_header=lambda record:
+            f'''Sumário anual de transações com cartão de crédito de todos os clientes da carteira {record['portfolio_id']} '''
+            f'''para o ano de {record['transaction_year']} com um total de '''
+            f'''{int(record['transaction_value_count'])} transações, dentre elas {int(record['card_variant_black_count'])} foram realizadas com cartão BLACK, '''
+            f'''{int(record['card_variant_gold_count'])} com cartão GOLD, {int(record['card_variant_platinum_count'])} com cartão PLATINUM, '''
+            f'''{int(record['card_variant_standard_count'])} com cartão STANDARD e {int(record['card_variant_international_count'])} com cartão INTERNACIONAL, '''
+            f'''a soma do valor de todas as transações é de R$ {record['transaction_value_sum']:.2f}, '''
+            f'''a média é de R$ {record['transaction_value_mean']:.2f}, '''
+            f'''o valor da maior das transações é de R$ {record['transaction_value_max']:.2f} e '''
+            f'''o valor da menor das transações é de R$ {record['transaction_value_min']:.2f}. '''
+    )
+
+    df = concat(result_dfs)
+    vectorstore_name = 'prj-ai-rag-llm-table-4-discursive-creditcard'
+    if insert:
+        write_documents_txt(vectorstore_name, documents)
+        insert_documents(vectorstore_name, documents)
+    return df, documents
+
+
+if __name__ == '__main__':
+    df = CardTransactions.read()
+    df = CardTransactions.refine(df)
+    aggregations = {
+        'transaction_value_sum': ('transaction_value', 'sum'),
+        'transaction_value_max': ('transaction_value', 'max'),
+        'transaction_value_min': ('transaction_value', 'min'),
+        'transaction_value_count': ('transaction_value', 'count'),
+        'transaction_value_mean': ('transaction_value', 'mean'),
+        'card_variant_black_count': ('card_variant', lambda x: x.value_counts().loc['BLACK']),
+        'card_variant_gold_count': ('card_variant', lambda x: x.value_counts().loc['GOLD']),
+        'card_variant_platinum_count': ('card_variant', lambda x: x.value_counts().loc['PLATINUM']),
+        'card_variant_standard_count': ('card_variant', lambda x: x.value_counts().loc['STANDARD']),
+        'card_variant_international_count': ('card_variant', lambda x: x.value_counts().loc['INTERNACIONAL'])
+    }
+
+    tests = []
+    tests.append(test_1(df, aggregations, insert=True))
+    tests.append(test_2(df, aggregations, insert=True))
+    tests.append(test_3(df, aggregations, insert=True))
+    tests.append(test_4(df, aggregations, insert=True))
