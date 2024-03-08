@@ -37,15 +37,13 @@ def generate_documents(
     temp_columns = ['_page_content_header', '_page_content_body', '_metadata']
     if where:
         df = df[where(df)].copy()
-    if group_by:
-        if parse_content_body:
-            df['_page_content_body'] = df.apply(lambda record: Document(page_content=parse_content_body(record)), axis=1)
-            df = df.groupby(group_by).agg({'_page_content_body': '\n'.join}).reset_index()
-        else:
-            df['_page_content_body'] = ''
-            df = df.groupby(group_by).agg({'_page_content_body': ''.join}).reset_index()
     else:
-        df['_page_content_body'] = ''
+        df = df.copy()
+    df['_page_content_body'] = ''
+    if group_by:
+        if parse_content_body is not None:
+            df['_page_content_body'] = df.apply(lambda record: parse_content_body(record), axis=1)
+        df = df.groupby(group_by, observed=True).agg({'_page_content_body': ''.join}).reset_index()
     df['_page_content_header'] = df.apply((lambda record: parse_content_header(record)), axis=1)
     df['_metadata'] = df[[c for c in df.columns if c not in temp_columns]] \
                         .astype('object') \

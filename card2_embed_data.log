@@ -225,53 +225,48 @@ Added 5676/5676 documents to vectorstore
  'namespaces': {'': {'vector_count': 5676}},
  'total_vector_count': 5676}
 
+Generating documents...
+Generated 2165 documents
+
+Generating documents...
+Generated 120 documents
+
+Generating documents...
+Generated 10 documents
+
+Generating documents...
+Generated 364 documents
+
+Generating documents...
+Generated 12 documents
+
+Generating documents...
+                                _page_content_header _page_content_body                                          _metadata
+0  Sumário anual de transações com cartão de créd...                     {'transaction_year': 2023, 'portfolio_id': 0, ...
+Generated 1 documents
+
+Deleting vectorstore: prj-ai-rag-llm-table-5-join-wo-transactions
+
+Vectorstore "prj-ai-rag-llm-table-5-join-wo-transactions" not found, skipping deletion
+
+Vectorstore "prj-ai-rag-llm-table-5-join-wo-transactions" not found, creating
+
+Creating vectorstore prj-ai-rag-llm-table-5-join-wo-transactions
+
+Found vectorstore: "prj-ai-rag-llm-table-5-join-wo-transactions"
+
+Calculating embedding cost for 2672 documents using model `text-embedding-3-small`...
+
+Total tokens: 254942
+Total documents: 2672 (~95.4 tokens/document)
+Embedding cost: $0.00510
+
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 6/6 [00:56<00:00,  9.43s/it] 
 
 
+Added 2672/2672 documents to vectorstore
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+{'dimension': 1536,
+ 'index_fullness': 0.0,
+ 'namespaces': {'': {'vector_count': 2672}},
+ 'total_vector_count': 2672}
