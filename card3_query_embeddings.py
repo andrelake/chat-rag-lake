@@ -29,7 +29,7 @@ if __name__ == '__main__':
         'prj-ai-rag-llm-table-2-discursive',
         'prj-ai-rag-llm-table-3-standard-creditcard',
         'prj-ai-rag-llm-table-4-discursive-creditcard',
-    )[3]
+    )[2]
     vectorstore = get_vectorstore(
         name=vectorstore_name,
         embedding_function=embedding_function,
@@ -38,6 +38,14 @@ if __name__ == '__main__':
         dimension_count=1536
     )
 
+    quiz_chain = CardTransactions.read_last_quiz()
+    for prompt, answer in quiz_chain[-22:][0:1]:
+        log(f'\033[96mPrompt: {prompt}\033[0m', end='\n')
+        if '\n' in answer:
+            answer = '\n\t' + answer.replace('\n', '\n\t')
+        log(f'\033[96mGround truth: \033[0m{answer}', end='\n')
+        log(f'\033[96mSimilar documents:\033[0m\n\t' +
+            '\n\t'.join([doc.page_content for doc in query_documents(vectorstore, prompt, k=6)]))
 
 
     # Ask user for prompt until user types "exit"
