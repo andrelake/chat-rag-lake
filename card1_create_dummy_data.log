@@ -1,0 +1,230 @@
+PS C:\Users\felip\Documents\GitHub\chat-rag-lake> & "C:/Program Files/Python311/python.exe" c:/Users/felip/Documents/GitHub/chat-rag-lake/card1_create_dummy_data.py
+Generating dummy data for `1` officers and `10` consumers per officer...
+
+Generating transactions...
+
+        Generated `9086` transactions for portfolio `0` (officer `0`: `Dra. Ana Cunha`).
+
+Generated `9086` transactions in total.
+
+Dataframe info:
+
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 9086 entries, 0 to 9085
+Data columns (total 16 columns):
+ #   Column              Non-Null Count  Dtype   
+---  ------              --------------  -----   
+ 0   transaction_id      9086 non-null   uint32  
+ 1   transaction_at      9086 non-null   string  
+ 2   transaction_year    9086 non-null   uint16  
+ 3   transaction_month   9086 non-null   uint8   
+ 4   transaction_day     9086 non-null   uint8   
+ 5   consumer_id_hash    9086 non-null   uint32  
+ 6   consumer_id         9086 non-null   uint32  
+ 7   consumer_document   9086 non-null   string  
+ 8   consumer_name       9086 non-null   string  
+ 9   portfolio_id        9086 non-null   uint32  
+ 10  officer_id          9086 non-null   uint32  
+ 11  officer_name        9086 non-null   string  
+ 12  product             9086 non-null   category
+ 13  card_variant        9086 non-null   category
+ 14  transaction_value   9086 non-null   float64 
+ 15  seller_description  9086 non-null   string  
+dtypes: category(2), float64(1), string(5), uint16(1), uint32(5), uint8(2)
+memory usage: 657.1 KB
+None
+Dataframe size: `(9086, 16)`
+Dataframe memory usage: `3.56 MB`
+
+Prompt: Query: Qual o valor total de transações em janeiro de 2023 feitas pelos clientes da carteira do gerente Dra. Ana Cunha?
+Answer: R$ 691825.11
+
+Prompt: Query: Quantos clientes possuem um cartão de crédito e quantos possuem um de débito?
+C:\Users\felip\Documents\GitHub\chat-rag-lake\data_tables.py:262: FutureWarning: The default of observed=False is deprecated and will be changed to True in a future version of pandas. Pass observed=False to retain current behavior or observed=True to adopt the future default and silence this warning.
+  .groupby(['product']) \
+Answer:
+        : 0 clientes
+        credit: 10 clientes
+        debit: 0 clientes
+
+Prompt: Query: Quantos clientes realizaram mais de R$ 8000 em transações com cartão platinum em um único mês?
+Answer: 86 clientes
+
+Prompt: Query: Quantas transações foram realizadas pelos 3 clientes com o maior valor total de transações em abril de 2023?
+Answer: 88 transações.
+
+Prompt: Quem são os 10 clientes que mais gastam no crédito?
+Prompt: ...Eu me chamo Dra. Ana Cunha.
+Answer:
+        [ID 000000008] Ana Lívia da Cruz  >  R$ 842226.42
+        [ID 000000006] Carlos Eduardo Rodrigues  >  R$ 830660.00
+        [ID 000000003] Raul Cardoso  >  R$ 817149.87
+        [ID 000000009] Levi Fogaça  >  R$ 769380.30
+        [ID 000000005] Lucas Viana  >  R$ 750585.63
+        [ID 000000004] Sr. André Peixoto  >  R$ 731259.78
+        [ID 000000000] Kaique da Luz  >  R$ 729602.92
+        [ID 000000007] Sra. Elisa Teixeira  >  R$ 726857.13
+        [ID 000000001] Enrico da Cruz  >  R$ 687073.79
+        [ID 000000002] Arthur Sales  >  R$ 673829.17
+
+Prompt: Qual é o total de gastos feito no cartão dos clientes da minha carteira?
+Prompt: ...Eu me chamo Dra. Ana Cunha.
+Answer: 7558624.98
+
+Prompt: Mostre a evolução de gastos dos últimos 4 meses para 3 clientes da carteira
+Answer:
+        Arthur Sales (2):
+                > 08/2023: R$ 29461.21
+                > 09/2023: R$ 75708.57
+                > 10/2023: R$ 68911.18
+                > 11/2023: R$ 47561.47
+                > 12/2023: R$ 69040.52
+        Lucas Viana (5):
+                > 08/2023: R$ 72357.75
+                > 09/2023: R$ 47302.76
+                > 10/2023: R$ 77152.03
+                > 11/2023: R$ 56103.68
+                > 12/2023: R$ 58199.96
+        Sra. Elisa Teixeira (7):
+                > 08/2023: R$ 63501.43
+                > 09/2023: R$ 51193.48
+                > 10/2023: R$ 62832.20
+                > 11/2023: R$ 58160.70
+                > 12/2023: R$ 62448.72
+
+Prompt: Mostre o ranking de gastos de cartão dos clientes por estabelecimento
+Answer:
+        Ribeiro: R$ 96610.48
+        da Paz: R$ 90729.86
+        da Rosa: R$ 81713.85
+        Jesus: R$ 75344.19
+        Monteiro: R$ 75044.10
+
+Prompt: Liste quem são os clientes com gastos mensais abaixo de R$ 3000
+Answer:
+        Kaique da Luz (ID 000000000)
+        Enrico da Cruz (ID 000000001)
+        Arthur Sales (ID 000000002)
+        Raul Cardoso (ID 000000003)
+        Sr. André Peixoto (ID 000000004)
+        Lucas Viana (ID 000000005)
+        Carlos Eduardo Rodrigues (ID 000000006)
+        Sra. Elisa Teixeira (ID 000000007)
+        Ana Lívia da Cruz (ID 000000008)
+        Levi Fogaça (ID 000000009)
+
+Prompt: Liste os clientes das carteiras que vem reduzindo os gastos com cartão nos últimos 4 meses
+Answer: 
+        Enrico da Cruz (ID 000000001):
+                > 08/2023: R$ 47377.04
+                > 09/2023: R$ 39356.87
+                > 10/2023: R$ 58756.77
+                > 11/2023: R$ 43779.97
+        Arthur Sales (ID 000000002):
+                > 08/2023: R$ 29461.21
+                > 09/2023: R$ 75708.57
+                > 10/2023: R$ 68911.18
+                > 11/2023: R$ 47561.47
+        Sr. André Peixoto (ID 000000004):
+                > 08/2023: R$ 58774.21
+                > 09/2023: R$ 45303.04
+                > 10/2023: R$ 107412.28
+                > 11/2023: R$ 43890.94
+        Lucas Viana (ID 000000005):
+                > 08/2023: R$ 72357.75
+                > 09/2023: R$ 47302.76
+                > 10/2023: R$ 77152.03
+                > 11/2023: R$ 56103.68
+        Carlos Eduardo Rodrigues (ID 000000006):
+                > 08/2023: R$ 87387.07
+                > 09/2023: R$ 41142.94
+                > 10/2023: R$ 62384.26
+                > 11/2023: R$ 43085.61
+        Sra. Elisa Teixeira (ID 000000007):
+                > 08/2023: R$ 63501.43
+                > 09/2023: R$ 51193.48
+                > 10/2023: R$ 62832.20
+                > 11/2023: R$ 58160.70
+        Levi Fogaça (ID 000000009):
+                > 08/2023: R$ 71263.53
+                > 09/2023: R$ 80779.93
+                > 10/2023: R$ 84565.67
+                > 11/2023: R$ 41154.85
+
+Prompt: Quanto o cliente Levi Fogaça gastou em 5 de abril de 2023?
+Answer: R$ 0.00
+
+Prompt: Quanto o cliente Levi Fogaça gastou em abril de 2023?
+Answer: R$ 65244.69
+
+Prompt: Quanto o cliente Levi Fogaça gastou em 2023?
+Answer: R$ 769380.30
+
+Prompt: Quanto o cliente Levi Fogaça gastou em abril, maio e junho de 2023?
+Answer: R$ 208072.21
+
+Prompt: Quanto o cliente Levi Fogaça gastou em abril comparado com junho de 2023?
+Answer: O cliente Levi Fogaça gastou R$ 65244.69 em abril e R$ 64056.85 em junho de 2023 (-1.8%).
+
+Prompt: Qual o total transacionado na carteira em 5 de abril de 2023?
+Answer: R$ 16193.31
+
+Prompt: Qual o total transacionado na carteira em abril de 2023?
+Answer: R$ 612354.40
+
+Prompt: Qual o total transacionado na carteira em 2023?
+Answer: R$ 7558624.98
+
+Prompt: Qual o total transacionado na carteira em abril, maio e junho de 2023?
+Answer: R$ 1999603.18
+
+Prompt: Qual o total transacionado na carteira em abril comparado com junho de 2023?
+Answer: O cliente Levi Fogaça gastou R$ 612354.40 em abril e R$ 652198.30 em junho de 2023 (+6.5%).
+Prompt: Qual o total transacionado no cartão de crédito em 5 de abril de 2023?
+Answer: R$ 16193.31
+
+Prompt: Qual o total transacionado no cartão de crédito em abril de 2023?
+Answer: R$ 612354.40
+
+Prompt: Qual o total transacionado no cartão de crédito em 2023?
+Answer: R$ 7558624.98
+
+Prompt: Qual o total transacionado no cartão de crédito em abril, maio e junho de 2023?
+Answer: R$ 1999603.18
+
+Prompt: Qual o total transacionado no cartão de crédito em abril comparado com junho de 2023?
+Answer: O cliente Levi Fogaça gastou R$ 612354.40 em abril e R$ 652198.30 em junho de 2023 (+6.5%).
+
+Prompt: Qual o total transacionado no cartão de crédito BLACK em 5 de abril de 2023?
+Answer: R$ 3546.29
+
+Prompt: Qual o total transacionado no cartão de crédito BLACK em abril de 2023?
+Answer: R$ 106070.97
+
+Prompt: Qual o total transacionado no cartão de crédito BLACK em abril, maio e junho de 2023?
+Answer: R$ 427014.73
+
+Prompt: Qual o total transacionado no cartão de crédito BLACK em abril comparado com junho de 2023?
+Answer: O cliente Levi Fogaça gastou R$ 106070.97 em abril e R$ 134678.39 em junho de 2023 (+27.0%).
+
+Prompt: Qual a evolução mensal dos gastos do cliente Levi Fogaça nos últimos 6 meses (julho, agosto, setembro, outubro, novembro e dezembro de 2023)?
+Answer:
+        Levi Fogaça (ID 000000009):
+                > 07/2023: R$ 71482.57
+                > 08/2023: R$ 71263.53
+                > 09/2023: R$ 80779.93
+                > 10/2023: R$ 84565.67
+                > 11/2023: R$ 41154.85
+                > 12/2023: R$ 68775.89
+
+Prompt: Qual a evolução anual dos gastos do cliente Levi Fogaça nos últimos 2 anos (2023, 2024)?
+Answer:
+        Levi Fogaça (ID 000000009):
+                > 2023: R$ 769380.30
+
+Prompt: Em relação à média de gastos de todos os clientes em abril, como a cliente Levi Fogaça se compara?
+Answer: O cliente Levi Fogaça gastou em média R$ 2836.73 em abril de 2023 +14.0%) em relação à média de todos os clientes de R$ 2489.25.
+
+Deleting old data from `data\landing\card_transactions.orc`...
+
+Writing ORC files to `data\landing\card_transactions.orc`...

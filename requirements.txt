@@ -20,3 +20,4 @@ lark
 ragas
 datasets
 pyarrow
+pyorc
