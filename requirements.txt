@@ -1,4 +1,4 @@
-langchain~=0.1.5
+langchain~=0.1.11
 langchain_openai
 langchain-experimental
 langchainhub
@@ -12,10 +12,12 @@ tiktoken
 chromadb-client
 sentence-transformers
 cramjam
-pandas
+pandas~=2.1.4
 Faker
 sentence_transformers
 tqdm
 lark
+ragas
+datasets
 pyarrow
 pyorc
