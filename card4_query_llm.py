@@ -5,16 +5,18 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder, Syst
     HumanMessagePromptTemplate, PromptTemplate
 from langchain_core.runnables import RunnablePassthrough, RunnableParallel
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from pprint import pprint
 
 from env import OPENAI_MODEL_NAME, OPENAI_API_KEY, PINECONE_INDEX_NAME
 
 
 def get_encoding(api_key: str) -> OpenAIEmbeddings:
-    return OpenAIEmbeddings(openai_api_key=api_key)
+    return OpenAIEmbeddings(openai_api_key=api_key,
+                            model="text-embedding-3-small")
 
 
 def get_vectorstore(index_name, encoding):
-    print(f'Getting info from index: {index_name}')
+    # print(f'Getting info from index: {index_name}')
     return PineconeVS.from_existing_index(index_name, encoding)
 
 
@@ -85,6 +87,13 @@ def build_rag_chain():
     retriever = get_retriever(vs)
     prompt = get_prompt()
     llm = get_llm()
+    # rag_chain_from_docs = (
+    #     {"context": retriever.get_relevant_documents, "input": RunnablePassthrough()}
+    #     | prompt
+    #     | llm
+    #     | StrOutputParser()
+    # )
+    # return rag_chain_from_docs
     rag_chain_from_docs = (
         RunnablePassthrough.assign(context=(lambda x: format_docs(x["context"])))
         | prompt
@@ -96,8 +105,15 @@ def build_rag_chain():
         {"context": retriever, "input": RunnablePassthrough()}
     ).assign(answer=rag_chain_from_docs)
 
-    return rag_chain_with_source
+    return retriever, rag_chain_with_source
 
 
-def ask_rag_chain(question, rag_chain=build_rag_chain()):
+def ask_rag_chain(question, rag_chain):
     return rag_chain.invoke(question)
+
+
+if __name__ == '__main__':
+    encoding = get_encoding(OPENAI_API_KEY)
+    vs = get_vectorstore(PINECONE_INDEX_NAME, encoding)
+    retriever = get_retriever(vs)
+    pprint(retriever.invoke('média mensal carteira abril 2023 comparar média mensal Levi Fogaça abril 2023.'))
