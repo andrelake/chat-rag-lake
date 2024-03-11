@@ -40,7 +40,7 @@ if __name__ == '__main__':
     )
 
     quiz_chain = CardTransactions.read_last_quiz()
-    for prompt, answer in quiz_chain[-22:][0:1]:
+    for prompt, answer in quiz_chain[-44:]:
         log(f'\033[96mPrompt: {prompt}\033[0m', end='\n')
         if '\n' in answer:
             answer = '\n\t' + answer.replace('\n', '\n\t')
