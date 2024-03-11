@@ -241,13 +241,58 @@ Generating documents...
 Generated 12 documents
 
 Generating documents...
-                                _page_content_header _page_content_body                                          _metadata
-0  Sumário anual de transações com cartão de créd...                     {'transaction_year': 2023, 'portfolio_id': 0, ...
 Generated 1 documents
 
 Deleting vectorstore: prj-ai-rag-llm-table-5-join-wo-transactions
 
-Vectorstore "prj-ai-rag-llm-table-5-join-wo-transactions" not found, skipping deletion
+Successfully deleted vectorstore: prj-ai-rag-llm-table-5-join-wo-transactions.
+
+Vectorstore "prj-ai-rag-llm-table-5-join-wo-transactions" not found, creating
+
+Creating vectorstore prj-ai-rag-llm-table-5-join-wo-transactions
+
+Found vectorstore: "prj-ai-rag-llm-table-5-join-wo-transactions"
+
+Calculating embedding cost for 2672 documents using model `text-embedding-3-small`...
+
+Total tokens: 246334
+Total documents: 2672 (~92.2 tokens/document)
+Embedding cost: $0.00493
+
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 6/6 [00:54<00:00,  9.01s/it] 
+
+
+Added 2672/2672 documents to vectorstore
+
+{'dimension': 1536,
+ 'index_fullness': 0.0,
+ 'namespaces': {'': {'vector_count': 2672}},
+ 'total_vector_count': 2672}
+
+PS C:\Users\felip\Documents\GitHub\chat-rag-lake> & "C:/Program Files/Python311/python.exe" c:/Users/felip/Documents/GitHub/chat-rag-lake/card2_embed_data.py
+Reading ORC files from `data\landing\card_transactions.orc`...
+
+Generating documents...
+Generated 2165 documents
+
+Generating documents...
+Generated 120 documents
+
+Generating documents...
+Generated 10 documents
+
+Generating documents...
+Generated 364 documents
+
+Generating documents...
+Generated 12 documents
+
+Generating documents...
+Generated 1 documents
+
+Deleting vectorstore: prj-ai-rag-llm-table-5-join-wo-transactions
+
+Successfully deleted vectorstore: prj-ai-rag-llm-table-5-join-wo-transactions.
 
 Vectorstore "prj-ai-rag-llm-table-5-join-wo-transactions" not found, creating
 
@@ -261,7 +306,108 @@ Total tokens: 254942
 Total documents: 2672 (~95.4 tokens/document)
 Embedding cost: $0.00510
 
-100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 6/6 [00:56<00:00,  9.43s/it] 
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 6/6 [00:57<00:00,  9.50s/it]
+
+
+Added 2672/2672 documents to vectorstore
+
+{'dimension': 1536,
+ 'index_fullness': 0.0,
+ 'namespaces': {'': {'vector_count': 2672}},
+ 'total_vector_count': 2672}
+
+Generating documents...
+Generated 2165 documents
+
+Generating documents...
+Generated 120 documents
+
+Generating documents...
+Generated 10 documents
+
+Generating documents...
+Generated 364 documents
+
+Generating documents...
+Generated 12 documents
+
+Generating documents...
+Generated 1 documents
+
+Total de documentos original: 2672
+
+Total de documentos: 794
+
+page_content='Sumário diário de transações com cartão de crédito do cliente Kaique da Luz (CPF: 46159283006) no dia 1 do mês de janeiro do ano de 2023 (01/01/2023): \tR$ 4363.57 no estabelecimento "Oliveira";\nSumário diário de transações com cartão de crédito do cliente Enrico da Cruz (CPF: 97051236407) no dia 1 do mês de janeiro do ano de 2023 (01/01/2023): \tR$ 1814.17 no estabelecimento "Caldeira";\tR$ 426.61 no estabelecimento "da Mota das Neves S.A.";\nSumário diário de transações com cartão de crédito do cliente Arthur Sales (CPF: 82301674517) no dia 1 do mês de janeiro do ano de 2023 (01/01/2023): \tR$ 4669.85 no estabelecimento "da Luz";\nSumário diário de transações com cartão de crédito do cliente Lucas Viana (CPF: 92106574894) no dia 1 do mês de janeiro do ano de 2023 (01/01/2023): \tR$ 1799.38 no estabelecimento "Dias";\tR$ 2817.71 no estabelecimento "Peixoto";\tR$ 178.36 no estabelecimento "da Rosa - ME";'
+908
+
+page_content='Sumário diário de transações com cartão de crédito do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) no dia 1 do mês de janeiro do ano de 2023 (01/01/2023): \tR$ 3348.86 no estabelecimento "Novaes - EI";\tR$ 2549.11 no estabelecimento "Porto";\nSumário diário de transações com cartão de crédito do cliente Ana Lívia da Cruz (CPF: 49738156084) no dia 1 do mês de janeiro do ano de 2023 (01/01/2023): \tR$ 339.93 no estabelecimento "Jesus";\nSumário diário de transações com cartão de crédito do cliente Kaique da Luz (CPF: 46159283006) no dia 2 do mês de janeiro do ano de 2023 (02/01/2023): \tR$ 4068.21 no estabelecimento "Souza Moraes S/A";\nSumário diário de transações com cartão de crédito do cliente Arthur Sales (CPF: 82301674517) no dia 2 do mês de janeiro do ano de 2023 (02/01/2023): \tR$ 1287.21 no estabelecimento "Moura - EI";'
+837
+
+page_content='Sumário diário de transações com cartão de crédito do cliente Sr. André Peixoto (CPF: 14857029332) no dia 2 do mês de janeiro do ano de 2023 (02/01/2023): \tR$ 696.27 no estabelecimento "Farias";\nSumário diário de transações com cartão de crédito do cliente Lucas Viana (CPF: 92106574894) no dia 2 do mês de janeiro do ano de 2023 (02/01/2023): \tR$ 1536.10 no estabelecimento "Caldeira";\tR$ 4487.33 no estabelecimento "Costa";\nSumário diário de transações com cartão de crédito do cliente Carlos Eduardo Rodrigues (CPF: 80763159212) no dia 2 do mês de janeiro do ano de 2023 (02/01/2023): \tR$ 2754.54 no estabelecimento "Ribeiro Ltda.";\tR$ 4870.21 no estabelecimento "Nunes - EI";\nSumário diário de transações com cartão de crédito do cliente Sra. Elisa Teixeira (CPF: 93175624855) no dia 2 do mês de janeiro do ano de 2023 (02/01/2023): \tR$ 3951.25 no estabelecimento "Azevedo Gonçalves - EI";'
+893
+
+Deleting vectorstore: prj-ai-rag-llm-table-6-chunks
+
+Vectorstore "prj-ai-rag-llm-table-6-chunks" not found, skipping deletion
+
+Vectorstore "prj-ai-rag-llm-table-6-chunks" not found, creating
+
+Creating vectorstore prj-ai-rag-llm-table-6-chunks
+
+Found vectorstore: "prj-ai-rag-llm-table-6-chunks"
+
+Calculating embedding cost for 794 documents using model `text-embedding-3-small`...
+
+Total tokens: 254681
+Total documents: 794 (~320.8 tokens/document)
+Embedding cost: $0.00509
+
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2/2 [00:21<00:00, 10.77s/it] 
+
+
+Added 794/794 documents to vectorstore
+
+{'dimension': 1536,
+ 'index_fullness': 0.0,
+ 'namespaces': {'': {'vector_count': 794}},
+ 'total_vector_count': 794}
+
+Generating documents...
+Generated 2165 documents
+
+Generating documents...
+Generated 120 documents
+
+Generating documents...
+Generated 10 documents
+
+Generating documents...
+Generated 364 documents
+
+Generating documents...
+Generated 12 documents
+
+Generating documents...
+Generated 1 documents
+
+Deleting vectorstore: prj-ai-rag-llm-table-8-storytelling
+
+Vectorstore "prj-ai-rag-llm-table-8-storytelling" not found, skipping deletion
+
+Vectorstore "prj-ai-rag-llm-table-8-storytelling" not found, creating
+
+Creating vectorstore prj-ai-rag-llm-table-8-storytelling
+
+Found vectorstore: "prj-ai-rag-llm-table-8-storytelling"
+
+Calculating embedding cost for 2672 documents using model `text-embedding-3-small`...
+
+Total tokens: 256977
+Total documents: 2672 (~96.2 tokens/document)
+Embedding cost: $0.00514
+
+100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 6/6 [00:55<00:00,  9.19s/it] 
 
 
 Added 2672/2672 documents to vectorstore
