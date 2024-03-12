@@ -676,6 +676,7 @@ class CardTransactions:
     
     def read_last_quiz() -> List[List[str]]:
         path = os.path.join('data', 'refined', 'validation')
+        os.makedirs(path, exist_ok=True)
         files = [file for file in os.listdir(path) if file.startswith('quiz_card_transactions')]
         if files:
             with open(os.path.join(path, files[-1]), 'r') as file:
