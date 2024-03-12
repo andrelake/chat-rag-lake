@@ -57,7 +57,7 @@ def get_chat_prompt() -> ChatPromptTemplate:
         
         Exemplo de sumário mensal da carteira:
         <doc> 
-        [Qual o total transacionado com cartão de crédito por todos os clientes no mês de julho do ano de 2023 (07/2023)?]	Resumo mensal de todas as transaçoes no mês, com uma contagem total de total 279 transações e valor total de R$ 706888.44, o valor médio é de R$ 2533.65, o valor da maior transação é de R$ 4999.94 e o valor da menor transação é de R$ 26.86. Dentre elas , 55 foram realizadas com cartão BLACK, 62 foram realizadas com cartão GOLD, 59 foram realizadas com cartão PLATINUM, 51 foram realizadas com cartão STANDARD, 52 foram realizadas com cartão INTERNACIONAL.
+        [Qual o total transacionado com cartão de crédito por todos os clientes no mês de julho do ano de 2023 (07/2023)?]	Resumo mensal de todas as transaçoes no mês, com uma contagem total de 279 transações e valor total de R$ 706888.44, o valor médio é de R$ 2533.65, o valor da maior transação é de R$ 4999.94 e o valor da menor transação é de R$ 26.86. Dentre elas foram realizadas 55 com cartão BLACK, 62 com cartão GOLD, 59 com cartão PLATINUM, 51 com cartão STANDARD, 52 com cartão INTERNACIONAL.
         </doc>
         
         Questão: {input}
