@@ -35,7 +35,8 @@ def get_prompt_template():
             ("system",
              "You are a helpful assistant. "
              "Use the tool \"transactions_search_tool\" as context to answer questions related to transactions. "
-             "If you don't know the answer, just say \"Eu não tenho fonte suficiente para responder essa instrução.\" Do not try to make up an answer."
+             "If the retrieved data has nothing to do with the question, just say \"Eu não tenho dados suficientes para responder essa instrução.\". "
+             "Do not try to guess or make up an answer."
              "Question: {input}"),
             MessagesPlaceholder("chat_history", optional=True),
             ("human", "{input}"),
@@ -54,7 +55,7 @@ def build_rag_chain():
         retriever,
         "transactions_search_tool",
         "Use this tool to search in the context of transactions. "
-        "Here you can find information about transactions. There are daily, monthly, and yearly summaries. "
+        "Here you can find information about transactions. There are daily, monthly, and yearly summaries for each consumer and daily, monthly, and yearly summaries for the overall portfolio.",
     )
     tools = [retriever_tool]
     agent = create_openai_tools_agent(llm, tools, prompt)
