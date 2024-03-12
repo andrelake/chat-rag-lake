@@ -127,6 +127,7 @@ class CardTransactions:
                             'transaction_value': random.uniform(1, 5000),
                             'seller_description': fake.company().strip()
                         })
+                        i_transaction_id += 1
                 if data_chunk:
                     count_transactions_portfolio += len(data_chunk)
                     df = pd.DataFrame(data=data_chunk, columns=pandas_schema.keys()) \
@@ -154,6 +155,8 @@ class CardTransactions:
 
     # By year, month, day, portfolio, officer, consumer, product, variant, seller, and transaction
     def group_by_transaction(df: pd.DataFrame) -> Tuple[pd.DataFrame, List[Document]]:
+        df = df.copy()
+        df['data_granularity'] = 'transaction_id'
         return df
 
     # By year, month, day, consumer, product
@@ -161,6 +164,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'transaction_month', 'transaction_day', 'consumer_id', 'consumer_document', 'consumer_name', 'product']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/transaction_month/transaction_day/portfolio_id/consumer_id/product'
         return df
 
     # By year, month, consumer, product
@@ -168,6 +172,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'transaction_month', 'consumer_id', 'consumer_document', 'consumer_name', 'product']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/transaction_month/portfolio_id/consumer_id/product'
         return df
 
     # By year, consumer, product
@@ -175,6 +180,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'consumer_id', 'consumer_document', 'consumer_name', 'product']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/portfolio_id/consumer_id/product'
         return df
     
     # By year, month, day, consumer
@@ -182,6 +188,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'transaction_month', 'transaction_day', 'consumer_id', 'consumer_document', 'consumer_name']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/transaction_month/transaction_day/portfolio_id/consumer_id'
         return df
     
     # By year, month, consumer
@@ -189,6 +196,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'transaction_month', 'consumer_id', 'consumer_document', 'consumer_name']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/transaction_month/portfolio_id/consumer_id'
         return df
     
     # By year, consumer
@@ -196,6 +204,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'consumer_id', 'consumer_document', 'consumer_name']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/portfolio_id/consumer_id'
         return df
 
     # By year, month, day, portfolio
@@ -203,6 +212,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'transaction_month', 'transaction_day', 'portfolio_id']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/transaction_month/transaction_day/portfolio_id'
         return df
 
     # By year, month, portfolio
@@ -210,6 +220,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'transaction_month', 'portfolio_id']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/transaction_month/portfolio_id'
         return df
 
     # By year, portfolio
@@ -217,6 +228,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'portfolio_id']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/portfolio_id'
         return df
     
     def refine(df: pd.DataFrame) -> pd.DataFrame:
@@ -433,36 +445,44 @@ class CardTransactions:
         # Perguntas adicionais
         # Quantos % dos clientes da carteira do gerente # fizeram transações com cartão de crédito nos últimos 6 meses?
 
-        # Quanto o cliente Maria gastou em 5 de abril de 2023?
-        prompt = f'Quanto o cliente {hypothetical_consumer_name} gastou em 5 de abril de 2023?'
+        # Total gasto pelo cliente Maria em 5 de abril de 2023?
+        prompt = f'Total gasto pelo cliente {hypothetical_consumer_name} em 5 de abril de 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 4) & (df2.transaction_day == 5) & (df2.consumer_id == hypotetical_consumer_id)].transaction_value.sum()
         answer = f'R$ {result:.2f}'
         chain.append((prompt, answer))
+        prompt = f'Quanto o cliente {hypothetical_consumer_name} gastou em 5 de abril de 2023?'
+        chain.append((prompt, answer))
 
-        # Quando o cliente João gastou em abril de 2023?
-        prompt = f'Quanto o cliente {hypothetical_consumer_name} gastou em abril de 2023?'
+        # Total gasto pelo cliente Maria gastou em abril de 2023?
+        prompt = f'Total gasto pelo cliente {hypothetical_consumer_name} gastou em abril de 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 4) & (df2.consumer_id == hypotetical_consumer_id)].transaction_value.sum()
         answer = f'R$ {result:.2f}'
         chain.append((prompt, answer))
+        prompt = f'Quanto o cliente {hypothetical_consumer_name} gastou em abril de 2023?'
+        chain.append((prompt, answer))
 
-        # Quanto o cliente Maria gastou em 2023?
-        prompt = f'Quanto o cliente {hypothetical_consumer_name} gastou em 2023?'
+        # Total gasto pelo cliente Maria gastou em 2023?
+        prompt = f'Total gasto pelo cliente {hypothetical_consumer_name} gastou em 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.consumer_id == hypotetical_consumer_id)].transaction_value.sum()
         answer = f'R$ {result:.2f}'
         chain.append((prompt, answer))
+        prompt = f'Quanto o cliente {hypothetical_consumer_name} gastou em 2023?'
+        chain.append((prompt, answer))
 
-        # Quanto o cliente Maria gastou em abril, maio e junho de 2023?
-        prompt = f'Quanto o cliente {hypothetical_consumer_name} gastou em abril, maio e junho de 2023?'
+        # Total gasto pelo cliente Maria gastou em abril, maio e junho de 2023?
+        prompt = f'Total gasto pelo cliente {hypothetical_consumer_name} gastou em abril, maio e junho de 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month.isin([4, 5, 6]) & (df2.consumer_id == hypotetical_consumer_id))].transaction_value.sum()
         answer = f'R$ {result:.2f}'
         chain.append((prompt, answer))
+        prompt = f'Quanto o cliente {hypothetical_consumer_name} gastou em abril, maio e junho de 2023?'
+        chain.append((prompt, answer))
 
         # Quanto o cliente Maria gastou em abril comparado com junho de 2023?
-        prompt = f'Quanto o cliente {hypothetical_consumer_name} gastou em abril comparado com junho de 2023?'
+        prompt = f'Total gasto pelo cliente {hypothetical_consumer_name} gastou em abril comparado com junho de 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month.isin([4, 6]) & (df2.consumer_id == hypotetical_consumer_id))].groupby('transaction_month').transaction_value.sum()
         result1 = result.iloc[0]
@@ -470,37 +490,47 @@ class CardTransactions:
         percentage = ((result2/result1) - 1) * 100
         answer = f'O cliente {hypothetical_consumer_name} gastou R$ {result1:.2f} em abril e R$ {result2:.2f} em junho de 2023 ({"+" if percentage >= 0 else ""}{percentage:.1f}%).'
         chain.append((prompt, answer))
+        prompt = f'Quanto o cliente {hypothetical_consumer_name} gastou em abril comparado com junho de 2023?'
+        chain.append((prompt, answer))
 
-        # Qual o total transacionado na carteira em 5 de abril de 2023?
-        prompt = f'Qual o total transacionado na carteira em 5 de abril de 2023?'
+        # Total transacionado na carteira em 5 de abril de 2023?
+        prompt = f'Total transacionado na carteira em 5 de abril de 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 4) & (df2.transaction_day == 5)].transaction_value.sum()
         answer = f'R$ {result:.2f}'
         chain.append((prompt, answer))
+        prompt = f'Qual o total transacionado na carteira em 5 de abril de 2023?'
+        chain.append((prompt, answer))
 
-        # Qual o total transacionado na carteira em abril de 2023?
-        prompt = f'Qual o total transacionado na carteira em abril de 2023?'
+        # Total transacionado na carteira em abril de 2023?
+        prompt = f'Total transacionado na carteira em abril de 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 4)].transaction_value.sum()
         answer = f'R$ {result:.2f}'
         chain.append((prompt, answer))
+        prompt = f'Qual o total transacionado na carteira em abril de 2023?'
+        chain.append((prompt, answer))
 
-        # Qual o total transacionado na carteira em 2023?
-        prompt = f'Qual o total transacionado na carteira em 2023?'
+        # Total transacionado na carteira em 2023?
+        prompt = f'Total transacionado na carteira em 2023?'
         df2 = df.copy()
         result = df2[df2.transaction_year == 2023].transaction_value.sum()
         answer = f'R$ {result:.2f}'
         chain.append((prompt, answer))
+        prompt = f'Qual o total transacionado na carteira em 2023?'
+        chain.append((prompt, answer))
 
-        # Qual o total transacionado na carteira em abril, maio e junho de 2023?
-        prompt = f'Qual o total transacionado na carteira em abril, maio e junho de 2023?'
+        # Total transacionado na carteira em abril, maio e junho de 2023?
+        prompt = f'Total transacionado na carteira em abril, maio e junho de 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month.isin([4, 5, 6]))].transaction_value.sum()
         answer = f'R$ {result:.2f}'
         chain.append((prompt, answer))
+        prompt = f'Qual o total transacionado na carteira em abril, maio e junho de 2023?'
+        chain.append((prompt, answer))
 
-        # Qual o total transacionado na carteira em abril comparado com junho de 2023?
-        prompt = f'Qual o total transacionado na carteira em abril comparado com junho de 2023?'
+        # Total transacionado na carteira em abril comparado com junho de 2023?
+        prompt = f'Total transacionado na carteira em abril comparado com junho de 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month.isin([4, 6]))].groupby('transaction_month').transaction_value.sum()
         result1 = result.iloc[0]
@@ -508,37 +538,47 @@ class CardTransactions:
         percentage = ((result2/result1) - 1) * 100
         answer = f'O cliente {hypothetical_consumer_name} gastou R$ {result1:.2f} em abril e R$ {result2:.2f} em junho de 2023 ({"+" if percentage >= 0 else ""}{percentage:.1f}%).'
         chain.append((prompt, answer))
+        prompt = f'Qual o total transacionado na carteira em abril comparado com junho de 2023?'
+        chain.append((prompt, answer))
 
-        # Qual o total transacionado no cartão de crédito em 5 de abril de 2023?
-        prompt = f'Qual o total transacionado no cartão de crédito em 5 de abril de 2023?'
+        # Total transacionado no cartão de crédito em 5 de abril de 2023?
+        prompt = f'Total transacionado no cartão de crédito em 5 de abril de 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 4) & (df2.transaction_day == 5) & (df2['product'] == 'credit')].transaction_value.sum()
         answer = f'R$ {result:.2f}'
         chain.append((prompt, answer))
+        prompt = f'Qual o total transacionado no cartão de crédito em 5 de abril de 2023?'
+        chain.append((prompt, answer))
 
-        # Qual o total transacionado no cartão de crédito em abril de 2023?
-        prompt = f'Qual o total transacionado no cartão de crédito em abril de 2023?'
+        # Total transacionado no cartão de crédito em abril de 2023?
+        prompt = f'Total transacionado no cartão de crédito em abril de 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 4) & (df2['product'] == 'credit')].transaction_value.sum()
         answer = f'R$ {result:.2f}'
         chain.append((prompt, answer))
+        prompt = f'Qual o total transacionado no cartão de crédito em abril de 2023?'
+        chain.append((prompt, answer))
 
-        # Qual o total transacionado no cartão de crédito em 2023?
-        prompt = f'Qual o total transacionado no cartão de crédito em 2023?'
+        # Total transacionado no cartão de crédito em 2023?
+        prompt = f'Total transacionado no cartão de crédito em 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2['product'] == 'credit')].transaction_value.sum()
         answer = f'R$ {result:.2f}'
         chain.append((prompt, answer))
+        prompt = f'Qual o total transacionado no cartão de crédito em 2023?'
+        chain.append((prompt, answer))
 
-        # Qual o total transacionado no cartão de crédito em abril, maio e junho de 2023?
-        prompt = f'Qual o total transacionado no cartão de crédito em abril, maio e junho de 2023?'
+        # Total transacionado no cartão de crédito em abril, maio e junho de 2023?
+        prompt = f'Total transacionado no cartão de crédito em abril, maio e junho de 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month.isin([4, 5, 6]) & (df2['product'] == 'credit'))].transaction_value.sum()
         answer = f'R$ {result:.2f}'
         chain.append((prompt, answer))
+        prompt = f'Qual o total transacionado no cartão de crédito em abril, maio e junho de 2023?'
+        chain.append((prompt, answer))
 
-        # Qual o total transacionado no cartão de crédito em abril comparado com junho de 2023?
-        prompt = f'Qual o total transacionado no cartão de crédito em abril comparado com junho de 2023?'
+        # Total transacionado no cartão de crédito em abril comparado com junho de 2023?
+        prompt = f'Total transacionado no cartão de crédito em abril comparado com junho de 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month.isin([4, 6]) & (df2['product'] == 'credit'))].groupby('transaction_month').transaction_value.sum()
         result1 = result.iloc[0]
@@ -546,30 +586,38 @@ class CardTransactions:
         percentage = ((result2/result1) - 1) * 100
         answer = f'O cliente {hypothetical_consumer_name} gastou R$ {result1:.2f} em abril e R$ {result2:.2f} em junho de 2023 ({"+" if percentage >= 0 else ""}{percentage:.1f}%).'
         chain.append((prompt, answer))
+        prompt = f'Qual o total transacionado no cartão de crédito em abril comparado com junho de 2023?'
+        chain.append((prompt, answer))
 
-        # Qual o total transacionado no cartão de crédito BLACK em 5 de abril de 2023?
-        prompt = f'Qual o total transacionado no cartão de crédito BLACK em 5 de abril de 2023?'
+        # Total transacionado no cartão de crédito BLACK em 5 de abril de 2023?
+        prompt = f'Total transacionado no cartão de crédito BLACK em 5 de abril de 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 4) & (df2.transaction_day == 5) & (df2['product'] == 'credit') & (df2.card_variant == 'black')].transaction_value.sum()
         answer = f'R$ {result:.2f}'
         chain.append((prompt, answer))
+        prompt = f'Qual o total transacionado no cartão de crédito BLACK em 5 de abril de 2023?'
+        chain.append((prompt, answer))
 
-        # Qual o total transacionado no cartão de crédito BLACK em abril de 2023?
-        prompt = f'Qual o total transacionado no cartão de crédito BLACK em abril de 2023?'
+        # Total transacionado no cartão de crédito BLACK em abril de 2023?
+        prompt = f'Total transacionado no cartão de crédito BLACK em abril de 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 4) & (df2['product'] == 'credit') & (df2.card_variant == 'black')].transaction_value.sum()
         answer = f'R$ {result:.2f}'
         chain.append((prompt, answer))
+        prompt = f'Qual o total transacionado no cartão de crédito BLACK em abril de 2023?'
+        chain.append((prompt, answer))
 
-        # Qual o total transacionado no cartão de crédito BLACK em abril, maio e junho de 2023?
-        prompt = f'Qual o total transacionado no cartão de crédito BLACK em abril, maio e junho de 2023?'
+        # Total transacionado no cartão de crédito BLACK em 2023?
+        prompt = f'Total transacionado no cartão de crédito BLACK em abril, maio e junho de 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month.isin([4, 5, 6]) & (df2['product'] == 'credit') & (df2.card_variant == 'black'))].transaction_value.sum()
         answer = f'R$ {result:.2f}'
         chain.append((prompt, answer))
+        prompt = f'Qual o total transacionado no cartão de crédito BLACK em abril, maio e junho de 2023?'
+        chain.append((prompt, answer))
 
-        # Qual o total transacionado no cartão de crédito BLACK em abril comparado com junho de 2023?
-        prompt = f'Qual o total transacionado no cartão de crédito BLACK em abril comparado com junho de 2023?'
+        # Total transacionado no cartão de crédito BLACK em abril comparado com junho de 2023?
+        prompt = f'Total transacionado no cartão de crédito BLACK em abril comparado com junho de 2023?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month.isin([4, 6]) & (df2['product'] == 'credit') & (df2.card_variant == 'black'))].groupby('transaction_month').transaction_value.sum()
         result1 = result.iloc[0]
@@ -577,9 +625,11 @@ class CardTransactions:
         percentage = ((result2/result1) - 1) * 100
         answer = f'O cliente {hypothetical_consumer_name} gastou R$ {result1:.2f} em abril e R$ {result2:.2f} em junho de 2023 ({"+" if percentage >= 0 else ""}{percentage:.1f}%).'
         chain.append((prompt, answer))
+        prompt = f'Qual o total transacionado no cartão de crédito BLACK em abril comparado com junho de 2023?'
+        chain.append((prompt, answer))
 
-        # Qual a evolução mensal dos gastos do cliente Maria nos últimos 6 meses (julho, agosto, setembro, outubro, novembro e dezembro de 2023)?
-        prompt = f'Qual a evolução mensal dos gastos do cliente {hypothetical_consumer_name} nos últimos 6 meses (julho, agosto, setembro, outubro, novembro e dezembro de 2023)?'
+        # Evolução mensal dos gastos do cliente Maria nos últimos 6 meses (julho, agosto, setembro, outubro, novembro e dezembro de 2023)?
+        prompt = f'Evolução mensal dos gastos do cliente {hypothetical_consumer_name} nos últimos 6 meses (julho, agosto, setembro, outubro, novembro e dezembro de 2023)?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month.isin([7, 8, 9, 10, 11, 12]) & (df2.consumer_id == hypotetical_consumer_id))] \
                     .groupby(['transaction_year', 'transaction_month', 'consumer_id']) \
@@ -591,9 +641,11 @@ class CardTransactions:
         result = result._agg2.iloc[0]
         answer = result
         chain.append((prompt, answer))
+        prompt = f'Qual a evolução mensal dos gastos do cliente {hypothetical_consumer_name} nos últimos 6 meses (julho, agosto, setembro, outubro, novembro e dezembro de 2023)?'
+        chain.append((prompt, answer))
 
-        # Qual a evolução anual dos gastos do cliente Maria nos últimos 2 anos (2023, 2024)?
-        prompt = f'Qual a evolução anual dos gastos do cliente {hypothetical_consumer_name} nos últimos 2 anos (2023, 2024)?'
+        # Evolução anual dos gastos do cliente Maria em 2023 e 2024?
+        prompt = f'Evolução anual dos gastos do cliente {hypothetical_consumer_name} em 2023 e 2024?'
         df2 = df.copy()
         result = df2[(df2.transaction_year.isin([2023, 2024]) & (df2.consumer_id == hypotetical_consumer_id))] \
                     .groupby(['transaction_year', 'consumer_id']) \
@@ -605,14 +657,18 @@ class CardTransactions:
         result = result._agg2.iloc[0]
         answer = result
         chain.append((prompt, answer))
+        prompt = f'Qual a evolução anual dos gastos do cliente {hypothetical_consumer_name} nos últimos 2 anos (2023, 2024)?'
+        chain.append((prompt, answer))
 
-        # Em relação à média de gastos de todos os clientes em abril, como a cliente Maria se compara?
-        prompt = f'Em relação à média de gastos de todos os clientes em abril, como a cliente {hypothetical_consumer_name} se compara?'
+        # Comparação entre a média de gastos da cliente Maria e a media de gastos de todos os clientes em abril?
+        prompt = f'Comparação entre a média de gastos da cliente {hypothetical_consumer_name} e a media de gastos de todos os clientes em abril?'
         df2 = df.copy()
         result = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 4)].transaction_value.mean()
         result2 = df2[(df2.transaction_year == 2023) & (df2.transaction_month == 4) & (df2.consumer_id == hypotetical_consumer_id)].transaction_value.mean()
         percentage = ((result2/result) - 1) * 100
         answer = f'O cliente {hypothetical_consumer_name} gastou em média R$ {result2:.2f} em abril de 2023 {"+" if percentage >= 0 else ""}{percentage:.1f}%) em relação à média de todos os clientes de R$ {result:.2f}.'
+        chain.append((prompt, answer))
+        prompt = f'Em relação à média de gastos de todos os clientes em abril, como a cliente {hypothetical_consumer_name} se compara?'
         chain.append((prompt, answer))
         
         if log.verbose:
@@ -632,6 +688,7 @@ class CardTransactions:
     
     def read_last_quiz() -> List[List[str]]:
         path = os.path.join('data', 'refined', 'validation')
+        os.makedirs(path, exist_ok=True)
         files = [file for file in os.listdir(path) if file.startswith('quiz_card_transactions')]
         if files:
             with open(os.path.join(path, files[-1]), 'r') as file:

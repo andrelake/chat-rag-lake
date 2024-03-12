@@ -38,32 +38,31 @@ def get_chat_prompt() -> ChatPromptTemplate:
     system_template = (
         """
         Você é um assistente de negócios. Você está auxiliando um gerente de contas de um banco. 
-        Considere o histórico de mensagens a seguir, crie uma consulta de busca para encontrar informações sobre transações. 
+        Considere o histórico de mensagens a seguir, crie uma consulta de busca para encontrar informações sobre transações de cartão de crédito. 
         Só utilize os documentos fornecidos como fonte de resposta se a pergunta for sobre transações bancárias.
         Considere utilizar o histórico de mensagens para criar uma consulta de busca ou responder perguntas.  
         Se não souber uma resposta, apenas responda "Não tenho informação suficiente para responder sobre isso". 
         Responda, por padrão, de maneira simples e direta.
         
         Os documentos relacionados são referentes a transações bancárias dos clientes da carteira de um gerente de contas. 
-        É possível encontrar informações sobre transações avulsas e agrupadas. Aqui um exemplo de transação avulsa: 
+        É possível encontrar sumários diários, mensais e anuais para cada cliente, existem também sumários diários, mensais e anuais de toda a carteira de clientes.
+        Desde que responda corretamente a pergunta, dê preferência a extrair informações dos sumários mais assertivos para a pergunta, por exemplo, 
+        se a pergunta for sobre um determinado mês busque informações no sumário mensal ao invés de somar todos os sumários diários daquele mês, 
+        ou se a pergunta for sobre a carteira (todos os clientes) busque informações nos sumários da carteira ao invés de somar os sumários de cada cliente.
         
-        < transação avulsa > 
-        O cliente Lucas Viana (CPF: 92106574894), realizou a transação com cartão de débito no dia 1 do mês de 
-        janeiro do ano de 2023 (01/01/2023), sendo esta com cartão PLATINUM.
-        < / transação avulsa > 
+        Exemplo de sumário diário de um cliente:
+        <doc> 
+        [Quanto o cliente Ana Lívia da Cruz (CPF: 49738156084) transacionou com cartão de crédito no dia 2 do mês de janeiro do ano de 2023 (02/01/2023)?]	Resumo diário das transações do cliente no dia: 	R$ 1095.13 no estabelecimento "Moreira";	R$ 2017.50 no estabelecimento "da Paz S/A";
+        </doc> 
         
-        As agrupadas contém informação por dia, por mês e por ano. Aqui um exemplo de informação sobre transações agrupadas: 
-        
-        < informação sobre transações agrupadas >
-        Sumário mensal de transações do cliente Carlos Eduardo Rodrigues(CPF: 80763159212) com cartão de débito para o 
-        mês de março do ano de 2023(03 / 2023): - Contagem de transações: 25, (4 com cartão BLACK, 4 com cartão GOLD, 4 
-        com cartão PLATINUM, 5 com cartão STANDARD, 8 com cartão INTERNACIONAL); - Valor total: R$ 62126.99; - Valor médio: R$ 2485.08; 
-        - Valor da maior transação: R$ 4809.23; - Valor da menor transação: R$ 47.65. 
-        < / informação sobre transações agrupadas >
+        Exemplo de sumário mensal da carteira:
+        <doc> 
+        [Qual o total transacionado com cartão de crédito por todos os clientes no mês de julho do ano de 2023 (07/2023)?]	Resumo mensal de todas as transaçoes no mês, com uma contagem total de 279 transações e valor total de R$ 706888.44, o valor médio é de R$ 2533.65, o valor da maior transação é de R$ 4999.94 e o valor da menor transação é de R$ 26.86. Dentre elas foram realizadas 55 com cartão BLACK, 62 com cartão GOLD, 59 com cartão PLATINUM, 51 com cartão STANDARD, 52 com cartão INTERNACIONAL.
+        </doc>
         
         Questão: {input}
         """
-    )
+    ).replace(' ' * 4, '')
 
     return ChatPromptTemplate.from_messages(
         [SystemMessagePromptTemplate(prompt=PromptTemplate(input_variables=['context', 'input'],
@@ -78,13 +77,13 @@ def get_stuff_docs_prompt() -> ChatPromptTemplate:
         """
         Utilize o contexto fornecido e o histórico de mensagens para responder perguntas ligadas a transações bancárias. 
         
-        < contexto > 
+        <contexto> 
         {context} 
-        < / contexto >  
+        </contexto>  
         
         Questão: {input}
         """
-    )
+    ).replace(' ' * 4, '')
 
     return ChatPromptTemplate.from_messages(
         [SystemMessagePromptTemplate(prompt=PromptTemplate(input_variables=['context', 'input'],
@@ -132,8 +131,7 @@ def build_rag_chain():
     return retriever, conversation_retriever_chain, memory, chain
 
 
-def ask_rag_chain(question):
-    retriever, conversation_retriever_chain, memory, rag_chain = build_rag_chain()
+def ask_rag_chain(question, conversation_retriever_chain, memory, rag_chain):
     # return retriever.invoke(question)
     response = rag_chain.invoke({"input": question, "context": conversation_retriever_chain})
     memory.save_context({"input": question}, {"output": response["answer"]})

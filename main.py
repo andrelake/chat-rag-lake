@@ -1,6 +1,6 @@
 from time import perf_counter, sleep
 
-from card4a_query_llm_agent import ask_rag_chain, build_rag_chain
+from card4a_query_llm_agentv2 import ask_rag_chain, build_rag_chain
 
 
 def chat_handler(chain):
@@ -21,8 +21,8 @@ def chat_handler(chain):
 
 
 def main():
-    # retriever, agent_executor = build_rag_chain()
-    retriever, rag_chain_with_source = build_rag_chain()
+    # retriever, rag_chain_with_source = build_rag_chain()
+    rag_chain_with_source = build_rag_chain()
     chat_handler(rag_chain_with_source)
 
 
