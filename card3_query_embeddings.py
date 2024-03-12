@@ -30,7 +30,11 @@ if __name__ == '__main__':
         'prj-ai-rag-llm-table-3-standard-creditcard',
         'prj-ai-rag-llm-table-4-discursive-creditcard',
         'prj-ai-rag-llm-table-5-join-wo-transactions-2',
-    )[4]
+        'prj-ai-rag-llm-table-6-chunks',
+        'prj-ai-rag-llm-table-7-cohere',
+        'prj-ai-rag-llm-table-8-storytelling',
+        'prj-ai-rag-llm-table-9-questions',
+    )[8]
     vectorstore = get_vectorstore(
         name=vectorstore_name,
         embedding_function=embedding_function,
