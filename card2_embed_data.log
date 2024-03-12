@@ -460,3 +460,94 @@ Added 2672/2672 documents to vectorstore
  'index_fullness': 0.0,
  'namespaces': {'': {'vector_count': 2672}},
  'total_vector_count': 2672}
+
+Generating documents...
+Generated 2165 documents
+
+Generating documents...
+Generated 120 documents
+
+Generating documents...
+Generated 10 documents
+
+Generating documents...
+Generated 364 documents
+
+Generating documents...
+Generated 12 documents
+
+Generating documents...
+Generated 1 documents
+
+Deleting vectorstore: prj-ai-rag-llm-table-9-questions
+
+Successfully deleted vectorstore: prj-ai-rag-llm-table-9-questions.
+
+Vectorstore "prj-ai-rag-llm-table-9-questions" not found, creating
+
+Creating vectorstore prj-ai-rag-llm-table-9-questions
+
+Found vectorstore: "prj-ai-rag-llm-table-9-questions"
+
+Calculating embedding cost for 2672 documents using model `text-embedding-3-small`...
+
+Total tokens: 287708
+Total documents: 2672 (~107.7 tokens/document)
+Embedding cost: $0.00575
+
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 6/6 [00:52<00:00,  8.82s/it]
+
+
+Added 2672/2672 documents to vectorstore
+
+{'dimension': 1536,
+ 'index_fullness': 0.0,
+ 'namespaces': {'': {'vector_count': 2672}},
+ 'total_vector_count': 2672}
+
+Generating documents...
+Generated 3004 documents
+
+Generating documents...
+Generated 2165 documents
+
+Generating documents...
+Generated 120 documents
+
+Generating documents...
+Generated 10 documents
+
+Generating documents...
+Generated 364 documents
+
+Generating documents...
+Generated 12 documents
+
+Generating documents...
+Generated 1 documents
+
+Deleting vectorstore: prj-ai-rag-llm-table-10-granularity
+
+Successfully deleted vectorstore: prj-ai-rag-llm-table-10-granularity.
+
+Vectorstore "prj-ai-rag-llm-table-10-granularity" not found, creating
+
+Creating vectorstore prj-ai-rag-llm-table-10-granularity
+
+Found vectorstore: "prj-ai-rag-llm-table-10-granularity"
+
+Calculating embedding cost for 5676 documents using model `text-embedding-3-small`...
+
+Total tokens: 616510
+Total documents: 5676 (~108.6 tokens/document)
+Embedding cost: $0.01233
+
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [01:52<00:00,  9.36s/it]
+
+
+Added 5676/5676 documents to vectorstore
+
+{'dimension': 1536,
+ 'index_fullness': 0.0,
+ 'namespaces': {'': {'vector_count': 5676}},
+ 'total_vector_count': 5676}

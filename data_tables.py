@@ -127,6 +127,7 @@ class CardTransactions:
                             'transaction_value': random.uniform(1, 5000),
                             'seller_description': fake.company().strip()
                         })
+                        i_transaction_id += 1
                 if data_chunk:
                     count_transactions_portfolio += len(data_chunk)
                     df = pd.DataFrame(data=data_chunk, columns=pandas_schema.keys()) \
@@ -154,6 +155,8 @@ class CardTransactions:
 
     # By year, month, day, portfolio, officer, consumer, product, variant, seller, and transaction
     def group_by_transaction(df: pd.DataFrame) -> Tuple[pd.DataFrame, List[Document]]:
+        df = df.copy()
+        df['data_granularity'] = 'transaction_id'
         return df
 
     # By year, month, day, consumer, product
@@ -161,6 +164,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'transaction_month', 'transaction_day', 'consumer_id', 'consumer_document', 'consumer_name', 'product']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/transaction_month/transaction_day/portfolio_id/consumer_id/product'
         return df
 
     # By year, month, consumer, product
@@ -168,6 +172,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'transaction_month', 'consumer_id', 'consumer_document', 'consumer_name', 'product']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/transaction_month/portfolio_id/consumer_id/product'
         return df
 
     # By year, consumer, product
@@ -175,6 +180,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'consumer_id', 'consumer_document', 'consumer_name', 'product']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/portfolio_id/consumer_id/product'
         return df
     
     # By year, month, day, consumer
@@ -182,6 +188,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'transaction_month', 'transaction_day', 'consumer_id', 'consumer_document', 'consumer_name']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/transaction_month/transaction_day/portfolio_id/consumer_id'
         return df
     
     # By year, month, consumer
@@ -189,6 +196,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'transaction_month', 'consumer_id', 'consumer_document', 'consumer_name']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/transaction_month/portfolio_id/consumer_id'
         return df
     
     # By year, consumer
@@ -196,6 +204,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'consumer_id', 'consumer_document', 'consumer_name']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/portfolio_id/consumer_id'
         return df
 
     # By year, month, day, portfolio
@@ -203,6 +212,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'transaction_month', 'transaction_day', 'portfolio_id']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/transaction_month/transaction_day/portfolio_id'
         return df
 
     # By year, month, portfolio
@@ -210,6 +220,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'transaction_month', 'portfolio_id']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/transaction_month/portfolio_id'
         return df
 
     # By year, portfolio
@@ -217,6 +228,7 @@ class CardTransactions:
         groupby = ['transaction_year', 'portfolio_id']
         df = df.groupby(groupby, observed=True).agg(**aggregations).reset_index()
         df = df[df.transaction_value_count > 0]
+        df['data_granularity'] = 'transaction_year/portfolio_id'
         return df
     
     def refine(df: pd.DataFrame) -> pd.DataFrame:
