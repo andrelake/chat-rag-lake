@@ -1,7 +1,4 @@
-from pprint import pprint
-import json
-
-from utils import log
+from utils.utils import log
 
 
 log.verbose = True
@@ -9,7 +6,6 @@ log.end = '\n\n'
 
 
 from env import PINECONE_API_KEY, OPENAI_API_KEY
-from connections.openai import get_self_query_retriever
 from connections.pinecone import get_database_client, get_vectorstore, query_documents
 from data_tables import CardTransactions
 from data_handler import get_embeddings_client

@@ -1,6 +1,6 @@
-from typing import Union, Tuple, List, Set
+from typing import List
 
-from utils import log
+from utils.utils import log
 
 import tiktoken
 from langchain_openai import OpenAIEmbeddings

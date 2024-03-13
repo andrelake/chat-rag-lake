@@ -1,19 +1,15 @@
 import os
 from env import PINECONE_API_KEY, OPENAI_API_KEY
-from datetime import date
-from typing import Optional, Any, Callable, List, Dict, Tuple
-import json
+from typing import Any, List, Dict, Tuple
 
-from utils import log, get_month_name
-from data_handler import read_orc, generate_documents, redistribute_by_characters, get_embeddings_client, get_embedding_cost
+from utils.utils import log, get_month_name
+from data_handler import generate_documents, redistribute_by_characters, get_embeddings_client, get_embedding_cost
 from data_tables import CardTransactions
 from connections.pinecone import (
     get_database_client,
-    create_vectorstore,
     get_vectorstore,
     delete_vectorstore,
     add_documents,
-    query_documents,
 )
 
 from pandas import DataFrame, concat

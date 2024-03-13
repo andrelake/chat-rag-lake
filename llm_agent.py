@@ -107,7 +107,7 @@ def build_rag_chain():
         ),
     ]
     agent = create_openai_tools_agent(llm, tools, prompt)
-    agent_executor = AgentExecutor(agent=agent, tools=tools)
+    agent_executor = AgentExecutor(agent=agent, tools=tools, max_iterations=15, verbose=True)
 
     return agent_executor
 

@@ -1,7 +1,6 @@
-import os
 from datetime import date
 
-from utils import log
+from utils.utils import log
 from data_tables import CardTransactions
 
 
