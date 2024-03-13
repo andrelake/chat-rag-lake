@@ -53,7 +53,7 @@ def insert_documents(vectorstore_name: str, documents: List[Document]) -> None:
 def write_documents_txt(vectorstore_name: str, documents: List[Document]) -> None:
     text_path = os.path.join('data', 'refined', database_type, vectorstore_name)
     os.makedirs(text_path, exist_ok=True)
-    with open(os.path.join(text_path, 'data.txt'), 'w') as fo:
+    with open(os.path.join(text_path, 'data.txt'), 'w', encoding='utf-8') as fo:
         fo.write('\n\n'.join([doc.page_content for doc in documents]))
 
 
@@ -1078,13 +1078,13 @@ if __name__ == '__main__':
     }
 
     tests = []
-    # tests.append(test_1(df, aggregations, insert=True))  # Standard processing
-    # tests.append(test_2(df, aggregations, insert=True))  # Discursive text content
-    # tests.append(test_3(df, aggregations, insert=True))  # Process credit cards data only
-    # tests.append(test_4(df, aggregations, insert=True))  # Discursive text content and only credit cards data
-    # tests.append(test_5(df, aggregations, insert=True))  # Join transactions with diary summaries
-    # tests.append(test_6(df, aggregations, insert=True))  # Chunks of 1000 tokens
+    tests.append(test_1(df, aggregations, insert=True))  # Standard processing
+    tests.append(test_2(df, aggregations, insert=True))  # Discursive text content
+    tests.append(test_3(df, aggregations, insert=True))  # Process credit cards data only
+    tests.append(test_4(df, aggregations, insert=True))  # Discursive text content and only credit cards data
+    tests.append(test_5(df, aggregations, insert=True))  # Join transactions with diary summaries
+    tests.append(test_6(df, aggregations, insert=True))  # Chunks of 1000 tokens
     # tests.append(test_7(df, aggregations, insert=True))  # Cohere embeddings
-    # tests.append(test_8(df, aggregations, insert=True))  # Day becomes "no dia", Month becomes "resumo", Year becomes "sumário"
+    tests.append(test_8(df, aggregations, insert=True))  # Day becomes "no dia", Month becomes "resumo", Year becomes "sumário"
     tests.append(test_9(df, aggregations, insert=True))  # Questions included in the document
     tests.append(test_10(df, aggregations, insert=True))  # Store granularity in metadata
