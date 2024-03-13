@@ -1,6 +1,6 @@
 from datasets import Dataset
 
-from card4a_query_llm_lcel_advanced import ask_rag_chain, build_rag_chain
+from chains.card4a_query_llm_lcel_advanced import ask_rag_chain, build_rag_chain
 from ragas import evaluate
 from ragas.metrics import (
     faithfulness,

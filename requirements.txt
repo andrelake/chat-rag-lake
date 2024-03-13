@@ -1,6 +1,6 @@
 langchain~=0.1.11
 langchain_openai
-langchain-experimental
+langchain-experimental~=0.0.53
 langchainhub
 python-dotenv~=1.0.1
 pinecone-client
@@ -19,5 +19,5 @@ tqdm
 lark
 ragas
 datasets
-pyarrow
+pyarrow~=15.0.1
 pyorc

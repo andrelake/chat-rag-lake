@@ -1,10 +1,10 @@
-from typing import Union, Tuple, List, Set
+from typing import Union, Tuple, List
 from time import sleep
 import os
 import json
 
-from env import OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_ENVIRONMENT
-from utils import log
+from env import PINECONE_ENVIRONMENT
+from utils.utils import log
 
 from langchain_community.vectorstores import Pinecone as LangchainPineconeVectorstore
 from langchain_core.documents import Document

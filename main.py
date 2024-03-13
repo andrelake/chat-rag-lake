@@ -1,6 +1,6 @@
 from time import perf_counter, sleep
 
-from card4a_query_llm_agentv2 import ask_rag_chain, build_rag_chain
+from llm_agent import ask_rag_chain, build_rag_chain
 
 
 def chat_handler(chain):
@@ -14,7 +14,9 @@ def chat_handler(chain):
             break
 
         time_start = perf_counter()
-        ask_rag_chain(question, chain)
+        resp = ask_rag_chain(question, chain)
+        print(f"\nResposta #{i}: ")
+        print(resp["output"])
         time_end = perf_counter()
         print(f"\nTime taken: {time_end - time_start:.2f} seconds")
         i += 1

@@ -1,11 +1,8 @@
 import os
 from shutil import rmtree
 from typing import Optional, Any, Callable, List, Dict
-from datetime import datetime, date
-import random
-import json
 
-from utils import Logger, log
+from utils.utils import Logger, log
 from connections.openai import (
     get_embeddings_client as _openai_get_embeddings_client,
     get_embedding_cost as _openai_get_embedding_cost
@@ -14,11 +11,9 @@ from connections.openai import (
 import pandas as pd
 import numpy as np
 import pyorc
-from faker import Faker
-from fastavro import block_reader, writer
+from fastavro import writer
 from chromadb.utils import embedding_functions as _chromadb_embedding_functions
 from langchain_core.documents import Document
-from langchain.chains.query_constructor.base import AttributeInfo
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
