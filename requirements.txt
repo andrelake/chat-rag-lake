@@ -8,7 +8,7 @@ astrapy~=0.7.3
 upstash-redis
 openai~=1.11.1
 pypdf
-tiktoken
+tiktoken>=0.6.0
 chromadb-client
 sentence-transformers
 cramjam
@@ -21,3 +21,6 @@ ragas
 datasets
 pyarrow~=15.0.1
 pyorc
+fastapi>=0.68.0,<0.69.0
+pydantic>=1.8.0,<2.0.0
+uvicorn>=0.15.0,<0.16.0
