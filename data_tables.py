@@ -6,7 +6,7 @@ import random
 import json
 from datetime import datetime
 
-from utils.utils import Logger, log
+from utils import Logger, log
 from data_handler import read_orc, write_orc
 
 from langchain_core.documents import Document

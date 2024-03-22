@@ -2,7 +2,7 @@ import os
 from shutil import rmtree
 from typing import Optional, Any, Callable, List, Dict
 
-from utils.utils import Logger, log
+from utils import Logger, log
 from connections.openai import (
     get_embeddings_client as _openai_get_embeddings_client,
     get_embedding_cost as _openai_get_embedding_cost

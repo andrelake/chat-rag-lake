@@ -1,4 +1,4 @@
-from utils.utils import log
+from utils import log
 
 
 log.verbose = True
