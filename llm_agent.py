@@ -5,12 +5,13 @@ from langchain_core.callbacks.streaming_stdout import StreamingStdOutCallbackHan
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
-from env import OPENAI_MODEL_NAME, OPENAI_API_KEY, PINECONE_INDEX_NAME
+from env import OPENAI_MODEL_NAME, OPENAI_API_KEY, PINECONE_INDEX_NAME, OPENAI_EMBEDDING_MODEL_NAME
 
 
 def get_encoding(api_key: str) -> OpenAIEmbeddings:
     return OpenAIEmbeddings(openai_api_key=api_key,
-                            model="text-embedding-3-small")
+                            model=OPENAI_EMBEDDING_MODEL_NAME,
+                            dimensions=3072)
 
 
 def get_vectorstore(index_name, encoding):
