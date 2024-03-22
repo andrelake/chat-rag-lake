@@ -1,6 +1,6 @@
 from typing import List
 
-from utils.utils import log
+from utils import log
 
 import tiktoken
 from langchain_openai import OpenAIEmbeddings
