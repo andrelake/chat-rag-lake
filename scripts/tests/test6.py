@@ -3,6 +3,8 @@ Test 6 - Chunks of 1000 tokens
 '''
 
 
+import os
+
 from env import PINECONE_API_KEY, OPENAI_API_KEY
 from utils import log
 from data_utils.handlers import DocumentsHandler
@@ -45,11 +47,20 @@ from test5 import documents
 documents = DocumentsHandler.redistribute_by_characters(documents, 1000, 0)
 
 if __name__ == '__main__':
-    DocumentsHandler.write_txt(Database.vectorstore_name, documents)
+    DocumentsHandler.write_txt(os.path.join('data', 'refined', 'pinecone', Database.vectorstore_name, 'data.txt'), documents)
 
-    # Add documents
+    # Recreate the vectorstore
     delete_vectorstore(name=Database.vectorstore_name, database_client=Database.client)
-    get_cost(documents=documents, model_name=Embedding.model_name)
+    Database.vectorstore = get_vectorstore(
+        name=Database.vectorstore_name,
+        embedding_function=Embedding.client,
+        database_client=Database.client,
+        create=True,
+        dimension_count=Embedding.dimension_count
+    )
+
+    # Add documents to the vectorstore
+    get_cost(documents=documents, model_name=Embedding.model_name, type=Embedding.type)
     add_documents(
         vectorstore=Database.vectorstore,
         documents=documents,
