@@ -4,8 +4,6 @@ Test 3 - Process credit cards only
 
 
 from env import PINECONE_API_KEY, OPENAI_API_KEY
-from typing import List
-
 from utils import log, get_month_name
 from data_handler import DocumentsHandler
 from data_tables import CardTransactions
@@ -18,7 +16,6 @@ from connections.pinecone import (
 )
 
 from pandas import concat
-from langchain_core.documents import Document
 
 
 # Configure Logger

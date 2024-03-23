@@ -4,11 +4,8 @@ Test 6 - Chunks of 1000 tokens
 
 
 from env import PINECONE_API_KEY, OPENAI_API_KEY
-from typing import List
-
-from utils import log, get_month_name
+from utils import log
 from data_handler import DocumentsHandler
-from data_tables import CardTransactions
 from connections.embeddings import get_client, get_cost, get_dimension_count
 from connections.pinecone import (
     get_database_client,
@@ -16,9 +13,6 @@ from connections.pinecone import (
     delete_vectorstore,
     add_documents,
 )
-
-from pandas import concat
-from langchain_core.documents import Document
 
 
 # Configure Logger

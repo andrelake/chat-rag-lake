@@ -3,22 +3,15 @@ Test 7 - Cohere embeddings
 '''
 
 
-from env import PINECONE_API_KEY, OPENAI_API_KEY
-from typing import List
-
-from utils import log, get_month_name
+from env import OPENAI_API_KEY
+from utils import log
 from data_handler import DocumentsHandler
-from data_tables import CardTransactions
 from connections.embeddings import get_client, get_cost, get_dimension_count
 from connections.pinecone import (
-    get_database_client,
     get_vectorstore,
     delete_vectorstore,
     add_documents,
 )
-
-from pandas import concat
-from langchain_core.documents import Document
 
 
 # Configure Logger
