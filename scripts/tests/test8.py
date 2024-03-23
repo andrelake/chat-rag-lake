@@ -5,8 +5,8 @@ Test 8 - Day becomes "no dia", Month becomes "resumo", Year becomes "sumário"
 
 from env import PINECONE_API_KEY, OPENAI_API_KEY
 from utils import log, get_month_name
-from data_handler import DocumentsHandler
-from data_tables import CardTransactions
+from data_utils.handlers import DocumentsHandler
+from data_utils.tables import CardTransactions
 from connections.embeddings import get_client, get_cost, get_dimension_count
 from connections.pinecone import (
     get_database_client,

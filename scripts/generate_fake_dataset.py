@@ -1,7 +1,7 @@
 from datetime import date
 
 from utils import log
-from data_tables import CardTransactions
+from data_utils.tables import CardTransactions
 
 
 # Configure Logger

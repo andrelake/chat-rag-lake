@@ -5,7 +5,7 @@ Test 11 - Use large text embedding model
 
 from env import PINECONE_API_KEY, OPENAI_API_KEY
 from utils import log
-from data_handler import DocumentsHandler
+from data_utils.handlers import DocumentsHandler
 from connections.embeddings import get_client, get_cost, get_dimension_count
 from connections.pinecone import (
     get_database_client,
