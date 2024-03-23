@@ -551,3 +551,50 @@ Added 5676/5676 documents to vectorstore
  'index_fullness': 0.0,
  'namespaces': {'': {'vector_count': 5676}},
  'total_vector_count': 5676}
+
+Generating documents...
+Generated 3004 documents
+
+Generating documents...
+Generated 2165 documents
+
+Generating documents...
+Generated 120 documents
+
+Generating documents...
+Generated 10 documents
+
+Generating documents...
+Generated 364 documents
+
+Generating documents...
+Generated 12 documents
+
+Generating documents...
+Generated 1 documents
+
+Deleting vectorstore: prj-ai-rag-llm-table-12-english
+
+Successfully deleted vectorstore: prj-ai-rag-llm-table-12-english.
+
+Vectorstore "prj-ai-rag-llm-table-12-english" not found, creating
+
+Creating vectorstore prj-ai-rag-llm-table-12-english
+
+Found vectorstore: "prj-ai-rag-llm-table-12-english"
+
+Calculating embedding cost for 5676 documents using model `text-embedding-3-large`...
+
+Total tokens: 516540
+Total documents: 5676 (~91.0 tokens/document)
+Total embedding cost: $0.06715
+
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [02:21<00:00, 11.77s/it]
+
+
+Added 5676/5676 documents to vectorstore
+
+{'dimension': 3072,
+ 'index_fullness': 0.0,
+ 'namespaces': {'': {'vector_count': 5676}},
+ 'total_vector_count': 5676}
