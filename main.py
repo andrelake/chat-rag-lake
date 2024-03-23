@@ -1,6 +1,6 @@
 from time import perf_counter, sleep
 
-from llm_agent import ask_rag_chain, build_rag_chain
+from chains.llm_agent import ask_rag_chain, build_rag_chain
 
 
 def chat_handler(chain):

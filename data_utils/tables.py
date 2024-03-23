@@ -6,8 +6,8 @@ import random
 import json
 from datetime import datetime
 
-from utils.utils import Logger, log
-from data_handler import read_orc, write_orc
+from utils import Logger, log
+from handlers import DataFrameHandler
 
 from langchain_core.documents import Document
 from faker import Faker
@@ -698,11 +698,11 @@ class CardTransactions:
 
     def read() -> pd.DataFrame:
         schema = CardTransactions.schema['pandas']
-        df = read_orc(path=CardTransactions.path, log=log).astype(schema)
+        df = DataFrameHandler.read_orc(path=CardTransactions.path, log=log).astype(schema)
         return df
     
     def write(df: pd.DataFrame):
-        write_orc(
+        DataFrameHandler.write_orc(
             df=df,
             path=CardTransactions.path,
             partitionBy=['transaction_year'],

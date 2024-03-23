@@ -1,6 +1,6 @@
 from typing import Union, Tuple, List
 
-from utils.utils import log
+from utils import log
 
 from langchain_community.vectorstores import Chroma as LangchainChromaVectorstore
 from langchain_openai import OpenAIEmbeddings

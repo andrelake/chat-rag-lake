@@ -4,7 +4,7 @@ import os
 import json
 
 from env import PINECONE_ENVIRONMENT
-from utils.utils import log
+from utils import log
 
 from langchain_community.vectorstores import Pinecone as LangchainPineconeVectorstore
 from langchain_core.documents import Document
