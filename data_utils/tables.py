@@ -7,7 +7,7 @@ import json
 from datetime import datetime
 
 from utils import Logger, log
-from handlers import DataFrameHandler
+from .handlers import DataFrameHandler
 
 from langchain_core.documents import Document
 from faker import Faker
