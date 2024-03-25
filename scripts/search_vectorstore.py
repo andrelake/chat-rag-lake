@@ -5,7 +5,7 @@ log.verbose = True
 log.end = '\n\n'
 
 
-from env import PINECONE_API_KEY, OPENAI_API_KEY
+from env import PINECONE_API_KEY, OPENAI_API_KEY, PINECONE_INDEX_NAME
 from connections.pinecone import get_database_client, get_vectorstore, query_documents
 from connections.embeddings import get_client, get_dimension_count
 
@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
     class Database:
         client = get_database_client(PINECONE_API_KEY)
-        vectorstore_name = 'prj-ai-rag-llm-table-11-large-embedding'
+        vectorstore_name = PINECONE_INDEX_NAME
                          # 'prj-ai-rag-llm-table-1-standard'
                          # 'prj-ai-rag-llm-table-2-discursive'
                          # 'prj-ai-rag-llm-table-3-standard-creditcard'
