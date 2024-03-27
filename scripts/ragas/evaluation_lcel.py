@@ -16,7 +16,7 @@ questions = [
              # "Quanto o cliente Levi Fogaça gastou em 2023?", -> Total anual Levi Fogaça 2023
              # "Quanto o cliente Levi Fogaça gastou em abril, maio e junho de 2023?", -> Soma total mensal Levi Fogaça abril maio junho 2023
              # "Quanto o cliente Levi Fogaça gastou em abril comparado com junho de 2023?", -> Comparativo em porcentagem total mensal Levi Fogaça entre abril junho 2023
-             # "Qual o total transacionado na carteira em 5 de abril de 2023?", -> Total diário 05/04/2023
+             # "Qual o total transacionado na carteira em 5 de abril de 2023?", ->
              # "Qual o total mensal transacionado na carteira em abril de 2023?", -> Total mensal carteira abril 2023
              # "Qual o total anual transacionado na carteira em 2023?", -> Total anual carteira 2023
              # "Qual o total transacionado na carteira em abril, maio e junho de 2023?", -> mensal abril maio junho 2023 soma
